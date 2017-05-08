@@ -25,7 +25,7 @@
   "license": "MIT",
   "typings": "lib/src/index.d.ts",
   "engines": {
-    "node": ">= 4.5.0"
+    "node": ">= 6"
   },
   "os": [
     "darwin",
