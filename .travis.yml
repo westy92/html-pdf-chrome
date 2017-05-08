@@ -1,5 +1,10 @@
+dist: trusty
+sudo: false
+
 addons:
-  - chrome: beta
+  apt:
+    packages:
+      - google-chrome-stable
 
 language: node_js
 node_js:
