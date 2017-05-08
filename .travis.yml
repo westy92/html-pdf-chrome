@@ -1,0 +1,10 @@
+addons:
+  apt:
+    packages:
+      - google-chrome-beta
+
+language: node_js
+node_js:
+  - "4.5"
+  - "6"
+  - "7"
