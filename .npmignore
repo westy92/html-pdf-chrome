@@ -1,0 +1,8 @@
+coverage/
+gulpfile.js
+lib/test/
+test/
+tsconfig.json
+tslint.json
+.travis.yml
+.vscode/
