@@ -1,5 +1,6 @@
 # html-pdf-chrome
 
+[![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://badge.fury.io/js/html-pdf-chrome)
 [![Build Status](https://travis-ci.org/westy92/html-pdf-chrome.svg)](https://travis-ci.org/westy92/html-pdf-chrome/)
 [![Known Vulnerabilities](https://snyk.io/test/github/westy92/html-pdf-chrome/badge.svg)](https://snyk.io/test/github/westy92/html-pdf-chrome)
 
