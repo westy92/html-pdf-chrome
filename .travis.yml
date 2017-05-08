@@ -1,7 +1,5 @@
 addons:
-  apt:
-    packages:
-      - google-chrome-beta
+  - chrome: beta
 
 language: node_js
 node_js:
