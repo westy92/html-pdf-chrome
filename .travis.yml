@@ -1,0 +1,22 @@
+os:
+  - linux
+  - osx
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - google-chrome-beta
+before_install:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      brew tap caskroom/versions > /dev/null
+      brew update > /dev/null
+      brew cask install google-chrome-beta
+    fi
+
+language: node_js
+node_js:
+  - "6"
+  - "7"

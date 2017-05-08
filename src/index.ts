@@ -33,10 +33,14 @@ export async function create(html: string, options?: Options): Promise<CreateRes
       reject(err);
     });
   }).then(async (createResult) => {
-    await chrome.kill();
+    if (chrome) {
+      await chrome.kill();
+    }
     return createResult;
   }).catch(async (err) => {
-    await chrome.kill();
+    if (chrome) {
+      await chrome.kill();
+    }
     return Promise.reject(err);
   });
 }
