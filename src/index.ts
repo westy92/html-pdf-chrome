@@ -6,11 +6,25 @@ import { ChromeLauncher } from 'lighthouse/lighthouse-cli/chrome-launcher';
 import { getRandomPort } from 'lighthouse/lighthouse-cli/random-port';
 import { Readable, Stream } from 'stream';
 
-export interface Options {
+/**
+ * PDF generation options.
+ *
+ * @export
+ * @interface CreateOptions
+ */
+export interface CreateOptions {
   port?: number;
 }
 
-export async function create(html: string, options?: Options): Promise<CreateResult> {
+/**
+ * Generates a PDF from the given HTML string.
+ *
+ * @export
+ * @param {string} html the HTML string.
+ * @param {Options} [options] the generation options.
+ * @returns {Promise<CreateResult>} the generated PDF data.
+ */
+export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
   myOptions.port = myOptions.port || await getRandomPort();
   const chrome = await launchChrome(myOptions.port);
@@ -45,7 +59,13 @@ export async function create(html: string, options?: Options): Promise<CreateRes
   });
 }
 
-async function launchChrome(port: number) {
+/**
+ * Launches Chrome and listens on the specified port.
+ *
+ * @param {number} port the port for the launched Chrome to listen on.
+ * @returns {Promise<ChromeLauncher>} The launched ChromeLauncher instance.
+ */
+async function launchChrome(port: number): Promise<ChromeLauncher> {
   const launcher = new ChromeLauncher({
     port,
     autoSelectChrome: true,
@@ -62,10 +82,27 @@ async function launchChrome(port: number) {
   }
 }
 
+/**
+ * Allows exporting of PDF data to multiple formats.
+ *
+ * @export
+ * @class CreateResult
+ */
 export class CreateResult {
 
-  private static async writeFile(filename: string, data: Buffer) {
-    return new Promise((resolve, reject) => {
+  /**
+   * Writes the given data Buffer to the specified file location.
+   *
+   * @private
+   * @static
+   * @param {string} filename the file name to write to.
+   * @param {Buffer} data the data to write.
+   * @returns {Promise<void>}
+   *
+   * @memberof CreateResult
+   */
+  private static async writeFile(filename: string, data: Buffer): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       fs.writeFile(filename, data, (err) => {
         err ? reject(err) : resolve();
       });
@@ -74,21 +111,52 @@ export class CreateResult {
 
   /**
    * Base64-encoded PDF data.
+   *
+   * @private
+   * @type {string}
+   * @memberof CreateResult
    */
   private data: string;
 
+  /**
+   * Creates an instance of CreateResult.
+   * @param {string} data base64 PDF data
+   *
+   * @memberof CreateResult
+   */
   public constructor(data: string) {
     this.data = data;
   }
 
+  /**
+   * Get the base64 PDF data.
+   *
+   * @returns {string} base64 PDF data.
+   *
+   * @memberof CreateResult
+   */
   public toBase64(): string {
     return this.data;
   }
 
+  /**
+   * Get a Buffer of the PDF data.
+   *
+   * @returns {Buffer} PDF data.
+   *
+   * @memberof CreateResult
+   */
   public toBuffer(): Buffer {
     return Buffer.from(this.data, 'base64');
   }
 
+  /**
+   * Get a Stream of the PDF data.
+   *
+   * @returns {Stream} Stream of PDF data.
+   *
+   * @memberof CreateResult
+   */
   public toStream(): Stream {
     const stream = new Readable();
     stream.push(this.data);
@@ -96,6 +164,14 @@ export class CreateResult {
     return stream;
   }
 
+  /**
+   * Saves the PDF to a file.
+   *
+   * @param {string} filename the filename.
+   * @returns {Promise<void>} resolves upon successful create.
+   *
+   * @memberof CreateResult
+   */
   public async toFile(filename: string): Promise<void> {
     await CreateResult.writeFile(filename, this.toBuffer());
   }
