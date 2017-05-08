@@ -1,0 +1,55 @@
+{
+  "name": "html-pdf-chrome",
+  "version": "0.0.1",
+  "description": "HTML to PDF converter via Chrome/Chromium",
+  "main": "lib/src/index.js",
+  "scripts": {
+    "test": "gulp"
+  },
+  "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
+  "homepage": "https://github.com/westy92/html-pdf-chrome",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/westy92/html-pdf-chrome"
+  },
+  "bugs": {
+    "url": "https://github.com/westy92/html-pdf-chrome/issues"
+  },
+  "keywords": [
+    "html",
+    "pdf",
+    "chrome",
+    "chromium",
+    "nodejs"
+  ],
+  "license": "MIT",
+  "typings": "lib/src/index.d.ts",
+  "engines": {
+    "node": ">= 4.5.0"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "devDependencies": {
+    "@types/chai": "^3.5.2",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.18",
+    "chai": "^3.5.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-spawn-mocha": "^3.3.0",
+    "gulp-tslint": "^8.0.0",
+    "gulp-typescript": "^3.1.6",
+    "mocha": "^3.3.0",
+    "remap-istanbul": "^0.9.5",
+    "tslint": "^5.2.0",
+    "tslint-microsoft-contrib": "^4.0.1",
+    "typescript": "^2.3.2"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.22.0",
+    "lighthouse": "^1.6.5"
+  }
+}
