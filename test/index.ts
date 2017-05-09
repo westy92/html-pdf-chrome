@@ -1,6 +1,10 @@
 'use strict';
 
+// tslint:disable:no-unused-expression
+
 import * as chai from 'chai';
+import * as fs from 'fs';
+import * as mockFs from 'mock-fs';
 import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
@@ -61,6 +65,25 @@ describe('HtmlPdf', () => {
             done(err);
           }
         });
+      });
+    });
+
+    describe('toFile', () => {
+      it('should output a file', async () => {
+        try {
+          mockFs({
+            myDir: {},
+          });
+          const cr = new HtmlPdf.CreateResult('dGVzdA==');
+          const path = 'myDir/file.pdf';
+          await cr.toFile(path);
+          const stats = fs.statSync(path);
+          expect(stats.isFile()).to.be.true;
+          expect(stats.isDirectory()).to.be.false;
+          expect(stats.size).to.be.greaterThan(0);
+        } finally {
+          mockFs.restore();
+        }
       });
     });
 
