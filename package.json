@@ -1,6 +1,6 @@
 {
   "name": "html-pdf-chrome",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
