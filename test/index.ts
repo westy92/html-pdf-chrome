@@ -1,6 +1,7 @@
 'use strict';
 
 import * as chai from 'chai';
+import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
 
@@ -35,6 +36,31 @@ describe('HtmlPdf', () => {
       it('should output a Buffer', () => {
         const cr = new HtmlPdf.CreateResult('dGVzdA==');
         expect(cr.toBuffer()).to.deep.equal(Buffer.from('dGVzdA==', 'base64'));
+      });
+    });
+
+    describe('toStream', () => {
+      it('should output a Readable Stream', () => {
+        const cr = new HtmlPdf.CreateResult('dGVzdA==');
+        const stream = cr.toStream();
+        expect(stream).to.be.an.instanceOf(Readable);
+      });
+
+      it('should output a valid Stream', (done) => {
+        const cr = new HtmlPdf.CreateResult('dGVzdA==');
+        const stream = cr.toStream();
+        let bytes = new Buffer('');
+        stream.on('data', (chunk) => {
+          bytes = Buffer.concat([bytes, chunk]);
+        });
+        stream.on('end', () => {
+          try {
+            expect(bytes).to.deep.equal(cr.toBuffer());
+            done();
+          } catch (err) {
+            done(err);
+          }
+        });
       });
     });
 

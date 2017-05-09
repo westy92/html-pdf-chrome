@@ -159,7 +159,7 @@ export class CreateResult {
    */
   public toStream(): Stream {
     const stream = new Readable();
-    stream.push(this.data);
+    stream.push(this.data, 'base64');
     stream.push(null);
     return stream;
   }
