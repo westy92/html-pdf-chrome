@@ -18,6 +18,25 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create('<p>hello!</p>');
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
+
+    it('should generate a PDF with options', async () => {
+      const options = {
+        port: 9222,
+      };
+      const result = await HtmlPdf.create('<p>hello!</p>', options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should generate a PDF with Chrome options', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        printOptions: {
+          landscape: true,
+          displayHeaderFooter: true,
+        },
+      };
+      const result = await HtmlPdf.create('<p>hello!</p>', options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
   });
 
   describe('CreateResult', () => {
