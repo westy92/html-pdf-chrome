@@ -27,7 +27,7 @@ TypeScript:
 ```ts
 import * as htmlPdf from 'html-pdf-chrome';
 
-const html = `<p>Hello world!</p>`;
+const html = `<p>Hello, world!</p>`;
 
 // async
 const pdf = await htmlPdf.create(html);
@@ -45,7 +45,7 @@ JavaScript:
 ```js
 const htmlPdf = require('html-pdf-chrome');
 
-const html = `<p>Hello world!</p>`;
+const html = `<p>Hello, world!</p>`;
 
 htmlPdf.create(html).then((pdf) => pdf.toFile('test.pdf'));
 htmlPdf.create(html).then((pdf) => pdf.toBase64());
@@ -53,6 +53,20 @@ htmlPdf.create(html).then((pdf) => pdf.toBuffer());
 ```
 
 View the full documentation in the source code.
+
+### Using a Template Engine
+
+Pug (formerly known as Jade)
+
+```ts
+import * as htmlPdf from 'html-pdf-chrome';
+import * as pug from 'pug';
+
+const template = pug.compile('p Hello, world!');
+
+const html = template();
+const pdf = await htmlPdf.create(html);
+```
 
 ## License
 html-pdf-chrome is released under the MIT License.
