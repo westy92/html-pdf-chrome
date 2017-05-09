@@ -4,5 +4,6 @@ lib/test/
 test/
 tsconfig.json
 tslint.json
+.istanbul.yml
 .travis.yml
 .vscode/
