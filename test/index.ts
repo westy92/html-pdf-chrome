@@ -104,6 +104,19 @@ describe('HtmlPdf', () => {
           mockFs.restore();
         }
       });
+
+      it('should fail output to a nonexistent directory', async () => {
+        try {
+          mockFs();
+          const cr = new HtmlPdf.CreateResult('dGVzdA==');
+          await cr.toFile('myDir/file.pdf');
+          expect.fail();
+        } catch (err) {
+          expect(err.message).to.contain('no such file or directory');
+        } finally {
+          mockFs.restore();
+        }
+      });
     });
 
   });

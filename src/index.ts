@@ -135,9 +135,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
       reject(err);
     });
   }).then(async (createResult) => {
-    if (chrome) {
-      await chrome.kill();
-    }
+    await chrome.kill();
     return createResult;
   }).catch(async (err) => {
     if (chrome) {
