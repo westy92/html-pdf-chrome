@@ -20,6 +20,8 @@
     "pdf",
     "chrome",
     "chromium",
+    "headless",
+    "typescript",
     "nodejs"
   ],
   "license": "MIT",
