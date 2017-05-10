@@ -142,9 +142,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     await chrome.kill();
     return createResult;
   }).catch(async (err) => {
-    if (chrome) {
-      await chrome.kill();
-    }
+    await chrome.kill();
     return Promise.reject(err);
   });
 }
@@ -169,5 +167,6 @@ async function launchChrome(port: number): Promise<ChromeLauncher> {
     return launcher;
   } catch (err) {
     await launcher.kill();
+    return Promise.reject(err);
   }
 }

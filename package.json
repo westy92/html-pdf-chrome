@@ -38,6 +38,8 @@
     "@types/mocha": "^2.2.41",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "^7.0.18",
+    "@types/sinon": "^2.2.1",
+    "@types/sinon-chai": "^2.7.27",
     "chai": "^3.5.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
@@ -48,6 +50,8 @@
     "mocha": "^3.3.0",
     "mock-fs": "^4.3.0",
     "remap-istanbul": "^0.9.5",
+    "sinon": "^2.2.0",
+    "sinon-chai": "^2.10.0",
     "tslint": "^5.2.0",
     "tslint-microsoft-contrib": "^4.0.1",
     "typescript": "^2.3.2"

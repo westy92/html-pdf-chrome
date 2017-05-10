@@ -4,7 +4,9 @@
 
 import * as chai from 'chai';
 import * as fs from 'fs';
+import { ChromeLauncher } from 'lighthouse/lighthouse-cli/chrome-launcher';
 import * as mockFs from 'mock-fs';
+import * as sinon from 'sinon';
 import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
@@ -36,6 +38,24 @@ describe('HtmlPdf', () => {
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should handle a Chrome launch failure', async () => {
+      let runStub: sinon.SinonStub;
+      let killStub: sinon.SinonStub;
+      const error = new Error('failed!');
+      try {
+        runStub = sinon.stub(ChromeLauncher.prototype, 'run').callsFake(() => Promise.reject(error));
+        killStub = sinon.stub(ChromeLauncher.prototype, 'kill').callsFake(() => Promise.resolve());
+        const result = await HtmlPdf.create('<p>hello!</p>');
+        expect.fail();
+      } catch (err) {
+        expect(killStub).to.have.been.called;
+        expect(err).to.equal(error);
+      } finally {
+        runStub.restore();
+        killStub.restore();
+      }
     });
   });
 
