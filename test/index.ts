@@ -78,7 +78,7 @@ describe('HtmlPdf', () => {
     describe('toBuffer', () => {
       it('should output a Buffer', () => {
         const cr = new HtmlPdf.CreateResult('dGVzdA==');
-        expect(cr.toBuffer()).to.deep.equal(Buffer.from('dGVzdA==', 'base64'));
+        expect(cr.toBuffer()).to.deep.equal(Buffer.from('test'));
       });
     });
 
