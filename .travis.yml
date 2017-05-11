@@ -12,7 +12,6 @@ before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap caskroom/versions > /dev/null
-      brew update > /dev/null
       brew cask install google-chrome-beta
     fi
 
