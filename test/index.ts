@@ -5,6 +5,7 @@
 import * as chai from 'chai';
 import * as fs from 'fs';
 import { ChromeLauncher } from 'lighthouse/lighthouse-cli/chrome-launcher';
+import { getRandomPort } from 'lighthouse/lighthouse-cli/random-port';
 import * as mockFs from 'mock-fs';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
@@ -22,8 +23,9 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF with options', async () => {
+      const port = await getRandomPort();
       const options: HtmlPdf.CreateOptions = {
-        port: 9222,
+        port,
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
