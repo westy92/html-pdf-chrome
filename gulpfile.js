@@ -52,6 +52,6 @@ gulp.task('test', ['scripts'], () =>
   gulp.src('lib/test/**/*.js', {read: false})
     .pipe(mocha({
       istanbul: true,
-      timeout: 15000,
+      timeout: 30000,
     }))
 );
