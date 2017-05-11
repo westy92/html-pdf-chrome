@@ -109,7 +109,7 @@ export interface ChromePrintOptions {
 }
 
 /**
- * Generates a PDF from the given HTML string.
+ * Generates a PDF from the given HTML string, launching Chrome as necessary.
  *
  * @export
  * @param {string} html the HTML string.
@@ -120,15 +120,30 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   const myOptions = Object.assign({}, options);
   myOptions.port = myOptions.port || await getRandomPort();
   const chrome = await launchChrome(myOptions.port);
+  try {
+    return await generate(html, myOptions);
+  } finally {
+    await chrome.kill();
+  }
+}
+
+/**
+ * Connects to Chrome and generates a PDF from HTML.
+ *
+ * @param {string} html the HTML string.
+ * @param {CreateOptions} options the generation options.
+ * @returns {Promise<CreateResult>} the generated PDF data.
+ */
+async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
   return new Promise<CreateResult>((resolve, reject) => {
-    CDP(myOptions, async (client) => {
+    CDP(options, async (client) => {
       try {
         const {Page} = client;
         await Page.enable(); // Enable Page events
         await Page.navigate({url: `data:text/html,${html}`});
         await Page.loadEventFired();
         // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
-        const pdf = await Page.printToPDF(myOptions.printOptions);
+        const pdf = await Page.printToPDF(options.printOptions);
         return resolve(new CreateResult(pdf.data));
       } catch (err) {
         reject(err);
@@ -138,12 +153,6 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     }).on('error', (err) => {
       reject(err);
     });
-  }).then(async (createResult) => {
-    await chrome.kill();
-    return createResult;
-  }).catch(async (err) => {
-    await chrome.kill();
-    return Promise.reject(err);
   });
 }
 

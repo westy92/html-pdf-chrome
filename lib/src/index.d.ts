@@ -97,7 +97,7 @@ export interface ChromePrintOptions {
     pageRanges?: string;
 }
 /**
- * Generates a PDF from the given HTML string.
+ * Generates a PDF from the given HTML string, launching Chrome as necessary.
  *
  * @export
  * @param {string} html the HTML string.

@@ -22,7 +22,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF with options', async () => {
-      const options = {
+      const options: HtmlPdf.CreateOptions = {
         port: 9222,
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
