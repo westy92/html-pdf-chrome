@@ -7,7 +7,22 @@ export { CreateResult };
  * @interface CreateOptions
  */
 export interface CreateOptions {
+    /**
+     * The port to connect to Chrome with.
+     * If set, it attempts to connect to Chrome.
+     * If not set, it spawns Chrome for the duration
+     * of the PDF generation.
+     *
+     * @type {number}
+     * @memberof CreateOptions
+     */
     port?: number;
+    /**
+     * The options to pass to Chrome's Page.printToPDF.
+     *
+     * @type {ChromePrintOptions}
+     * @memberof CreateOptions
+     */
     printOptions?: ChromePrintOptions;
 }
 /**
