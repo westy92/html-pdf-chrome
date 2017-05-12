@@ -9,6 +9,7 @@ import { getRandomPort } from 'lighthouse/lighthouse-cli/random-port';
 import * as mockFs from 'mock-fs';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
+import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
 
@@ -17,28 +18,35 @@ const expect = chai.expect;
 describe('HtmlPdf', () => {
 
   describe('create', () => {
-    it('should generate a PDF', async () => {
+    let port: number;
+    let launcher: ChromeLauncher;
+
+    before(async () => {
+      try {
+        // Start Chrome and wait for it to start listening for connections.
+        port = await getRandomPort();
+        launcher = new ChromeLauncher({
+          port,
+          autoSelectChrome: true,
+          additionalFlags: [
+            '--disable-gpu',
+            '--headless',
+          ],
+        });
+        await launcher.run();
+        await tcpPortUsed.waitUntilUsed(port);
+      } catch (err) {
+        await launcher.kill();
+        throw err;
+      }
+    });
+
+    after(async () => {
+      await launcher.kill();
+    });
+
+    it('should spawn Chrome and generate a PDF', async () => {
       const result = await HtmlPdf.create('<p>hello!</p>');
-      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-    });
-
-    it('should generate a PDF with options', async () => {
-      const port = await getRandomPort();
-      const options: HtmlPdf.CreateOptions = {
-        port,
-      };
-      const result = await HtmlPdf.create('<p>hello!</p>', options);
-      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-    });
-
-    it('should generate a PDF with Chrome options', async () => {
-      const options: HtmlPdf.CreateOptions = {
-        printOptions: {
-          landscape: true,
-          displayHeaderFooter: true,
-        },
-      };
-      const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
 
@@ -59,6 +67,24 @@ describe('HtmlPdf', () => {
         killStub.restore();
       }
     });
+
+    it('should use running Chrome and generate a PDF', async () => {
+      const result = await HtmlPdf.create('<p>hello!</p>', {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should use running Chrome and generate a PDF with Chrome options', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        printOptions: {
+          landscape: true,
+          displayHeaderFooter: true,
+        },
+      };
+      const result = await HtmlPdf.create('<p>hello!</p>', options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
   });
 
   describe('CreateResult', () => {

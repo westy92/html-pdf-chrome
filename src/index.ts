@@ -17,7 +17,23 @@ export { CreateResult };
  * @interface CreateOptions
  */
 export interface CreateOptions {
+  /**
+   * The port to connect to Chrome with.
+   * If set, it attempts to connect to Chrome.
+   * If not set, it spawns Chrome for the duration
+   * of the PDF generation.
+   *
+   * @type {number}
+   * @memberof CreateOptions
+   */
   port?: number;
+
+  /**
+   * The options to pass to Chrome's Page.printToPDF.
+   *
+   * @type {ChromePrintOptions}
+   * @memberof CreateOptions
+   */
   printOptions?: ChromePrintOptions;
 }
 
@@ -35,6 +51,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   landscape?: boolean;
+
   /**
    * Display header and footer. Defaults to false.
    *
@@ -42,6 +59,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   displayHeaderFooter?: boolean;
+
   /**
    * Print background graphics. Defaults to false.
    *
@@ -49,6 +67,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   printBackground?: boolean;
+
   /**
    * Scale of the webpage rendering. Defaults to 1.
    *
@@ -56,6 +75,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   scale?: number;
+
   /**
    * Paper width in inches. Defaults to 8.5 inches.
    *
@@ -63,6 +83,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   paperWidth?: number;
+
   /**
    * Paper height in inches. Defaults to 11 inches.
    *
@@ -70,6 +91,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   paperHeight?: number;
+
   /**
    * Top margin in inches. Defaults to 1cm (~0.4 inches).
    *
@@ -77,6 +99,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   marginTop?: number;
+
   /**
    * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
    *
@@ -84,6 +107,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   marginBottom?: number;
+
   /**
    * Left margin in inches. Defaults to 1cm (~0.4 inches).
    *
@@ -91,6 +115,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   marginLeft?: number;
+
   /**
    * Right margin in inches. Defaults to 1cm (~0.4 inches).
    *
@@ -98,6 +123,7 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   marginRight?: number;
+
   /**
    * Paper ranges to print, e.g., '1-5, 8, 11-13'.
    * Defaults to the empty string, which means print all pages.
@@ -118,12 +144,17 @@ export interface ChromePrintOptions {
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
-  myOptions.port = myOptions.port || await getRandomPort();
-  const chrome = await launchChrome(myOptions.port);
+  let chrome: ChromeLauncher;
+  if (!myOptions.port) {
+    myOptions.port = await getRandomPort();
+    chrome = await launchChrome(myOptions.port);
+  }
   try {
     return await generate(html, myOptions);
   } finally {
-    await chrome.kill();
+    if (chrome) {
+      await chrome.kill();
+    }
   }
 }
 

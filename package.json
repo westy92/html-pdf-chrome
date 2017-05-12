@@ -52,6 +52,7 @@
     "remap-istanbul": "^0.9.5",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
+    "tcp-port-used": "^0.1.2",
     "tslint": "^5.2.0",
     "tslint-microsoft-contrib": "^4.0.1",
     "typescript": "^2.3.2"
