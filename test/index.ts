@@ -111,6 +111,25 @@ describe('HtmlPdf', () => {
       expect(pdfText).startsWith('Passed!');
     });
 
+    it('should generate a PDF with external CSS', async () => {
+      // #test:before{content:'Passed!';}
+      const html = `
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,I3Rlc3Q6YmVmb3Jle2NvbnRlbnQ6J1Bhc3NlZCEnO30=">
+          </head>
+          <body>
+            <div id="test"></div>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdfText = await getPdfText(result.toBuffer());
+      expect(pdfText).startsWith('Passed!');
+    });
+
   });
 
   describe('CreateResult', () => {
