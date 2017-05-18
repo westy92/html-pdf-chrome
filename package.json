@@ -22,6 +22,9 @@
     "chromium",
     "headless",
     "typescript",
+    "windows",
+    "mac",
+    "linux",
     "nodejs"
   ],
   "license": "MIT",
@@ -29,10 +32,6 @@
   "engines": {
     "node": ">= 6"
   },
-  "os": [
-    "darwin",
-    "linux"
-  ],
   "devDependencies": {
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",

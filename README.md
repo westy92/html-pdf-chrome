@@ -5,18 +5,20 @@
 [![Dependency Status](https://david-dm.org/westy92/html-pdf-chrome.svg)](https://david-dm.org/westy92/html-pdf-chrome)
 [![Known Vulnerabilities](https://snyk.io/test/github/westy92/html-pdf-chrome/badge.svg)](https://snyk.io/test/github/westy92/html-pdf-chrome)
 
-
 HTML to PDF converter via Chrome/Chromium.
 
 ## Notice
+
 html-pdf-chrome is in an alpha phase while Chrome/Chromium headless mode is [still being developed](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=label:Proj-Headless).
 
 ## Prerequisites
+
 * Chrome/Chromium 59 or higher (still in beta)
-* Linux or macOS
+* Windows, macOS, or Linux
 * Node.js v6 or later
 
 ## Installation
+
 ```bash
 npm install --save html-pdf-chrome
 ```
@@ -28,6 +30,7 @@ __Note:__ It is _strongly_ recommended that you keep Chrome running side-by-side
 It's suggested to use [pm2](http://pm2.keymetrics.io/) to ensure Chrome continues to run.  If it crashes, it will restart automatically.
 
 As of this writing, headless Chrome uses about 65mb of RAM while idle.
+
 ```bash
 # install pm2 globally
 npm install -g pm2
@@ -37,6 +40,7 @@ pm2 start google-chrome-beta --interpreter none -- --headless --disable-gpu --re
 ```
 
 TypeScript:
+
 ```js
 import * as htmlPdf from 'html-pdf-chrome';
 
@@ -58,6 +62,7 @@ htmlPdf.create(html, options).then((pdf) => pdf.toBuffer());
 ```
 
 JavaScript:
+
 ```js
 const htmlPdf = require('html-pdf-chrome');
 
@@ -94,4 +99,5 @@ const pdf = await htmlPdf.create(html, options);
 ```
 
 ## License
+
 html-pdf-chrome is released under the MIT License.
