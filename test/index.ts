@@ -72,10 +72,16 @@ describe('HtmlPdf', () => {
     });
 
     it('should use running Chrome to generate a PDF', async () => {
-      const result = await HtmlPdf.create('<p>hello!</p>', {port});
-      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-      const pdfText = await getPdfText(result.toBuffer());
-      expect(pdfText).startsWith('hello!');
+      const runStub = sinon.stub(ChromeLauncher.prototype, 'run');
+      try {
+        const result = await HtmlPdf.create('<p>hello!</p>', {port});
+        expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+        expect(runStub).to.not.have.been.called;
+        const pdfText = await getPdfText(result.toBuffer());
+        expect(pdfText).startsWith('hello!');
+      } finally {
+        runStub.restore();
+      }
     });
 
     it('should generate a PDF with Chrome options', async () => {
@@ -95,7 +101,7 @@ describe('HtmlPdf', () => {
         <html>
           <head>
             <meta charset="utf-8">
-            <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
           </head>
           <body>
             <div id="test">Failed!</div>
