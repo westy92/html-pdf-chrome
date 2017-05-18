@@ -7,12 +7,15 @@ import * as fs from 'fs';
 import { ChromeLauncher } from 'lighthouse/lighthouse-cli/chrome-launcher';
 import { getRandomPort } from 'lighthouse/lighthouse-cli/random-port';
 import * as mockFs from 'mock-fs';
+import * as PDFParser from 'pdf2json';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
 import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
 
+// tslint:disable-next-line:no-var-requires
+chai.use(require('chai-string'));
 const expect = chai.expect;
 
 describe('HtmlPdf', () => {
@@ -68,12 +71,14 @@ describe('HtmlPdf', () => {
       }
     });
 
-    it('should use running Chrome and generate a PDF', async () => {
+    it('should use running Chrome to generate a PDF', async () => {
       const result = await HtmlPdf.create('<p>hello!</p>', {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdfText = await getPdfText(result.toBuffer());
+      expect(pdfText).startsWith('hello!');
     });
 
-    it('should use running Chrome and generate a PDF with Chrome options', async () => {
+    it('should generate a PDF with Chrome options', async () => {
       const options: HtmlPdf.CreateOptions = {
         port,
         printOptions: {
@@ -83,6 +88,27 @@ describe('HtmlPdf', () => {
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should generate a PDF with external JavaScript', async () => {
+      const html = `
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+          </head>
+          <body>
+            <div id="test">Failed!</div>
+            <script>
+              $('#test').text('Passed!');
+            </script>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdfText = await getPdfText(result.toBuffer());
+      expect(pdfText).startsWith('Passed!');
     });
 
   });
@@ -170,3 +196,12 @@ describe('HtmlPdf', () => {
   });
 
 });
+
+async function getPdfText(buffer: Buffer) {
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser(null, 1);
+    pdfParser.on('pdfParser_dataError', (err) => reject(err.parserError));
+    pdfParser.on('pdfParser_dataReady', () => resolve(pdfParser.getRawTextContent()));
+    pdfParser.parseBuffer(buffer);
+  });
+}
