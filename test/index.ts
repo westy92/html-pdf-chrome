@@ -76,8 +76,8 @@ describe('HtmlPdf', () => {
         const result = await HtmlPdf.create('<p>hello!</p>', {port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
-        const pdfText = await getPdfText(result.toBuffer());
-        expect(pdfText).startsWith('hello!');
+        const pdf = await getParsedPdf(result.toBuffer());
+        expect(pdf.getRawTextContent()).startsWith('hello!');
       } finally {
         launchStub.restore();
       }
@@ -112,8 +112,8 @@ describe('HtmlPdf', () => {
       `;
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-      const pdfText = await getPdfText(result.toBuffer());
-      expect(pdfText).startsWith('Passed!');
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).startsWith('Passed!');
     });
 
     it('should generate a PDF with external CSS', async () => {
@@ -131,8 +131,33 @@ describe('HtmlPdf', () => {
       `;
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-      const pdfText = await getPdfText(result.toBuffer());
-      expect(pdfText).startsWith('Passed!');
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).startsWith('Passed!');
+    });
+
+    it('should generate a PDF with multiple pages', async () => {
+      const html = `
+        <html>
+          <head>
+            <meta charset="utf-8">
+          </head>
+          <body>
+            <div style="page-break-after:always">Page 1</div>
+            <div>Page 2</div>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      const expected = [
+        'Page 1',
+        '----------------Page (0) Break----------------',
+        'Page 2',
+        '----------------Page (1) Break----------------',
+        '',
+      ].join('\r\n');
+      expect(pdf.getRawTextContent()).to.equal(expected);
     });
 
   });
@@ -221,11 +246,11 @@ describe('HtmlPdf', () => {
 
 });
 
-async function getPdfText(buffer: Buffer) {
+async function getParsedPdf(buffer: Buffer): Promise<any> {
   return new Promise((resolve, reject) => {
     const pdfParser = new PDFParser(null, 1);
     pdfParser.on('pdfParser_dataError', (err) => reject(err.parserError));
-    pdfParser.on('pdfParser_dataReady', () => resolve(pdfParser.getRawTextContent()));
+    pdfParser.on('pdfParser_dataReady', () => resolve(pdfParser));
     pdfParser.parseBuffer(buffer);
   });
 }
