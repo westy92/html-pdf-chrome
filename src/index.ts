@@ -2,8 +2,8 @@
 
 import * as CDP from 'chrome-remote-interface';
 import * as fs from 'fs';
-import { ChromeLauncher } from 'lighthouse/lighthouse-cli/chrome-launcher';
-import { getRandomPort } from 'lighthouse/lighthouse-cli/random-port';
+import { Launcher } from 'lighthouse/chrome-launcher/chrome-launcher';
+import { getRandomPort } from 'lighthouse/chrome-launcher/random-port';
 import { Readable, Stream } from 'stream';
 
 import { CreateResult } from './CreateResult';
@@ -144,7 +144,7 @@ export interface ChromePrintOptions {
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
-  let chrome: ChromeLauncher;
+  let chrome: Launcher;
   if (!myOptions.port) {
     myOptions.port = await getRandomPort();
     chrome = await launchChrome(myOptions.port);
@@ -191,19 +191,18 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
  * Launches Chrome and listens on the specified port.
  *
  * @param {number} port the port for the launched Chrome to listen on.
- * @returns {Promise<ChromeLauncher>} The launched ChromeLauncher instance.
+ * @returns {Promise<Launcher>} The launched Launcher instance.
  */
-async function launchChrome(port: number): Promise<ChromeLauncher> {
-  const launcher = new ChromeLauncher({
+async function launchChrome(port: number): Promise<Launcher> {
+  const launcher = new Launcher({
     port,
-    autoSelectChrome: true,
-    additionalFlags: [
+    chromeFlags: [
       '--disable-gpu',
       '--headless',
     ],
   });
   try {
-    await launcher.run();
+    await launcher.launch();
     return launcher;
   } catch (err) {
     await launcher.kill();
