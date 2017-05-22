@@ -4,7 +4,9 @@
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
-    "test": "gulp"
+    "test": "gulp",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
   "homepage": "https://github.com/westy92/html-pdf-chrome",
@@ -62,6 +64,8 @@
   },
   "dependencies": {
     "chrome-remote-interface": "^0.22.0",
-    "lighthouse": "^2.0.0"
-  }
+    "lighthouse": "^2.0.0",
+    "snyk": "^1.30.1"
+  },
+  "snyk": true
 }
