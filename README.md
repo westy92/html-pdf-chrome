@@ -35,7 +35,12 @@ As of this writing, headless Chrome uses about 65mb of RAM while idle.
 # install pm2 globally
 npm install -g pm2
 # start Chrome and be sure to specify a port to use in the html-pdf-chrome options.
-pm2 start google-chrome-beta --interpreter none -- --headless --disable-gpu --remote-debugging-port=<port goes here>
+pm2 start google-chrome-beta \
+  --interpreter none \
+  -- \
+  --headless \
+  --disable-gpu \
+  --remote-debugging-port=<port goes here>
 # run your Node.js app.
 ```
 
