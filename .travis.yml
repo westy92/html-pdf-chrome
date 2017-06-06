@@ -12,7 +12,7 @@ before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap caskroom/versions > /dev/null
-      brew cask install google-chrome-stable
+      brew cask install google-chrome
     fi
 
 language: node_js
