@@ -79,6 +79,19 @@ htmlPdf.create(html, options).then((pdf) => pdf.toBuffer());
 
 View the full documentation in the source code.
 
+### Using an External Site
+
+```js
+import * as htmlPdf from 'html-pdf-chrome';
+
+const options: htmlPdf.CreateOptions = {
+  port: 9222, // port Chrome is listening on
+};
+
+const url = 'https://github.com/westy92/html-pdf-chrome';
+const pdf = await htmlPdf.create(url, options);
+```
+
 ### Using a Template Engine
 
 Pug (formerly known as Jade)

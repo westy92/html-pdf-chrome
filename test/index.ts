@@ -153,6 +153,13 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).to.contain('Page (0) Break').and.to.contain('Page (1) Break');
     });
 
+    it('should generate a PDF from an external site', async () => {
+      const result = await HtmlPdf.create('https://m.facebook.com/', {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.contain('Facebook');
+    });
+
   });
 
   describe('CreateResult', () => {

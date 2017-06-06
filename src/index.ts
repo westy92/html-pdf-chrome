@@ -64,9 +64,9 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
 }
 
 /**
- * Connects to Chrome and generates a PDF from HTML.
+ * Connects to Chrome and generates a PDF from HTML or a URL.
  *
- * @param {string} html the HTML string.
+ * @param {string} html the HTML string or URL.
  * @param {CreateOptions} options the generation options.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
@@ -76,7 +76,8 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
       try {
         const {Page} = client;
         await Page.enable(); // Enable Page events
-        await Page.navigate({url: `data:text/html,${html}`});
+        const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
+        await Page.navigate({url});
         await Page.loadEventFired();
         // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
         const pdf = await Page.printToPDF(options.printOptions);
