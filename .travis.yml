@@ -7,12 +7,12 @@ sudo: false
 addons:
   apt:
     packages:
-      - google-chrome
+      - google-chrome-stable
 before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap caskroom/versions > /dev/null
-      brew cask install google-chrome
+      brew cask install google-chrome-stable
     fi
 
 language: node_js
