@@ -7,13 +7,9 @@
 
 HTML to PDF converter via Chrome/Chromium.
 
-## Notice
-
-html-pdf-chrome is in an alpha phase while Chrome/Chromium headless mode is [still being developed](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=label:Proj-Headless).
-
 ## Prerequisites
 
-* Chrome/Chromium 59 or higher (still in beta)
+* Chrome/Chromium 59 or higher (60 or higher for some features)
 * Windows, macOS, or Linux
 * Node.js v6 or later
 
@@ -35,7 +31,7 @@ As of this writing, headless Chrome uses about 65mb of RAM while idle.
 # install pm2 globally
 npm install -g pm2
 # start Chrome and be sure to specify a port to use in the html-pdf-chrome options.
-pm2 start google-chrome-beta \
+pm2 start google-chrome \
   --interpreter none \
   -- \
   --headless \

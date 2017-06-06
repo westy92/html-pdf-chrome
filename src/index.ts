@@ -31,6 +31,7 @@ export interface CreateOptions {
 
   /**
    * The options to pass to Chrome's Page.printToPDF.
+   * Note: these require Chrome >= 60.
    *
    * @type {ChromePrintOptions}
    * @memberof CreateOptions
