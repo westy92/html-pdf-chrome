@@ -70,10 +70,23 @@ describe('HtmlPdf', () => {
       }
     });
 
-    it('should use running Chrome to generate a PDF', async () => {
+    it('should use running Chrome to generate a PDF (specify port)', async () => {
       const launchStub = sinon.stub(Launcher.prototype, 'launch');
       try {
         const result = await HtmlPdf.create('<p>hello!</p>', {port});
+        expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+        expect(launchStub).to.not.have.been.called;
+        const pdf = await getParsedPdf(result.toBuffer());
+        expect(pdf.getRawTextContent()).startsWith('hello!');
+      } finally {
+        launchStub.restore();
+      }
+    });
+
+    it('should use running Chrome to generate a PDF (specify host and port)', async () => {
+      const launchStub = sinon.stub(Launcher.prototype, 'launch');
+      try {
+        const result = await HtmlPdf.create('<p>hello!</p>', {host: 'localhost', port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
         const pdf = await getParsedPdf(result.toBuffer());
