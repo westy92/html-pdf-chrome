@@ -82,26 +82,19 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
-  return new Promise<CreateResult>((resolve, reject) => {
-    CDP(options, async (client) => {
-      try {
-        const {Page} = client;
-        await Page.enable(); // Enable Page events
-        const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
-        await Page.navigate({url});
-        await Page.loadEventFired();
-        // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
-        const pdf = await Page.printToPDF(options.printOptions);
-        return resolve(new CreateResult(pdf.data));
-      } catch (err) {
-        reject(err);
-      } finally {
-        client.close();
-      }
-    }).on('error', (err) => {
-      reject(err);
-    });
-  });
+  const client = await CDP(options);
+  try {
+    const {Page} = client;
+    await Page.enable(); // Enable Page events
+    const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
+    await Page.navigate({url});
+    await Page.loadEventFired();
+    // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
+    const pdf = await Page.printToPDF(options.printOptions);
+    return new CreateResult(pdf.data);
+  } finally {
+    client.close();
+  }
 }
 
 /**
