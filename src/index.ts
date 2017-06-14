@@ -61,7 +61,7 @@ export interface CreateOptions {
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
   let chrome: Launcher;
-  if (!myOptions.port && !myOptions.host) {
+  if (!myOptions.host && !myOptions.port) {
     myOptions.port = await getRandomPort();
     chrome = await launchChrome(myOptions.port);
   }
