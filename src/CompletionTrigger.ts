@@ -12,10 +12,8 @@ export class Timer extends CompletionTrigger {
   }
 
   public async wait(client: any): Promise<any> {
-    const {Runtime} = client;
-    return Runtime.evaluate({
-      awaitPromise: true,
-      expression: `new Promise(resolve => { setTimeout(resolve, ${this.timeout}) })`,
+    return new Promise((resolve) => {
+      setTimeout(resolve, this.timeout);
     });
   }
 }
