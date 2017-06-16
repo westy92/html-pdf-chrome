@@ -7,9 +7,10 @@ import { getRandomPort } from 'lighthouse/chrome-launcher/random-port';
 import { Readable, Stream } from 'stream';
 
 import { ChromePrintOptions } from './ChromePrintOptions';
+import * as CompletionTrigger from './CompletionTrigger';
 import { CreateResult } from './CreateResult';
 
-export { CreateResult };
+export { CompletionTrigger, CreateResult };
 
 /**
  * PDF generation options.
@@ -48,6 +49,15 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   printOptions?: ChromePrintOptions;
+
+  /**
+   * An optional CompletionTrigger to wait for before
+   * printing the rendered page to a PDF.
+   *
+   * @type {CompletionTrigger.CompletionTrigger}
+   * @memberof CreateOptions
+   */
+  completionTrigger?: CompletionTrigger.CompletionTrigger;
 }
 
 /**
@@ -89,6 +99,9 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
     await Page.navigate({url});
     await Page.loadEventFired();
+    if (options.completionTrigger) {
+      await options.completionTrigger.wait(client);
+    }
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
     return new CreateResult(pdf.data);

@@ -1,6 +1,7 @@
 import { ChromePrintOptions } from './ChromePrintOptions';
+import * as CompletionTrigger from './CompletionTrigger';
 import { CreateResult } from './CreateResult';
-export { CreateResult };
+export { CompletionTrigger, CreateResult };
 /**
  * PDF generation options.
  *
@@ -36,6 +37,14 @@ export interface CreateOptions {
      * @memberof CreateOptions
      */
     printOptions?: ChromePrintOptions;
+    /**
+     * An optional CompletionTrigger to wait for before
+     * printing the rendered page to a PDF.
+     *
+     * @type {CompletionTrigger.CompletionTrigger}
+     * @memberof CreateOptions
+     */
+    completionTrigger?: CompletionTrigger.CompletionTrigger;
 }
 /**
  * Generates a PDF from the given HTML string, launching Chrome as necessary.

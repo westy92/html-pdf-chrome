@@ -112,7 +112,6 @@ describe('HtmlPdf', () => {
       const html = `
         <html>
           <head>
-            <meta charset="utf-8">
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
           </head>
           <body>
@@ -134,7 +133,6 @@ describe('HtmlPdf', () => {
       const html = `
         <html>
           <head>
-            <meta charset="utf-8">
             <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,I3Rlc3Q6YmVmb3Jle2NvbnRlbnQ6J1Bhc3NlZCEnO30=">
           </head>
           <body>
@@ -151,9 +149,6 @@ describe('HtmlPdf', () => {
     it('should generate a PDF with multiple pages', async () => {
       const html = `
         <html>
-          <head>
-            <meta charset="utf-8">
-          </head>
           <body>
             <div style="page-break-after:always">Page 1</div>
             <div>Page 2</div>
@@ -171,6 +166,91 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.contain('Facebook');
+    });
+
+    it('should generate a PDF with a timer completion trigger', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Timer(60),
+      };
+      const html = `
+        <html>
+          <body>
+            <div id="test">Failed!</div>
+            <script>
+              setTimeout(() => {
+                document.getElementById('test').innerHTML = 'Passed!';
+              }, 50);
+            </script>
+          </body>
+        </html>
+      `;
+      // Generates too early without completion trigger
+      const prematureResult = await HtmlPdf.create(html, {port});
+      expect(prematureResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const prematurePdf = await getParsedPdf(prematureResult.toBuffer());
+      expect(prematurePdf.getRawTextContent()).startsWith('Failed!');
+
+      // Generates correctly with completion trigger
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).startsWith('Passed!');
+    });
+
+    it('should generate a PDF with an event completion trigger', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent'),
+      };
+      const html = `
+        <html>
+          <body>
+            <div id="test">Failed!</div>
+            <script>
+              setTimeout(() => {
+                document.getElementById('test').innerHTML = 'Passed!';
+                document.body.dispatchEvent(new Event('myEvent'));
+              }, 50);
+            </script>
+          </body>
+        </html>
+      `;
+      // Generates too early without completion trigger
+      const prematureResult = await HtmlPdf.create(html, {port});
+      expect(prematureResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const prematurePdf = await getParsedPdf(prematureResult.toBuffer());
+      expect(prematurePdf.getRawTextContent()).startsWith('Failed!');
+
+      // Generates too early with short timeout
+      const timeoutOptions: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', null, 1),
+      };
+      const timeoutResult = await HtmlPdf.create(html, timeoutOptions);
+      expect(timeoutResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const timeoutPdf = await getParsedPdf(timeoutResult.toBuffer());
+      expect(timeoutPdf.getRawTextContent()).startsWith('Failed!');
+
+      // Generates after timeout when listening on wrong DOM element
+      // TODO add test to verify the success scenario
+      const timeout = 75;
+      const domOptions: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', 'test', timeout),
+      };
+      const timeMs = Date.now();
+      const domResult = await HtmlPdf.create(html, domOptions);
+      expect(Date.now() - timeMs).to.be.at.least(timeout);
+      expect(domResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const domPdf = await getParsedPdf(domResult.toBuffer());
+      expect(domPdf.getRawTextContent()).startsWith('Passed!');
+
+      // Generates correctly with completion trigger
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).startsWith('Passed!');
     });
 
   });
