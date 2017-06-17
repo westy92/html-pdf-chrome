@@ -48,7 +48,6 @@ export class Callback extends CompletionTrigger {
     return Runtime.evaluate({
       awaitPromise: true,
       expression: `
-        var ${cbName};
         new Promise(resolve => {
           ${cbName} = resolve;
           setTimeout(resolve, ${this.timeout});

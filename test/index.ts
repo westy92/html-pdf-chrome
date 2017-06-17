@@ -264,8 +264,11 @@ describe('HtmlPdf', () => {
             <div id="test">Failed!</div>
             <script>
               setTimeout(() => {
-                document.getElementById('test').innerHTML = 'Passed!';
-                htmlPdfCb();
+                document.getElementById('test').innerHTML = 'Timeout!';
+                if (window.htmlPdfCb) {
+                  document.getElementById('test').innerHTML = 'Callback!';
+                  htmlPdfCb();
+                }
               }, 50);
             </script>
           </body>
@@ -299,13 +302,13 @@ describe('HtmlPdf', () => {
       expect(Date.now() - timeMs).to.be.at.least(timeout);
       expect(domResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const domPdf = await getParsedPdf(domResult.toBuffer());
-      expect(domPdf.getRawTextContent()).startsWith('Passed!');
+      expect(domPdf.getRawTextContent()).startsWith('Timeout!');
 
       // Generates correctly with completion trigger
       const result = await HtmlPdf.create(html, options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).startsWith('Passed!');
+      expect(pdf.getRawTextContent()).startsWith('Callback!');
     });
 
   });
