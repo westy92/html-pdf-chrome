@@ -3,9 +3,9 @@
 // tslint:disable:no-unused-expression
 
 import * as chai from 'chai';
+import { Launcher } from 'chrome-launcher';
+import { getRandomPort } from 'chrome-launcher/random-port';
 import * as fs from 'fs';
-import { Launcher } from 'lighthouse/chrome-launcher/chrome-launcher';
-import { getRandomPort } from 'lighthouse/chrome-launcher/random-port';
 import * as mockFs from 'mock-fs';
 import * as PDFParser from 'pdf2json';
 import * as sinon from 'sinon';
