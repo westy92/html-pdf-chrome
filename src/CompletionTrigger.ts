@@ -29,9 +29,9 @@ export class Event extends CompletionTrigger {
     return Runtime.evaluate({
       awaitPromise: true,
       expression: `
-        new Promise(resolve => {
+        new Promise((resolve, reject) => {
           document.${selector}.addEventListener('${this.event}', resolve, { once: true });
-          setTimeout(resolve, ${this.timeout});
+          setTimeout(reject, ${this.timeout});
         })`,
     });
   }
@@ -48,9 +48,9 @@ export class Callback extends CompletionTrigger {
     return Runtime.evaluate({
       awaitPromise: true,
       expression: `
-        new Promise(resolve => {
+        new Promise((resolve, reject) => {
           ${cbName} = resolve;
-          setTimeout(resolve, ${this.timeout});
+          setTimeout(reject, ${this.timeout});
         })`,
     });
   }
