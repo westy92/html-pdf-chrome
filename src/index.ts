@@ -1,9 +1,9 @@
 'use strict';
 
+import { Launcher } from 'chrome-launcher';
+import { getRandomPort } from 'chrome-launcher/random-port';
 import * as CDP from 'chrome-remote-interface';
 import * as fs from 'fs';
-import { Launcher } from 'lighthouse/chrome-launcher/chrome-launcher';
-import { getRandomPort } from 'lighthouse/chrome-launcher/random-port';
 import { Readable, Stream } from 'stream';
 
 import { ChromePrintOptions } from './ChromePrintOptions';
