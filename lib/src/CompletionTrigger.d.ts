@@ -9,7 +9,7 @@ export declare class Timer extends CompletionTrigger {
 }
 export declare class Event extends CompletionTrigger {
     protected event: string;
-    protected elementId: string;
-    constructor(event: string, elementId?: string, timeout?: number);
+    protected cssSelector: string;
+    constructor(event: string, cssSelector?: string, timeout?: number);
     wait(client: any): Promise<any>;
 }

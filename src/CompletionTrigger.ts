@@ -19,13 +19,13 @@ export class Timer extends CompletionTrigger {
 }
 
 export class Event extends CompletionTrigger {
-  constructor(protected event: string, protected elementId?: string, timeout?: number) {
+  constructor(protected event: string, protected cssSelector?: string, timeout?: number) {
     super(timeout);
   }
 
   public async wait(client: any): Promise<any> {
     const {Runtime} = client;
-    const selector = this.elementId ? `getElementById('${this.elementId}')` : 'body';
+    const selector = this.cssSelector ? `querySelector('${this.cssSelector}')` : 'body';
     return Runtime.evaluate({
       awaitPromise: true,
       expression: `new Promise(resolve => {

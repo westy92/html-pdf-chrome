@@ -237,7 +237,7 @@ describe('HtmlPdf', () => {
       const timeout = 75;
       const domOptions: HtmlPdf.CreateOptions = {
         port,
-        completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', 'test', timeout),
+        completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', '#test', timeout),
       };
       const timeMs = Date.now();
       const domResult = await HtmlPdf.create(html, domOptions);
