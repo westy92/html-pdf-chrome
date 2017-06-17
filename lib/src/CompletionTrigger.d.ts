@@ -13,3 +13,8 @@ export declare class Event extends CompletionTrigger {
     constructor(event: string, cssSelector?: string, timeout?: number);
     wait(client: any): Promise<any>;
 }
+export declare class Callback extends CompletionTrigger {
+    protected callbackName: string;
+    constructor(callbackName?: string, timeout?: number);
+    wait(client: any): Promise<any>;
+}

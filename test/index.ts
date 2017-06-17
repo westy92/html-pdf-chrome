@@ -253,6 +253,61 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).startsWith('Passed!');
     });
 
+    it('should generate a PDF with a callback completion trigger', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Callback(),
+      };
+      const html = `
+        <html>
+          <body>
+            <div id="test">Failed!</div>
+            <script>
+              setTimeout(() => {
+                document.getElementById('test').innerHTML = 'Passed!';
+                htmlPdfCb();
+              }, 50);
+            </script>
+          </body>
+        </html>
+      `;
+      // Generates too early without completion trigger
+      const prematureResult = await HtmlPdf.create(html, {port});
+      expect(prematureResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const prematurePdf = await getParsedPdf(prematureResult.toBuffer());
+      expect(prematurePdf.getRawTextContent()).startsWith('Failed!');
+
+      // Generates too early with short timeout
+      const timeoutOptions: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Callback(null, 1),
+      };
+      const timeoutResult = await HtmlPdf.create(html, timeoutOptions);
+      expect(timeoutResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const timeoutPdf = await getParsedPdf(timeoutResult.toBuffer());
+      expect(timeoutPdf.getRawTextContent()).startsWith('Failed!');
+
+      // Generates after timeout when listening on wrong callback
+      // TODO add test to verify the success scenario
+      const timeout = 75;
+      const domOptions: HtmlPdf.CreateOptions = {
+        port,
+        completionTrigger: new HtmlPdf.CompletionTrigger.Callback('wrongCb', timeout),
+      };
+      const timeMs = Date.now();
+      const domResult = await HtmlPdf.create(html, domOptions);
+      expect(Date.now() - timeMs).to.be.at.least(timeout);
+      expect(domResult).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const domPdf = await getParsedPdf(domResult.toBuffer());
+      expect(domPdf.getRawTextContent()).startsWith('Passed!');
+
+      // Generates correctly with completion trigger
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).startsWith('Passed!');
+    });
+
   });
 
   describe('CreateResult', () => {

@@ -28,10 +28,31 @@ export class Event extends CompletionTrigger {
     const selector = this.cssSelector ? `querySelector('${this.cssSelector}')` : 'body';
     return Runtime.evaluate({
       awaitPromise: true,
-      expression: `new Promise(resolve => {
-        document.${selector}.addEventListener('${this.event}', resolve, { once: true });
-        setTimeout(resolve, ${this.timeout});
-      })`,
+      expression: `
+        new Promise(resolve => {
+          document.${selector}.addEventListener('${this.event}', resolve, { once: true });
+          setTimeout(resolve, ${this.timeout});
+        })`,
+    });
+  }
+}
+
+export class Callback extends CompletionTrigger {
+  constructor(protected callbackName?: string, timeout?: number) {
+    super(timeout);
+  }
+
+  public async wait(client: any): Promise<any> {
+    const {Runtime} = client;
+    const cbName = this.callbackName || 'htmlPdfCb';
+    return Runtime.evaluate({
+      awaitPromise: true,
+      expression: `
+        var ${cbName};
+        new Promise(resolve => {
+          ${cbName} = resolve;
+          setTimeout(resolve, ${this.timeout});
+        })`,
     });
   }
 }

@@ -100,7 +100,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     await Page.navigate({url});
     await Page.loadEventFired();
     if (options.completionTrigger) {
-      await options.completionTrigger.wait(client);
+      await options.completionTrigger.wait(client); // TODO handle rejections (inside return value)?
     }
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
