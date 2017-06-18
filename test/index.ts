@@ -7,6 +7,7 @@ import { Launcher } from 'chrome-launcher';
 import { getRandomPort } from 'chrome-launcher/random-port';
 import * as fs from 'fs';
 import * as mockFs from 'mock-fs';
+import * as path from 'path';
 import * as PDFParser from 'pdf2json';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
@@ -164,6 +165,14 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.contain('Page (0) Break').and.to.contain('Page (1) Break');
+    });
+
+    it('should generate a PDF from a local file', async () => {
+      const filePath = path.join('file://', __dirname, '../../test/test.html');
+      const result = await HtmlPdf.create(filePath, {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.contain('Passed!');
     });
 
     it('should generate a PDF from an external site', async () => {

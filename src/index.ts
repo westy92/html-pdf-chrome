@@ -86,7 +86,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
   try {
     const {Page} = client;
     await Page.enable(); // Enable Page events
-    const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
+    const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     await Page.navigate({url});
     await Page.loadEventFired();
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
