@@ -78,7 +78,7 @@ describe('HtmlPdf', () => {
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
         const pdf = await getParsedPdf(result.toBuffer());
-        expect(pdf.getRawTextContent()).startsWith('hello!');
+        expect(pdf.getRawTextContent()).to.startWith('hello!');
       } finally {
         launchStub.restore();
       }
@@ -91,7 +91,7 @@ describe('HtmlPdf', () => {
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
         const pdf = await getParsedPdf(result.toBuffer());
-        expect(pdf.getRawTextContent()).startsWith('hello!');
+        expect(pdf.getRawTextContent()).to.startWith('hello!');
       } finally {
         launchStub.restore();
       }
@@ -127,7 +127,7 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).startsWith('Passed!');
+      expect(pdf.getRawTextContent()).to.startWith('Passed!');
     });
 
     it('should generate a PDF with external CSS', async () => {
@@ -146,7 +146,7 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).startsWith('Passed!');
+      expect(pdf.getRawTextContent()).to.startWith('Passed!');
     });
 
     it('should generate a PDF with multiple pages', async () => {
@@ -172,7 +172,7 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create(filePath, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).to.contain('Passed!');
+      expect(pdf.getRawTextContent()).to.startWith('Passed!');
     });
 
     it('should generate a PDF from an external site', async () => {
