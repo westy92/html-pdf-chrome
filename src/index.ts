@@ -116,6 +116,6 @@ async function launchChrome(port: number): Promise<Launcher> {
     return launcher;
   } catch (err) {
     await launcher.kill();
-    return Promise.reject(err);
+    throw err;
   }
 }
