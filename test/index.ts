@@ -248,7 +248,7 @@ describe('HtmlPdf', () => {
           expect(pdf.getRawTextContent()).startsWith('Failed!');
         });
 
-        it('should generate after a timeout', async () => {
+        it('should generate correctly after an adequate timeout', async () => {
           const timeout = 75;
           const options: HtmlPdf.CreateOptions = {
             port,
@@ -312,7 +312,7 @@ describe('HtmlPdf', () => {
           expect(pdf.getRawTextContent()).startsWith('Failed!');
         });
 
-        it('should generate after a timeout', async () => {
+        it('should generate correctly after an adequate timeout', async () => {
           const timeout = 75;
           const options: HtmlPdf.CreateOptions = {
             port,
@@ -375,7 +375,7 @@ describe('HtmlPdf', () => {
           expect(pdf.getRawTextContent()).startsWith('Failed!');
         });
 
-        it('should generate after a timeout', async () => {
+        it('should generate correctly after an adequate timeout', async () => {
           const timeout = 75;
           const options: HtmlPdf.CreateOptions = {
             port,
