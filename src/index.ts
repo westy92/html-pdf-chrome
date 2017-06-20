@@ -96,7 +96,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
   try {
     const {Page} = client;
     await Page.enable(); // Enable Page events
-    const url = html.toLowerCase().startsWith('http') ? html : `data:text/html,${html}`;
+    const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     await Page.navigate({url});
     await Page.loadEventFired();
     if (options.completionTrigger) {
@@ -129,6 +129,6 @@ async function launchChrome(port: number): Promise<Launcher> {
     return launcher;
   } catch (err) {
     await launcher.kill();
-    return Promise.reject(err);
+    throw err;
   }
 }
