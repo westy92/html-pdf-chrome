@@ -55,3 +55,28 @@ export class Callback extends CompletionTrigger {
     });
   }
 }
+
+export class Element extends CompletionTrigger {
+  constructor(protected cssSelector: string, timeout?: number) {
+    super(timeout);
+  }
+
+  public async wait(client: any): Promise<any> {
+    const {Runtime} = client;
+    return Runtime.evaluate({
+      awaitPromise: true,
+      expression: `
+        new Promise((resolve, reject) => {
+          new MutationObserver((mutations, observer) => {
+            mutations.forEach((mutation) => {
+              if ([...mutation.addedNodes].find((node) => node.matches('${this.cssSelector}'))) {
+                observer.disconnect();
+                resolve();
+              }
+            });
+          }).observe(document.body, { childList: true });
+          setTimeout(reject, ${this.timeout});
+        })`,
+    });
+  }
+}
