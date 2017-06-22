@@ -1,6 +1,7 @@
 export declare abstract class CompletionTrigger {
     protected timeout: number;
-    constructor(timeout?: number);
+    protected timeoutMessage: string;
+    constructor(timeout?: number, timeoutMessage?: string);
     abstract wait(client: any): Promise<any>;
 }
 export declare class Timer extends CompletionTrigger {

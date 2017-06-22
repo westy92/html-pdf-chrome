@@ -1,7 +1,10 @@
 'use strict';
 
 export abstract class CompletionTrigger {
-  constructor(protected timeout = 1000) {}
+  constructor(
+    protected timeout = 1000,
+    protected timeoutMessage = 'CompletionTrigger timed out.',
+  ) {}
 
   public abstract async wait(client: any): Promise<any>;
 }
@@ -31,7 +34,7 @@ export class Event extends CompletionTrigger {
       expression: `
         new Promise((resolve, reject) => {
           document.${selector}.addEventListener('${this.event}', resolve, { once: true });
-          setTimeout(reject, ${this.timeout});
+          setTimeout(() => reject('${this.timeoutMessage}'), ${this.timeout});
         })`,
     });
   }
@@ -50,7 +53,7 @@ export class Callback extends CompletionTrigger {
       expression: `
         new Promise((resolve, reject) => {
           ${cbName} = resolve;
-          setTimeout(reject, ${this.timeout});
+          setTimeout(() => reject('${this.timeoutMessage}'), ${this.timeout});
         })`,
     });
   }
@@ -75,7 +78,7 @@ export class Element extends CompletionTrigger {
               }
             });
           }).observe(document.body, { childList: true });
-          setTimeout(reject, ${this.timeout});
+          setTimeout(() => reject('${this.timeoutMessage}'), ${this.timeout});
         })`,
     });
   }
