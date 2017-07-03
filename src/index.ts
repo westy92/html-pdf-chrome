@@ -97,10 +97,10 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
       }, myOptions.timeout);
     }
 
-    throwIfCanceled(myOptions);
+    await throwIfCanceled(myOptions);
     if (!myOptions.host && !myOptions.port) {
       myOptions.port = await getRandomPort();
-      throwIfCanceled(myOptions);
+      await throwIfCanceled(myOptions);
       chrome = await launchChrome(myOptions.port);
     }
 
@@ -124,26 +124,26 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
 async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
   let client: any;
   try {
-    throwIfCanceled(options);
+    await throwIfCanceled(options);
     client = await CDP(options);
     const {Page} = client;
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
-    throwIfCanceled(options);
+    await throwIfCanceled(options);
     await Page.navigate({url});
-    throwIfCanceled(options);
+    await throwIfCanceled(options);
     await Page.loadEventFired();
     if (options.completionTrigger) {
-      throwIfCanceled(options);
+      await throwIfCanceled(options);
       const waitResult = await options.completionTrigger.wait(client);
       if (waitResult && waitResult.exceptionDetails) {
         throw new Error(waitResult.result.value);
       }
     }
-    throwIfCanceled(options);
+    await throwIfCanceled(options);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
-    throwIfCanceled(options);
+    await throwIfCanceled(options);
     return new CreateResult(pdf.data);
   } finally {
     client.close();
