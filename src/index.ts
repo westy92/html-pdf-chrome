@@ -58,7 +58,23 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   completionTrigger?: CompletionTrigger.CompletionTrigger;
+
+  /**
+   * The time in milliseconds to wait until timing out.
+   */
+  timeout?: number;
+
+  /**
+   * A private flag to signify the operation has been canceled.
+   */
+  _canceled?: boolean;
 }
+
+/**
+ * A message that is sent with a Promise rejection in
+ * case of a timeout.
+ */
+const timeoutMessage = 'HtmlPdf.create() timed out.';
 
 /**
  * Generates a PDF from the given HTML string, launching Chrome as necessary.
@@ -69,19 +85,33 @@ export interface CreateOptions {
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
-  const myOptions = Object.assign({}, options);
-  let chrome: Launcher;
-  if (!myOptions.host && !myOptions.port) {
-    myOptions.port = await getRandomPort();
-    chrome = await launchChrome(myOptions.port);
-  }
-  try {
-    return await generate(html, myOptions);
-  } finally {
-    if (chrome) {
-      await chrome.kill();
+  return new Promise<CreateResult>(async (resolve, reject) => {
+    const myOptions = Object.assign({}, options);
+    let chrome: Launcher;
+
+    myOptions._canceled = false;
+    if (myOptions.timeout >= 0) {
+      setTimeout(() => {
+        myOptions._canceled = true;
+        reject(timeoutMessage);
+      }, myOptions.timeout);
     }
-  }
+
+    throwIfCanceled(myOptions);
+    if (!myOptions.host && !myOptions.port) {
+      myOptions.port = await getRandomPort();
+      throwIfCanceled(myOptions);
+      chrome = await launchChrome(myOptions.port);
+    }
+
+    try {
+      return await generate(html, myOptions);
+    } finally {
+      if (chrome) {
+        await chrome.kill();
+      }
+    }
+  });
 }
 
 /**
@@ -92,24 +122,39 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
-  const client = await CDP(options);
+  let client: any;
   try {
+    throwIfCanceled(options);
+    client = await CDP(options);
     const {Page} = client;
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
+    throwIfCanceled(options);
     await Page.navigate({url});
+    throwIfCanceled(options);
     await Page.loadEventFired();
     if (options.completionTrigger) {
+      throwIfCanceled(options);
       const waitResult = await options.completionTrigger.wait(client);
       if (waitResult && waitResult.exceptionDetails) {
         throw new Error(waitResult.result.value);
       }
     }
+    throwIfCanceled(options);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
+    throwIfCanceled(options);
     return new CreateResult(pdf.data);
   } finally {
     client.close();
+  }
+}
+
+// TODO add unit tests
+async function throwIfCanceled(options: CreateOptions) {
+  console.log(Date.now()); // TODO use to see where lengthy parts are
+  if (options._canceled) {
+    throw timeoutMessage;
   }
 }
 

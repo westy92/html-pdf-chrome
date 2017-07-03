@@ -45,6 +45,14 @@ export interface CreateOptions {
      * @memberof CreateOptions
      */
     completionTrigger?: CompletionTrigger.CompletionTrigger;
+    /**
+     * The time in milliseconds to wait until timing out.
+     */
+    timeout?: number;
+    /**
+     * A private flag to signify the operation has been canceled.
+     */
+    _canceled?: boolean;
 }
 /**
  * Generates a PDF from the given HTML string, launching Chrome as necessary.
