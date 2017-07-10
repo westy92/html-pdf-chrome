@@ -1,6 +1,6 @@
 'use strict';
 
-import { Launcher } from 'chrome-launcher';
+import { launch, LaunchedChrome } from 'chrome-launcher';
 import { getRandomPort } from 'chrome-launcher/random-port';
 import * as CDP from 'chrome-remote-interface';
 import * as fs from 'fs';
@@ -71,12 +71,6 @@ export interface CreateOptions {
 }
 
 /**
- * A message that is sent with a Promise rejection in
- * case of a timeout.
- */
-const timeoutMessage = 'HtmlPdf.create() timed out.';
-
-/**
  * Generates a PDF from the given HTML string, launching Chrome as necessary.
  *
  * @export
@@ -85,33 +79,30 @@ const timeoutMessage = 'HtmlPdf.create() timed out.';
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
-  return new Promise<CreateResult>(async (resolve, reject) => {
-    const myOptions = Object.assign({}, options);
-    let chrome: Launcher;
+  const myOptions = Object.assign({}, options);
+  let chrome: LaunchedChrome;
 
-    myOptions._canceled = false;
-    if (myOptions.timeout >= 0) {
-      setTimeout(() => {
-        myOptions._canceled = true;
-        reject(timeoutMessage);
-      }, myOptions.timeout);
-    }
+  myOptions._canceled = false;
+  if (myOptions.timeout >= 0) {
+    setTimeout(() => {
+      myOptions._canceled = true;
+    }, myOptions.timeout);
+  }
 
+  await throwIfCanceled(myOptions);
+  if (!myOptions.host && !myOptions.port) {
+    myOptions.port = await getRandomPort();
     await throwIfCanceled(myOptions);
-    if (!myOptions.host && !myOptions.port) {
-      myOptions.port = await getRandomPort();
-      await throwIfCanceled(myOptions);
-      chrome = await launchChrome(myOptions.port);
-    }
+    chrome = await launchChrome(myOptions.port);
+  }
 
-    try {
-      return await generate(html, myOptions);
-    } finally {
-      if (chrome) {
-        await chrome.kill();
-      }
+  try {
+    return await generate(html, myOptions);
+  } finally {
+    if (chrome) {
+      await chrome.kill();
     }
-  });
+  }
 }
 
 /**
@@ -146,15 +137,21 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     await throwIfCanceled(options);
     return new CreateResult(pdf.data);
   } finally {
-    client.close();
+    if (client) {
+      client.close();
+    }
   }
 }
 
-// TODO add unit tests
-async function throwIfCanceled(options: CreateOptions) {
-  console.log(Date.now()); // TODO use to see where lengthy parts are
+/**
+ * Throws an exception if the operation has been canceled.
+ *
+ * @param {CreateOptions} options the options which track cancellation.
+ * @returns {Promise<void>} reject if cancelled, resolve if not.
+ */
+async function throwIfCanceled(options: CreateOptions): Promise<void> {
   if (options._canceled) {
-    throw timeoutMessage;
+    throw new Error('HtmlPdf.create() timed out.');
   }
 }
 
@@ -162,21 +159,14 @@ async function throwIfCanceled(options: CreateOptions) {
  * Launches Chrome and listens on the specified port.
  *
  * @param {number} port the port for the launched Chrome to listen on.
- * @returns {Promise<Launcher>} The launched Launcher instance.
+ * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
  */
-async function launchChrome(port: number): Promise<Launcher> {
-  const launcher = new Launcher({
+async function launchChrome(port: number): Promise<LaunchedChrome> {
+  return launch({
     port,
     chromeFlags: [
       '--disable-gpu',
       '--headless',
     ],
   });
-  try {
-    await launcher.launch();
-    return launcher;
-  } catch (err) {
-    await launcher.kill();
-    throw err;
-  }
 }

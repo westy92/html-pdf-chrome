@@ -3,7 +3,7 @@
 // tslint:disable:no-unused-expression
 
 import * as chai from 'chai';
-import { Launcher } from 'chrome-launcher';
+import * as chromeLauncher from 'chrome-launcher';
 import { getRandomPort } from 'chrome-launcher/random-port';
 import * as fs from 'fs';
 import * as mockFs from 'mock-fs';
@@ -23,29 +23,28 @@ describe('HtmlPdf', () => {
 
   describe('create', () => {
     let port: number;
-    let launcher: Launcher;
+    let chrome: chromeLauncher.LaunchedChrome;
 
     before(async () => {
       try {
         // Start Chrome and wait for it to start listening for connections.
         port = await getRandomPort();
-        launcher = new Launcher({
+        chrome = await chromeLauncher.launch({
           port,
           chromeFlags: [
             '--disable-gpu',
             '--headless',
           ],
         });
-        await launcher.launch();
         await tcpPortUsed.waitUntilUsed(port);
       } catch (err) {
-        await launcher.kill();
+        await chrome.kill();
         throw err;
       }
     });
 
     after(async () => {
-      await launcher.kill();
+      await chrome.kill();
     });
 
     it('should spawn Chrome and generate a PDF', async () => {
@@ -55,24 +54,20 @@ describe('HtmlPdf', () => {
 
     it('should handle a Chrome launch failure', async () => {
       let launchStub: sinon.SinonStub;
-      let killStub: sinon.SinonStub;
       const error = new Error('failed!');
       try {
-        launchStub = sinon.stub(Launcher.prototype, 'launch').callsFake(() => Promise.reject(error));
-        killStub = sinon.stub(Launcher.prototype, 'kill').callsFake(() => Promise.resolve());
+        launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
         const result = await HtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
-        expect(killStub).to.have.been.called;
         expect(err).to.equal(error);
       } finally {
         launchStub.restore();
-        killStub.restore();
       }
     });
 
     it('should use running Chrome to generate a PDF (specify port)', async () => {
-      const launchStub = sinon.stub(Launcher.prototype, 'launch');
+      const launchStub = sinon.stub(chromeLauncher, 'launch');
       try {
         const result = await HtmlPdf.create('<p>hello!</p>', {port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
@@ -85,7 +80,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should use running Chrome to generate a PDF (specify host and port)', async () => {
-      const launchStub = sinon.stub(Launcher.prototype, 'launch');
+      const launchStub = sinon.stub(chromeLauncher, 'launch');
       try {
         const result = await HtmlPdf.create('<p>hello!</p>', {host: 'localhost', port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
@@ -107,6 +102,19 @@ describe('HtmlPdf', () => {
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should timeout', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        timeout: 0,
+      };
+      try {
+        await HtmlPdf.create('<p>hello!</p>', options);
+        expect.fail();
+      } catch (err) {
+        expect(err).to.deep.equal(new Error('HtmlPdf.create() timed out.'));
+      }
     });
 
     it('should generate a PDF with external JavaScript', async () => {
@@ -466,9 +474,9 @@ describe('HtmlPdf', () => {
             myDir: {},
           });
           const cr = new HtmlPdf.CreateResult('dGVzdA==');
-          const path = 'myDir/file.pdf';
-          await cr.toFile(path);
-          const stats = fs.statSync(path);
+          const filePath = 'myDir/file.pdf';
+          await cr.toFile(filePath);
+          const stats = fs.statSync(filePath);
           expect(stats.isFile()).to.be.true;
           expect(stats.isDirectory()).to.be.false;
           expect(stats.size).to.be.greaterThan(0);
