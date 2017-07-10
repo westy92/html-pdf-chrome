@@ -113,10 +113,9 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
-  let client: any;
+  await throwIfCanceled(options);
+  const client = await CDP(options);
   try {
-    await throwIfCanceled(options);
-    client = await CDP(options);
     const {Page} = client;
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
@@ -137,9 +136,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     await throwIfCanceled(options);
     return new CreateResult(pdf.data);
   } finally {
-    if (client) {
-      client.close();
-    }
+    client.close();
   }
 }
 
