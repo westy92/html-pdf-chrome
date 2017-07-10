@@ -24,3 +24,8 @@ export declare class Element extends CompletionTrigger {
     constructor(cssSelector: string, timeout?: number);
     wait(client: any): Promise<any>;
 }
+export declare class Variable extends CompletionTrigger {
+    protected variableName: string;
+    constructor(variableName?: string, timeout?: number);
+    wait(client: any): Promise<any>;
+}

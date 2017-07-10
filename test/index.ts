@@ -415,6 +415,68 @@ describe('HtmlPdf', () => {
 
       });
 
+      describe('Variable', () => {
+
+        const html = `
+          <html>
+            <body>
+              <div id="test">Failed!</div>
+              <script>
+                setTimeout(() => {
+                  document.getElementById('test').innerHTML = 'Variable!';
+                  htmlPdfDone = true;
+                }, 50);
+              </script>
+            </body>
+          </html>
+        `;
+
+        it('should generate prematurely without a CompletionTrigger', async () => {
+          const result = await HtmlPdf.create(html, {port});
+          expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+          const pdf = await getParsedPdf(result.toBuffer());
+          expect(pdf.getRawTextContent()).startsWith('Failed!');
+        });
+
+        it('should time out', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable(null, 1),
+          };
+          try {
+            await HtmlPdf.create(html, options);
+            expect.fail();
+          } catch (err) {
+            expect(err).to.deep.equal(timeoutError);
+          }
+        });
+
+        it('should time out from listening to the wrong variable', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('wrongVar', 75),
+          };
+          try {
+            await HtmlPdf.create(html, options);
+            expect.fail();
+          } catch (err) {
+            expect(err).to.deep.equal(timeoutError);
+          }
+        });
+
+        it('should generate correctly after being triggered', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable(),
+          };
+          const result = await HtmlPdf.create(html, options);
+          expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+          const pdf = await getParsedPdf(result.toBuffer());
+          expect(pdf.getRawTextContent()).startsWith('Variable!');
+        });
+
+      });
+
     });
 
   });

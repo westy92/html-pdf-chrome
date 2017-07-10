@@ -83,3 +83,24 @@ export class Element extends CompletionTrigger {
     });
   }
 }
+
+export class Variable extends CompletionTrigger {
+  constructor(protected variableName?: string, timeout?: number) {
+    super(timeout);
+  }
+
+  public async wait(client: any): Promise<any> {
+    const {Runtime} = client;
+    const varName = this.variableName || 'htmlPdfDone';
+    return Runtime.evaluate({
+      awaitPromise: true,
+      expression: `
+        new Promise((resolve, reject) => {
+          Object.defineProperty(window, '${varName}', {
+            set: (val) => { if (val === true) resolve(); }
+          });
+          setTimeout(() => reject('${this.timeoutMessage}'), ${this.timeout});
+        })`,
+    });
+  }
+}
