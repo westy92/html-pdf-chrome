@@ -1,7 +1,6 @@
 'use strict';
 
 import { launch, LaunchedChrome } from 'chrome-launcher';
-import { getRandomPort } from 'chrome-launcher/random-port';
 import * as CDP from 'chrome-remote-interface';
 import * as fs from 'fs';
 import { Readable, Stream } from 'stream';
@@ -91,9 +90,9 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
 
   await throwIfCanceled(myOptions);
   if (!myOptions.host && !myOptions.port) {
-    myOptions.port = await getRandomPort();
     await throwIfCanceled(myOptions);
-    chrome = await launchChrome(myOptions.port);
+    chrome = await launchChrome();
+    myOptions.port = chrome.port;
   }
 
   try {
@@ -153,12 +152,12 @@ async function throwIfCanceled(options: CreateOptions): Promise<void> {
 }
 
 /**
- * Launches Chrome and listens on the specified port.
+ * Launches Chrome and listens on the specified or selected port.
  *
- * @param {number} port the port for the launched Chrome to listen on.
+ * @param {number} [port] the port for the launched Chrome to listen on.
  * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
  */
-async function launchChrome(port: number): Promise<LaunchedChrome> {
+async function launchChrome(port?: number): Promise<LaunchedChrome> {
   return launch({
     port,
     chromeFlags: [

@@ -4,7 +4,6 @@
 
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
-import { getRandomPort } from 'chrome-launcher/random-port';
 import * as fs from 'fs';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
@@ -28,14 +27,13 @@ describe('HtmlPdf', () => {
     before(async () => {
       try {
         // Start Chrome and wait for it to start listening for connections.
-        port = await getRandomPort();
         chrome = await chromeLauncher.launch({
-          port,
           chromeFlags: [
             '--disable-gpu',
             '--headless',
           ],
         });
+        port = chrome.port;
         await tcpPortUsed.waitUntilUsed(port);
       } catch (err) {
         await chrome.kill();
