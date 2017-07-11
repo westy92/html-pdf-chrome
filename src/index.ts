@@ -133,6 +133,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
       await throwIfCanceled(options);
       const waitResult = await options.completionTrigger.wait(client);
       if (waitResult && waitResult.exceptionDetails) {
+        await throwIfCanceled(options);
         throw new Error(waitResult.result.value);
       }
     }
