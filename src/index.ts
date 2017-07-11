@@ -1,15 +1,15 @@
 'use strict';
 
-import { Launcher } from 'chrome-launcher';
-import { getRandomPort } from 'chrome-launcher/random-port';
+import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
 import * as fs from 'fs';
 import { Readable, Stream } from 'stream';
 
 import { ChromePrintOptions } from './ChromePrintOptions';
+import * as CompletionTrigger from './CompletionTrigger';
 import { CreateResult } from './CreateResult';
 
-export { CreateResult };
+export { CompletionTrigger, CreateResult };
 
 /**
  * PDF generation options.
@@ -41,6 +41,14 @@ export interface CreateOptions {
   port?: number;
 
   /**
+   * The explicit path of the intended Chrome binary.
+   *
+   * @type {string}
+   * @memberof CreateOptions
+   */
+  chromePath?: string;
+
+  /**
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *
@@ -48,6 +56,25 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   printOptions?: ChromePrintOptions;
+
+  /**
+   * An optional CompletionTrigger to wait for before
+   * printing the rendered page to a PDF.
+   *
+   * @type {CompletionTrigger.CompletionTrigger}
+   * @memberof CreateOptions
+   */
+  completionTrigger?: CompletionTrigger.CompletionTrigger;
+
+  /**
+   * The time in milliseconds to wait until timing out.
+   */
+  timeout?: number;
+
+  /**
+   * A private flag to signify the operation has been canceled.
+   */
+  _canceled?: boolean;
 }
 
 /**
@@ -60,11 +87,21 @@ export interface CreateOptions {
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
-  let chrome: Launcher;
-  if (!myOptions.host && !myOptions.port) {
-    myOptions.port = await getRandomPort();
-    chrome = await launchChrome(myOptions.port);
+  let chrome: LaunchedChrome;
+
+  myOptions._canceled = false;
+  if (myOptions.timeout >= 0) {
+    setTimeout(() => {
+      myOptions._canceled = true;
+    }, myOptions.timeout);
   }
+
+  await throwIfCanceled(myOptions);
+  if (!myOptions.host && !myOptions.port) {
+    await throwIfCanceled(myOptions);
+    chrome = await launchChrome(myOptions);
+  }
+
   try {
     return await generate(html, myOptions);
   } finally {
@@ -82,15 +119,28 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
+  await throwIfCanceled(options);
   const client = await CDP(options);
   try {
     const {Page} = client;
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
+    await throwIfCanceled(options);
     await Page.navigate({url});
+    await throwIfCanceled(options);
     await Page.loadEventFired();
+    if (options.completionTrigger) {
+      await throwIfCanceled(options);
+      const waitResult = await options.completionTrigger.wait(client);
+      if (waitResult && waitResult.exceptionDetails) {
+        await throwIfCanceled(options);
+        throw new Error(waitResult.result.value);
+      }
+    }
+    await throwIfCanceled(options);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
+    await throwIfCanceled(options);
     return new CreateResult(pdf.data);
   } finally {
     client.close();
@@ -98,24 +148,32 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
 }
 
 /**
- * Launches Chrome and listens on the specified port.
+ * Throws an exception if the operation has been canceled.
  *
- * @param {number} port the port for the launched Chrome to listen on.
- * @returns {Promise<Launcher>} The launched Launcher instance.
+ * @param {CreateOptions} options the options which track cancellation.
+ * @returns {Promise<void>} reject if cancelled, resolve if not.
  */
-async function launchChrome(port: number): Promise<Launcher> {
-  const launcher = new Launcher({
-    port,
+async function throwIfCanceled(options: CreateOptions): Promise<void> {
+  if (options._canceled) {
+    throw new Error('HtmlPdf.create() timed out.');
+  }
+}
+
+/**
+ * Launches Chrome with the specified options.
+ *
+ * @param {CreateOptions} options the options for Chrome.
+ * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
+ */
+async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
+  const chrome = await launch({
+    port: options.port,
+    chromePath: options.chromePath,
     chromeFlags: [
       '--disable-gpu',
       '--headless',
     ],
   });
-  try {
-    await launcher.launch();
-    return launcher;
-  } catch (err) {
-    await launcher.kill();
-    throw err;
-  }
+  options.port = chrome.port;
+  return chrome;
 }

@@ -120,6 +120,45 @@ const html = template(templateData);
 const pdf = await htmlPdf.create(html, options);
 ```
 
+### Trigger Render Completion
+
+There are a few `CompletionTrigger` types that wait for something to occur before triggering PDF printing.
+
+* Callback - waits for a callback to be called
+* Element - waits for an element to be injected into the DOM
+* Event - waits for an Event to fire
+* Timer - waits a specified amount of time
+* Variable - waits for a variable to be set to `true`
+
+```js
+const options: htmlPdf.CreateOptions = {
+  port: 9222, // port Chrome is listening on
+  completionTrigger: new htmlPdf.CompletionTrigger.Timer(5000), // milliseconds
+};
+
+// Alternative completionTrigger options:
+new htmlPdf.CompletionTrigger.Callback(
+  'cbName', // optional, name of the callback to define for the browser to call when finished rendering.  Defaults to 'htmlPdfCb'.
+  5000 // optional, timeout (milliseconds)
+),
+
+new htmlPdf.CompletionTrigger.Element(
+  'div#myElement', // name of the DOM element to wait for
+  5000 // optional, timeout (milliseconds)
+),
+
+new htmlPdf.CompletionTrigger.Event(
+  'myEvent', // name of the event to listen for
+  '#myElement', // optional DOM element CSS selector to listen on, defaults to body
+  5000 // optional timeout (milliseconds)
+),
+
+new htmlPdf.CompletionTrigger.Variable(
+  'myVarName', // optional, name of the variable to wait for.  Defaults to 'htmlPdfDone'
+  5000 // optional, timeout (milliseconds)
+),
+```
+
 ## License
 
 html-pdf-chrome is released under the MIT License.
