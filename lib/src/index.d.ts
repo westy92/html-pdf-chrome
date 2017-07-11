@@ -30,6 +30,13 @@ export interface CreateOptions {
      */
     port?: number;
     /**
+     * The explicit path of the intended Chrome binary.
+     *
+     * @type {string}
+     * @memberof CreateOptions
+     */
+    chromePath?: string;
+    /**
      * The options to pass to Chrome's Page.printToPDF.
      * Note: these require Chrome >= 60.
      *

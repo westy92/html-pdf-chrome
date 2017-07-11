@@ -41,6 +41,14 @@ export interface CreateOptions {
   port?: number;
 
   /**
+   * The explicit path of the intended Chrome binary.
+   *
+   * @type {string}
+   * @memberof CreateOptions
+   */
+  chromePath?: string;
+
+  /**
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *
@@ -91,8 +99,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   await throwIfCanceled(myOptions);
   if (!myOptions.host && !myOptions.port) {
     await throwIfCanceled(myOptions);
-    chrome = await launchChrome();
-    myOptions.port = chrome.port;
+    chrome = await launchChrome(myOptions);
   }
 
   try {
@@ -152,17 +159,20 @@ async function throwIfCanceled(options: CreateOptions): Promise<void> {
 }
 
 /**
- * Launches Chrome and listens on the specified or selected port.
+ * Launches Chrome with the specified options.
  *
- * @param {number} [port] the port for the launched Chrome to listen on.
+ * @param {CreateOptions} options the options for Chrome.
  * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
  */
-async function launchChrome(port?: number): Promise<LaunchedChrome> {
-  return launch({
-    port,
+async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
+  const chrome = await launch({
+    port: options.port,
+    chromePath: options.chromePath,
     chromeFlags: [
       '--disable-gpu',
       '--headless',
     ],
   });
+  options.port = chrome.port;
+  return chrome;
 }
