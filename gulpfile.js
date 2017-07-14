@@ -44,7 +44,7 @@ gulp.task('coverage', ['test'], () => {
         'text': null,
         'text-summary': null,
         'html': 'coverage/html-report',
-        'json': 'coverage/coverage-final.json',
+        'json': 'coverage/coverage-remapped.json',
       }
     }));
 });

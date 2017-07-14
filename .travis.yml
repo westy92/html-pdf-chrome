@@ -19,7 +19,7 @@ before_install:
     fi
 
 after_success:
-  - codecov
+  - codecov -f coverage/coverage-remapped.json
 
 language: node_js
 node_js:
