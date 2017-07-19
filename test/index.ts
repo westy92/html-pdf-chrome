@@ -55,7 +55,7 @@ describe('HtmlPdf', () => {
       const error = new Error('failed!');
       try {
         launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
-        const result = await HtmlPdf.create('<p>hello!</p>');
+        await HtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
         expect(err).to.equal(error);

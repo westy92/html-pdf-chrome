@@ -1,9 +1,10 @@
 var del = require('del');
 const gulp = require('gulp');
+const gulpTsLint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const mocha = require('gulp-spawn-mocha');
-const tslint = require('gulp-tslint');
 const ts = require('gulp-typescript');
+const tslint = require('tslint');
 var remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul');
 
 const tsProject = ts.createProject('tsconfig.json');
@@ -26,12 +27,13 @@ gulp.task('scripts', () => {
 
 gulp.task('lint', ['scripts'], () => {
   return gulp.src(['src/**/*.ts', 'test/**/*.ts'])
-    .pipe(tslint({
+    .pipe(gulpTsLint({
       configuration: './tslint.json',
       formatter: 'verbose',
-      tslint: require('tslint'),
+      program: tslint.Linter.createProgram('./tsconfig.json'),
+      tslint: tslint,
     }))
-    .pipe(tslint.report({
+    .pipe(gulpTsLint.report({
       emitError: false,
       summarizeFailureOutput: true,
     }));

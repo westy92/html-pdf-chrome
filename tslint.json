@@ -10,6 +10,7 @@
         "interface-name": [true, "never-prefix"],
         "max-classes-per-file": [false],
         "max-line-length": [false],
+        "no-unused-variable": [true],
         "object-literal-sort-keys": false, // TODO 2 spaces once that option is available.
         "quotemark": [true, "single", "avoid-escape"],
         // tslint-microsoft-contrib rules
