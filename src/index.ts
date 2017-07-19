@@ -2,8 +2,6 @@
 
 import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
-import * as fs from 'fs';
-import { Readable, Stream } from 'stream';
 
 import { ChromePrintOptions } from './ChromePrintOptions';
 import * as CompletionTrigger from './CompletionTrigger';
