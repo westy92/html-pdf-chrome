@@ -86,7 +86,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
  * Throws an exception if the operation has been canceled.
  *
  * @param {CreateOptions} options the options which track cancellation.
- * @returns {Promise<void>} reject if cancelled, resolve if not.
+ * @returns {Promise<void>} reject if canceled, resolve if not.
  */
 async function throwIfCanceled(options: CreateOptions): Promise<void> {
   if (options._canceled) {
