@@ -130,6 +130,7 @@ There are a few `CompletionTrigger` types that wait for something to occur befor
 * Event - waits for an Event to fire
 * Timer - waits a specified amount of time
 * Variable - waits for a variable to be set to `true`
+* Custom - extend `htmlPdf.CompletionTrigger.CompletionTrigger`
 
 ```js
 const options: htmlPdf.CreateOptions = {
