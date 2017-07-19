@@ -4,7 +4,8 @@
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
-    "test": "gulp"
+    "test": "gulp",
+    "prepublish": "gulp"
   },
   "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
   "homepage": "https://github.com/westy92/html-pdf-chrome",
