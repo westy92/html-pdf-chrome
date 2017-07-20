@@ -60,10 +60,10 @@
     "tcp-port-used": "^0.1.2",
     "tslint": "^5.5.0",
     "tslint-microsoft-contrib": "^5.0.1",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.2"
   },
   "dependencies": {
-    "chrome-launcher": "^0.3.1",
+    "chrome-launcher": "^0.3.2",
     "chrome-remote-interface": "^0.24.2"
   }
 }
