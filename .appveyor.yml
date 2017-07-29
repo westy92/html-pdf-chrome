@@ -5,10 +5,12 @@ environment:
     - nodejs_version: 6
     - nodejs_version: 7
     - nodejs_version: 8
+      npm_version: 5
     
 install:
   - choco install googlechrome
   - ps: Install-Product node $env:nodejs_version
+  - IF DEFINED npm_version (npm i -g npm@%npm_version%)
   - node --version
   - npm --version
   - npm install
