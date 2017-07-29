@@ -17,3 +17,6 @@ test_script:
   - npm test
 
 build: off
+
+cache:
+  - node_modules
