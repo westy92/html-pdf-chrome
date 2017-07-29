@@ -14,8 +14,10 @@ import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
 
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
 chai.use(require('chai-string'));
+chai.use(require('sinon-chai'));
+// tslint:enable:no-var-requires
 const expect = chai.expect;
 
 describe('HtmlPdf', () => {
@@ -111,7 +113,7 @@ describe('HtmlPdf', () => {
         await HtmlPdf.create('<p>hello!</p>', options);
         expect.fail();
       } catch (err) {
-        expect(err).to.deep.equal(new Error('HtmlPdf.create() timed out.'));
+        expect(err.message).to.equal('HtmlPdf.create() timed out.');
       }
     });
 
@@ -185,7 +187,7 @@ describe('HtmlPdf', () => {
 
     describe('CompletionTrigger', () => {
 
-      const timeoutError = new Error('CompletionTrigger timed out.');
+      const timeoutErrorMessage = 'CompletionTrigger timed out.';
 
       describe('Timer', () => {
 
@@ -254,7 +256,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -267,7 +269,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -319,7 +321,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -332,7 +334,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -383,7 +385,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -396,7 +398,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -445,7 +447,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -458,7 +460,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
