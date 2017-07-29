@@ -113,7 +113,7 @@ describe('HtmlPdf', () => {
         await HtmlPdf.create('<p>hello!</p>', options);
         expect.fail();
       } catch (err) {
-        expect(err).to.deep.equal(new Error('HtmlPdf.create() timed out.'));
+        expect(err.message).to.equal('HtmlPdf.create() timed out.');
       }
     });
 
@@ -187,7 +187,7 @@ describe('HtmlPdf', () => {
 
     describe('CompletionTrigger', () => {
 
-      const timeoutError = new Error('CompletionTrigger timed out.');
+      const timeoutErrorMessage = 'CompletionTrigger timed out.';
 
       describe('Timer', () => {
 
@@ -256,7 +256,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -269,7 +269,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -321,7 +321,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -334,7 +334,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -385,7 +385,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -398,7 +398,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -447,7 +447,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
@@ -460,7 +460,7 @@ describe('HtmlPdf', () => {
             await HtmlPdf.create(html, options);
             expect.fail();
           } catch (err) {
-            expect(err).to.deep.equal(timeoutError);
+            expect(err.message).to.equal(timeoutErrorMessage);
           }
         });
 
