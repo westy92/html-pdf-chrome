@@ -14,8 +14,10 @@ import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
 
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
 chai.use(require('chai-string'));
+chai.use(require('sinon-chai'));
+// tslint:enable:no-var-requires
 const expect = chai.expect;
 
 describe('HtmlPdf', () => {
