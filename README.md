@@ -1,7 +1,5 @@
 # html-pdf-chrome
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/westy92/html-pdf-chrome.svg)](https://greenkeeper.io/)
-
 [![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://badge.fury.io/js/html-pdf-chrome)
 [![Build Status](https://travis-ci.org/westy92/html-pdf-chrome.svg)](https://travis-ci.org/westy92/html-pdf-chrome/)
 [![Code Coverage](https://codecov.io/gh/westy92/html-pdf-chrome/branch/master/graph/badge.svg)](https://codecov.io/gh/westy92/html-pdf-chrome)
