@@ -214,7 +214,7 @@ describe('HtmlPdf', () => {
         it('should generate correctly after being triggered', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(125),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(200),
           };
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
@@ -263,7 +263,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong event', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', '#test', 125),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', '#test', 200),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -328,7 +328,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong callback', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Callback('wrongCb', 125),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Callback('wrongCb', 200),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -392,7 +392,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening for the wrong element', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Element('div#derp', 125),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Element('div#derp', 200),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -454,7 +454,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong variable', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('wrongVar', 125),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('wrongVar', 200),
           };
           try {
             await HtmlPdf.create(html, options);
