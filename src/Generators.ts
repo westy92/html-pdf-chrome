@@ -30,6 +30,7 @@ async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
     chromeFlags: [
       '--disable-gpu',
       '--headless',
+      '--hide-scrollbars',
     ],
   });
   options.port = chrome.port;
