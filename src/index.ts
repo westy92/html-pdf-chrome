@@ -47,7 +47,7 @@ export function create(html: string, options?: CreateOptions, type: DocumentType
  * @param {Options} [options] the generation options.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
-export function createPdf(html: string, options?: CreateOptions): Promise<CreateResult> {
+export function createPDF(html: string, options?: CreateOptions): Promise<CreateResult> {
   return _create(html, options, 'pdf');
 }
 
