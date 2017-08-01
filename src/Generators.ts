@@ -155,10 +155,6 @@ export class ScreenshotGenerator extends Generator {
       await throwIfCanceled(options);
       await Page.loadEventFired();
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      });
-
       if (options.screenshotOptions && options.screenshotOptions.fullPage) {
         const {root: {nodeId: documentNodeId}} = await DOM.getDocument();
         const {nodeId: bodyNodeId} = await DOM.querySelector({
