@@ -1,6 +1,8 @@
 'use strict';
 
-import { ChromePrintOptions } from './ChromePrintOptions';
+import DeviceMetricsOverrideOptions from './chrome/Emulation/DeviceMetricsOverrideOptions';
+import CaptureScreenshotOptions from './chrome/Page/CaptureScreenshotOptions';
+import PrintToPDFOptions from './chrome/Page/PrintToPDFOptions';
 import * as CompletionTrigger from './CompletionTrigger';
 
 /**
@@ -47,7 +49,30 @@ export interface CreateOptions {
    * @type {ChromePrintOptions}
    * @memberof CreateOptions
    */
-  printOptions?: ChromePrintOptions;
+  printOptions?: PrintToPDFOptions;
+
+  screenshotOptions?: {
+    /**
+     * The options to pass to Chrome's Page.captureScreenshot.
+     *
+     * @type {ChromeCaptureScreenshotOptions}
+     */
+    captureScreenShotOptions?: CaptureScreenshotOptions;
+
+    /**
+     * The options to pass to Chrome's Emulation.setDeviceMetricsOverride.
+     *
+     * @type {DeviceMetricsOverrideOptions}
+     */
+    deviceMetrics?: DeviceMetricsOverrideOptions;
+
+    /**
+     * Wether to capture a full-page screenshot.
+     *
+     * @type {boolean}
+     */
+    fullPage?: boolean;
+  };
 
   /**
    * An optional CompletionTrigger to wait for before

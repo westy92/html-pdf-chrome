@@ -5,14 +5,14 @@
  * Note: these require Chrome >= 60.
  *
  * @export
- * @interface ChromePrintOptions
+ * @interface PrintToPDFOptions
  */
-export interface ChromePrintOptions {
+export default interface PrintToPDFOptions {
   /**
    * Paper orientation. Defaults to false.
    *
    * @type {boolean}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   landscape?: boolean;
 
@@ -20,7 +20,7 @@ export interface ChromePrintOptions {
    * Display header and footer. Defaults to false.
    *
    * @type {boolean}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   displayHeaderFooter?: boolean;
 
@@ -28,7 +28,7 @@ export interface ChromePrintOptions {
    * Print background graphics. Defaults to false.
    *
    * @type {boolean}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   printBackground?: boolean;
 
@@ -36,7 +36,7 @@ export interface ChromePrintOptions {
    * Scale of the webpage rendering. Defaults to 1.
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   scale?: number;
 
@@ -44,7 +44,7 @@ export interface ChromePrintOptions {
    * Paper width in inches. Defaults to 8.5 inches.
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   paperWidth?: number;
 
@@ -52,7 +52,7 @@ export interface ChromePrintOptions {
    * Paper height in inches. Defaults to 11 inches.
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   paperHeight?: number;
 
@@ -60,7 +60,7 @@ export interface ChromePrintOptions {
    * Top margin in inches. Defaults to 1cm (~0.4 inches).
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   marginTop?: number;
 
@@ -68,7 +68,7 @@ export interface ChromePrintOptions {
    * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   marginBottom?: number;
 
@@ -76,7 +76,7 @@ export interface ChromePrintOptions {
    * Left margin in inches. Defaults to 1cm (~0.4 inches).
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   marginLeft?: number;
 
@@ -84,7 +84,7 @@ export interface ChromePrintOptions {
    * Right margin in inches. Defaults to 1cm (~0.4 inches).
    *
    * @type {number}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   marginRight?: number;
 
@@ -93,7 +93,7 @@ export interface ChromePrintOptions {
    * Defaults to the empty string, which means print all pages.
    *
    * @type {string}
-   * @memberof ChromePrintOptions
+   * @memberof PrintToPDFOptions
    */
   pageRanges?: string;
 }
