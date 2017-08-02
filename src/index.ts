@@ -7,7 +7,7 @@ import { Generator, PDFGenerator, ScreenshotGenerator } from './Generators';
 
 export { CompletionTrigger, CreateOptions, CreateResult };
 
-export type DocumentType = 'pdf' | 'screenshot';
+export type OutputType = 'pdf' | 'screenshot';
 
 /**
  * Internal function used by all exported creator functions.
@@ -17,8 +17,8 @@ export type DocumentType = 'pdf' | 'screenshot';
  * @param {('pdf'|'screenshot')} [type=pdf] The type of document to generate.
  * @returns {Promise<CreateResult>} the generated data.
  */
-function _create(html: string, options?: CreateOptions, what: DocumentType = 'pdf'): Promise<CreateResult> {
-  const generators: {[x in DocumentType]: { new (html: string, options?: CreateOptions): Generator } } = {
+function _create(html: string, options?: CreateOptions, what: OutputType = 'pdf'): Promise<CreateResult> {
+  const generators: {[x in OutputType]: { new (html: string, options?: CreateOptions): Generator } } = {
     pdf: PDFGenerator,
     screenshot: ScreenshotGenerator,
   };
@@ -35,7 +35,7 @@ function _create(html: string, options?: CreateOptions, what: DocumentType = 'pd
  * @param {('pdf'|'screenshot')} [type=pdf] The type of document to generate.
  * @returns {Promise<CreateResult>} The generated data.
  */
-export function create(html: string, options?: CreateOptions, type: DocumentType = 'pdf'): Promise<CreateResult> {
+export function create(html: string, options?: CreateOptions, type: OutputType = 'pdf'): Promise<CreateResult> {
   return _create(html, options, type);
 }
 
