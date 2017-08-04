@@ -99,13 +99,18 @@ async function throwIfCanceled(options: CreateOptions): Promise<void> {
  * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
  */
 async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
+  
+  if (!options.chromeFlags) {
+    options.chromeFlags = [
+      '--disable-gpu',
+      '--headless',
+    ]
+  }
+  
   const chrome = await launch({
     port: options.port,
     chromePath: options.chromePath,
-    chromeFlags: [
-      '--disable-gpu',
-      '--headless',
-    ],
+    chromeFlags: options.chromeFlags,
   });
   options.port = chrome.port;
   return chrome;
