@@ -124,7 +124,7 @@ export class PDFGenerator extends Generator {
 export class ScreenshotGenerator extends Generator {
   protected async generate(client: any, options: CreateOptions): Promise<CreateResult> {
     await throwIfCanceled(options);
-    const {DOM, Emulation, Network, Page, Runtime} = client;
+    const {DOM, Emulation, Network, Page} = client;
 
     await Page.enable();
     await DOM.enable();
