@@ -79,10 +79,29 @@ describe('HtmlPdf', () => {
           return pdf.getRawTextContent();
         },
         extraTests() {
-          describe('createPDF()', () => {
-            it(`should spawn Chrome and generate a PDF`, async () => {
-              const result = await HtmlPdf.createPDF('<p>hello!</p>');
-              expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+          describe('Concurrent PDF generation', () => {
+            const maxPDFs = 15;
+            let results: Array<[number, CreateResult]> | undefined;
+            it(`should concurrently generate ${ maxPDFs } PDFs`, async () => {
+              const promises: Array<Promise<[number, CreateResult]>> = [];
+              for (let x = 1; x <= maxPDFs; x++) {
+                const promise = HtmlPdf.createPDF(`<p>${ x }</p>`)
+                  .then((result) => [x, result] as [number, CreateResult]);
+                promises.push(promise);
+              }
+              results = await Promise.all(promises);
+              expect(results.length).to.be.equal(maxPDFs);
+            });
+            it('should respect each invocation\'s context', async () => {
+              if (results) {
+                for (let x = 1; x <= maxPDFs; x++) {
+                  const [n, result] = results[x - 1];
+                  const pdf = await getParsedPdf(result.toBuffer());
+                  expect(pdf.getRawTextContent()).to.contain(n.toString());
+                }
+              } else {
+                throw new Error('results === undefined');
+              }
             });
           });
         },
@@ -111,12 +130,6 @@ describe('HtmlPdf', () => {
             const result = await HtmlPdf.createScreenshot('https://www.reddit.com/', options);
             const image = await jimp.read(result.toBuffer());
             expect(image.bitmap.height).to.be.greaterThan(100);
-          });
-          describe('createScreenshot()', () => {
-            it(`should spawn Chrome and generate a Screenshot`, async () => {
-              const result = await HtmlPdf.createScreenshot('<p>hello!</p>');
-              expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-            });
           });
         },
       },
