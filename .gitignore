@@ -39,3 +39,7 @@ package-lock.json
 
 # Transpiled files
 lib
+
+# tesseract.js eng language files
+test/langs/*
+!test/langs/.gitkeep

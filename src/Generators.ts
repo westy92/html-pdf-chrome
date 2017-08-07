@@ -162,9 +162,6 @@ export class ScreenshotGenerator extends Generator {
       deviceMetrics.height = model.height;
 
       await Emulation.setVisibleSize({width: deviceMetrics.width, height: deviceMetrics.height});
-      // This forceViewport call ensures that content outside the viewport is
-      // rendered, otherwise it shows up as grey. Possibly a bug?
-      await Emulation.forceViewport({x: 0, y: 0, scale: 1});
     }
 
     if (options.completionTrigger) {
