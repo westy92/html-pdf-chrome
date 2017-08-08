@@ -105,7 +105,6 @@ async function throwIfCanceled(options: CreateOptions): Promise<void> {
  * @returns {Promise<LaunchedChrome>} The launched Chrome instance.
  */
 async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
-
   const chrome = await launch({
     port: options.port,
     chromePath: options.chromePath,
