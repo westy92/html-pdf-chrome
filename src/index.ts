@@ -8,6 +8,12 @@ import * as CompletionTrigger from './CompletionTrigger';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
 
+const DEFAULT_CHROME_FLAGS = [
+    '--disable-gpu',
+    '--headless',
+    '--hide-scrollbars',
+];
+
 export { CompletionTrigger, CreateOptions, CreateResult };
 
 /**
@@ -102,10 +108,7 @@ async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
   const chrome = await launch({
     port: options.port,
     chromePath: options.chromePath,
-    chromeFlags: [
-      '--disable-gpu',
-      '--headless',
-    ],
+    chromeFlags: options.chromeFlags || DEFAULT_CHROME_FLAGS,
   });
   options.port = chrome.port;
   return chrome;
