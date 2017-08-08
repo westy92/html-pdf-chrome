@@ -41,12 +41,12 @@ export interface CreateOptions {
   chromePath?: string;
 
   /**
-   * The chrome options.
-   * 
-   * @type {Array<string>}
+   * The flags to pass to Chrome.
+   *
+   * @type {string[]}
    * @memberof CreateOptions
    */
-  chromeFlags?: [string];
+  chromeFlags?: string[];
 
   /**
    * The options to pass to Chrome's Page.printToPDF.
