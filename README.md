@@ -46,6 +46,7 @@ pm2 start google-chrome \
   --metrics-recording-only \
   --disable-default-apps \
   --no-first-run \
+  --mute-audio \
   --hide-scrollbars \
   --remote-debugging-port=<port goes here>
 # run your Node.js app.
