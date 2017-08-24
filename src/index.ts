@@ -9,9 +9,9 @@ import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
 
 const DEFAULT_CHROME_FLAGS = [
-    '--disable-gpu',
-    '--headless',
-    '--hide-scrollbars',
+  '--disable-gpu',
+  '--headless',
+  '--hide-scrollbars',
 ];
 
 export { CompletionTrigger, CreateOptions, CreateResult };
