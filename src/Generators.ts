@@ -5,6 +5,12 @@ import * as CDP from 'chrome-remote-interface';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
 
+const DEFAULT_CHROME_FLAGS = [
+  '--disable-gpu',
+  '--headless',
+  '--hide-scrollbars',
+];
+
 /**
  * Throws an exception if the operation has been canceled.
  *
@@ -27,11 +33,7 @@ async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
   const chrome = await launch({
     port: options.port,
     chromePath: options.chromePath,
-    chromeFlags: [
-      '--disable-gpu',
-      '--headless',
-      '--hide-scrollbars',
-    ],
+    chromeFlags: options.chromeFlags || DEFAULT_CHROME_FLAGS,
   });
   options.port = chrome.port;
   return chrome;

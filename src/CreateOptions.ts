@@ -43,6 +43,14 @@ export interface CreateOptions {
   chromePath?: string;
 
   /**
+   * The flags to pass to Chrome.
+   *
+   * @type {string[]}
+   * @memberof CreateOptions
+   */
+  chromeFlags?: string[];
+
+  /**
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *

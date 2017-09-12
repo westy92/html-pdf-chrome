@@ -1,5 +1,4 @@
 'use strict';
-
 import * as CompletionTrigger from './CompletionTrigger';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
