@@ -46,10 +46,8 @@
     "chai": "^4.1.0",
     "chai-string": "^1.3.0",
     "codecov": "^2.2.0",
-    "decompress": "^4.2.0",
     "decompress-gz": "0.0.1",
     "del": "^3.0.0",
-    "download": "^6.2.5",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-spawn-mocha": "^3.3.0",
@@ -63,7 +61,6 @@
     "sinon": "^2.3.8",
     "sinon-chai": "^2.12.0",
     "tcp-port-used": "^0.1.2",
-    "tesseract.js": "github:mikewesthad/tesseract.js#4bff805",
     "tslint": "^5.5.0",
     "tslint-microsoft-contrib": "^5.0.1",
     "typescript": "^2.4.2"
