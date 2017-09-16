@@ -61,7 +61,9 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
   await throwIfCanceled(options);
   const client = await CDP(options);
   try {
+    const {Network} = client;
     const {Page} = client;
+    await Network.clearBrowserCache(); // Clear cache to force chrome to load a fresh copy
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     await throwIfCanceled(options);
