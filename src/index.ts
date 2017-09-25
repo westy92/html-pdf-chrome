@@ -26,7 +26,6 @@ export { CompletionTrigger, CreateOptions, CreateResult };
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
-  let chrome: LaunchedChrome;
 
   myOptions._canceled = false;
   if (myOptions.timeout >= 0) {
@@ -36,10 +35,15 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   }
 
   await throwIfCanceled(myOptions);
-  if (!myOptions.host && !myOptions.port) {
-    await throwIfCanceled(myOptions);
-    chrome = await launchChrome(myOptions);
+
+  async function getChrome() {
+    if (!myOptions.host && !myOptions.port) {
+      await throwIfCanceled(myOptions);
+      return launchChrome(myOptions);
+    }
   }
+
+  const chrome: LaunchedChrome | undefined = await getChrome();
 
   try {
     return await generate(html, myOptions);
