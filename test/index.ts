@@ -481,6 +481,27 @@ describe('HtmlPdf', () => {
 
     });
 
+    describe('Concurrent PDF generation', function() {
+      this.timeout(30000);
+      async function createAndParse(index) {
+        const html = `<p>${ index }</p>`;
+        const result = await HtmlPdf.create(html);
+        const parsed = await getParsedPdf(result.toBuffer());
+        const re = /^(\d+)\r\n----------------Page \(0\) Break----------------\r\n$/;
+        return (re.exec(parsed.getRawTextContent()) || [])[1];
+      }
+
+      const length = 15;
+      it(`should concurrently generate ${ length } PDFs`, async () => {
+        const input = Array.from({ length }, (v, i) => `${i}`);
+        const results = await Promise.all(input.map(createAndParse));
+        expect(results.length).to.be.equal(length);
+
+        // verify round trip.
+        expect(results).to.eql(input);
+      });
+    });
+
   });
 
   describe('CreateResult', () => {
