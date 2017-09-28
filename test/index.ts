@@ -26,7 +26,7 @@ describe('HtmlPdf', () => {
     let port: number;
     let chrome: chromeLauncher.LaunchedChrome;
 
-    before(async () => {
+    beforeEach(async () => {
       try {
         // Start Chrome and wait for it to start listening for connections.
         chrome = await chromeLauncher.launch({
@@ -43,7 +43,7 @@ describe('HtmlPdf', () => {
       }
     });
 
-    after(async () => {
+    afterEach(async () => {
       await chrome.kill();
     });
 
