@@ -41,13 +41,19 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     chrome = await launchChrome(myOptions);
   }
 
-  const tab = await CDP.New(myOptions);
-  const client = await CDP({ ...myOptions, tab });
   try {
-    return await generate(client, html, myOptions);
+    const tab = await CDP.New(myOptions);
+    try {
+      const client = await CDP({ ...myOptions, tab });
+      try {
+        return await generate(client, html, myOptions);
+      } finally {
+        await client.close();
+      }
+    } finally {
+      await CDP.Close({ ...myOptions, id: tab.id });
+    }
   } finally {
-    await client.close();
-    await CDP.Close({ ...myOptions, id: tab.id });
     if (chrome) {
       await chrome.kill();
     }
