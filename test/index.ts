@@ -482,7 +482,7 @@ describe('HtmlPdf', () => {
     });
 
     describe('Concurrent PDF generation', function() {
-      this.timeout(30000);
+      this.timeout(0);
       async function createAndParse(index) {
         const html = `<p>${ index }</p>`;
         const result = await HtmlPdf.create(html, { port });
