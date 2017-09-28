@@ -485,7 +485,7 @@ describe('HtmlPdf', () => {
       this.timeout(30000);
       async function createAndParse(index) {
         const html = `<p>${ index }</p>`;
-        const result = await HtmlPdf.create(html);
+        const result = await HtmlPdf.create(html, { port });
         const parsed = await getParsedPdf(result.toBuffer());
         const re = /^(\d+)\r\n----------------Page \(0\) Break----------------\r\n$/;
         return (re.exec(parsed.getRawTextContent()) || [])[1];
