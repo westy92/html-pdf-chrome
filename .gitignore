@@ -26,9 +26,10 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
+# Dependency artifacts
 node_modules
 jspm_packages
+package-lock.json
 
 # Optional npm cache directory
 .npm
@@ -38,3 +39,7 @@ jspm_packages
 
 # Transpiled files
 lib
+
+# tesseract.js eng language files
+test/langs/*
+!test/langs/.gitkeep
