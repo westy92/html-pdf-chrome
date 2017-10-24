@@ -42,7 +42,17 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   }
 
   try {
-    return await generate(html, myOptions);
+    const tab = await CDP.New(myOptions);
+    try {
+      const client = await CDP({ ...myOptions, tab });
+      try {
+        return await generate(client, html, myOptions);
+      } finally {
+        await client.close();
+      }
+    } finally {
+      await CDP.Close({ ...myOptions, id: tab.id });
+    }
   } finally {
     if (chrome) {
       await chrome.kill();
@@ -57,33 +67,28 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @param {CreateOptions} options the generation options.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
-async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
+async function generate(client: any, html: string, options: CreateOptions): Promise<CreateResult>  {
   await throwIfCanceled(options);
-  const client = await CDP(options);
-  try {
-    const {Page} = client;
-    await Page.enable(); // Enable Page events
-    const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
+  const {Page} = client;
+  await Page.enable(); // Enable Page events
+  const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
+  await throwIfCanceled(options);
+  await Page.navigate({url});
+  await throwIfCanceled(options);
+  await Page.loadEventFired();
+  if (options.completionTrigger) {
     await throwIfCanceled(options);
-    await Page.navigate({url});
-    await throwIfCanceled(options);
-    await Page.loadEventFired();
-    if (options.completionTrigger) {
+    const waitResult = await options.completionTrigger.wait(client);
+    if (waitResult && waitResult.exceptionDetails) {
       await throwIfCanceled(options);
-      const waitResult = await options.completionTrigger.wait(client);
-      if (waitResult && waitResult.exceptionDetails) {
-        await throwIfCanceled(options);
-        throw new Error(waitResult.result.value);
-      }
+      throw new Error(waitResult.result.value);
     }
-    await throwIfCanceled(options);
-    // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
-    const pdf = await Page.printToPDF(options.printOptions);
-    await throwIfCanceled(options);
-    return new CreateResult(pdf.data);
-  } finally {
-    client.close();
   }
+  await throwIfCanceled(options);
+  // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
+  const pdf = await Page.printToPDF(options.printOptions);
+  await throwIfCanceled(options);
+  return new CreateResult(pdf.data);
 }
 
 /**
