@@ -65,9 +65,7 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     await throwIfCanceled(options);
-    await Page.navigate({url});
-    await throwIfCanceled(options);
-    await Page.loadEventFired();
+    await navigate(client, url);
     if (options.completionTrigger) {
       await throwIfCanceled(options);
       const waitResult = await options.completionTrigger.wait(client);
@@ -84,6 +82,24 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
   } finally {
     client.close();
   }
+}
+
+/**
+ * Navigates to the given URL and waits until it loads.
+ *
+ * @param {CDP} the CDP page to use
+ * @param {Url} url to navigate to
+ * @returns {Promise<void>}
+ */
+function navigate(client: CDP, url: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const callback = () => {
+      client.removeListener('Page.loadEventFired', callback);
+      resolve();
+    };
+    client.on('Page.loadEventFired', callback);
+    client.Page.navigate({url});
+  });
 }
 
 /**
