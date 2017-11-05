@@ -56,5 +56,6 @@ gulp.task('test', ['scripts'], () =>
     .pipe(mocha({
       istanbul: true,
       timeout: 15000,
+      retries: 4,
     }))
 );
