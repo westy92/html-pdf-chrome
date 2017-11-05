@@ -75,6 +75,14 @@ export interface CreateOptions {
   timeout?: number;
 
   /**
+   * Clears Chrome's cache before loading a page.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  clearCache?: boolean;
+
+  /**
    * A private flag to signify the operation has been canceled.
    *
    * @type {boolean}

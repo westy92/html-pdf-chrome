@@ -95,6 +95,7 @@ describe('HtmlPdf', () => {
     it('should generate a PDF with Chrome options', async () => {
       const options: HtmlPdf.CreateOptions = {
         port,
+        clearCache: true,
         printOptions: {
           landscape: true,
           displayHeaderFooter: true,

@@ -11,7 +11,7 @@ HTML to PDF converter via Chrome/Chromium.
 
 ## Prerequisites
 
-* Chrome/Chromium 59 or higher (60 or higher for some features)
+* Latest Chrome/Chromium (latest recommended, 59 or higher required but some features may not work)
 * Windows, macOS, or Linux
 * Node.js v6 or later
 
