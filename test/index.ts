@@ -196,11 +196,9 @@ describe('HtmlPdf', () => {
             <body>
               <div id="test">Failed!</div>
               <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                  setTimeout(() => {
-                    document.getElementById('test').innerHTML = 'Passed!';
-                  }, 500);
-                });
+                setTimeout(() => {
+                  document.getElementById('test').innerHTML = 'Passed!';
+                }, 200);
               </script>
             </body>
           </html>
@@ -216,7 +214,7 @@ describe('HtmlPdf', () => {
         it('should generate correctly after being triggered', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(600),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(300),
           };
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
