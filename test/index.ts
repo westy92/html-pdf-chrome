@@ -198,7 +198,7 @@ describe('HtmlPdf', () => {
               <script>
                 setTimeout(() => {
                   document.getElementById('test').innerHTML = 'Passed!';
-                }, 100);
+                }, 200);
               </script>
             </body>
           </html>
@@ -214,7 +214,7 @@ describe('HtmlPdf', () => {
         it('should generate correctly after being triggered', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(200),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Timer(300),
           };
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);

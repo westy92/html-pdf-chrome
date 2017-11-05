@@ -65,9 +65,10 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     await throwIfCanceled(options);
-    await Page.navigate({url});
-    await throwIfCanceled(options);
-    await Page.loadEventFired();
+    await Promise.all([
+      Page.navigate({url}),
+      Page.loadEventFired(),
+    ]); // Resolve order varies
     if (options.completionTrigger) {
       await throwIfCanceled(options);
       const waitResult = await options.completionTrigger.wait(client);
