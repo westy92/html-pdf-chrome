@@ -96,4 +96,13 @@ export interface ChromePrintOptions {
    * @memberof ChromePrintOptions
    */
   pageRanges?: string;
+
+  /**
+   * Whether to silently ignore invalid but successfully parsed
+   * page ranges, such as '3-2'. Defaults to false.
+   *
+   * @type {boolean}
+   * @memberof ChromePrintOptions
+   */
+  ignoreInvalidPageRanges?: boolean;
 }
