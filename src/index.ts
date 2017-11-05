@@ -3,7 +3,6 @@
 import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
 
-import { ChromePrintOptions } from './ChromePrintOptions';
 import * as CompletionTrigger from './CompletionTrigger';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
