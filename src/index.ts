@@ -67,6 +67,10 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
     }
     await Page.enable(); // Enable Page events
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
+    if (options.cookies) {
+      await throwIfCanceled(options);
+      await Network.setCookies({cookies: options.cookies});
+    }
     await throwIfCanceled(options);
     await Promise.all([
       Page.navigate({url}),

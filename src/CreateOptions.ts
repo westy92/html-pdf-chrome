@@ -1,5 +1,6 @@
 'use strict';
 
+import { ChromeCookie } from './ChromeCookie';
 import { ChromePrintOptions } from './ChromePrintOptions';
 import * as CompletionTrigger from './CompletionTrigger';
 
@@ -81,6 +82,14 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   clearCache?: boolean;
+
+  /**
+   * Cookies to set.
+   *
+   * @type {ChromeCookie[]}
+   * @memberof CreateOptions
+   */
+  cookies?: ChromeCookie[];
 
   /**
    * A private flag to signify the operation has been canceled.

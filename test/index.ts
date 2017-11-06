@@ -105,6 +105,22 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
 
+    it('should generate a PDF with cookies', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        cookies: [
+          {
+            name: 'status',
+            value: 'Passed!',
+            domain: 'westy92.github.io',
+          },
+        ],
+      };
+      const result = await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.startWith('Cookies: status=Passed!');
+    });
+
     it('should timeout', async () => {
       const options: HtmlPdf.CreateOptions = {
         port,
