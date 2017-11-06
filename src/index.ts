@@ -41,7 +41,12 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   }
 
   try {
-    return await generate(html, myOptions);
+    const tab = await CDP.New(myOptions);
+    try {
+      return await generate(html, myOptions, tab);
+    } finally {
+      await CDP.Close({ ...myOptions, id: tab.id });
+    }
   } finally {
     if (chrome) {
       await chrome.kill();
@@ -54,11 +59,12 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  *
  * @param {string} html the HTML string or URL.
  * @param {CreateOptions} options the generation options.
+ * @param {any} tab the tab to use.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
-async function generate(html: string, options: CreateOptions): Promise<CreateResult>  {
+async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult>  {
   await throwIfCanceled(options);
-  const client = await CDP(options);
+  const client = await CDP({ ...options, target: tab });
   try {
     const {Network, Page, Runtime} = client;
     await throwIfCanceled(options);
