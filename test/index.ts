@@ -27,7 +27,7 @@ describe('HtmlPdf', () => {
     let port: number;
     let chrome: chromeLauncher.LaunchedChrome;
 
-    before(async () => {
+    beforeEach(async () => {
       try {
         // Start Chrome and wait for it to start listening for connections.
         chrome = await chromeLauncher.launch({
@@ -44,7 +44,7 @@ describe('HtmlPdf', () => {
       }
     });
 
-    after(async () => {
+    afterEach(async () => {
       await chrome.kill();
     });
 
@@ -53,44 +53,46 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
 
-    it('should handle a Chrome launch failure', async () => {
+    describe('with stubs', () => {
       let launchStub: sinon.SinonStub;
       const error = new Error('failed!');
-      try {
-        launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
-        await HtmlPdf.create('<p>hello!</p>');
-        expect.fail();
-      } catch (err) {
-        expect(err).to.equal(error);
-      } finally {
-        launchStub.restore();
-      }
-    });
+      beforeEach(() => {
+        launchStub = sinon
+          .stub(chromeLauncher, 'launch')
+          .callsFake(() => Promise.reject(error));
+      });
 
-    it('should use running Chrome to generate a PDF (specify port)', async () => {
-      const launchStub = sinon.stub(chromeLauncher, 'launch');
-      try {
+      afterEach(() => {
+        launchStub.restore();
+        launchStub = undefined;
+      });
+
+      it('should handle a Chrome launch failure', async () => {
+        const err = await (async () => {
+          try {
+            await HtmlPdf.create('<p>hello!</p>');
+          } catch (e) {
+            return e;
+          }
+        })();
+        expect(err).to.equal(error);
+      });
+
+      it('should use running Chrome to generate a PDF (specify port)', async () => {
         const result = await HtmlPdf.create('<p>hello!</p>', {port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
         const pdf = await getParsedPdf(result.toBuffer());
         expect(pdf.getRawTextContent()).to.startWith('hello!');
-      } finally {
-        launchStub.restore();
-      }
-    });
+      });
 
-    it('should use running Chrome to generate a PDF (specify host and port)', async () => {
-      const launchStub = sinon.stub(chromeLauncher, 'launch');
-      try {
+      it('should use running Chrome to generate a PDF (specify host and port)', async () => {
         const result = await HtmlPdf.create('<p>hello!</p>', {host: 'localhost', port});
         expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
         expect(launchStub).to.not.have.been.called;
         const pdf = await getParsedPdf(result.toBuffer());
         expect(pdf.getRawTextContent()).to.startWith('hello!');
-      } finally {
-        launchStub.restore();
-      }
+      });
     });
 
     it('should generate a PDF with Chrome options', async () => {
