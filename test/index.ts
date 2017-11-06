@@ -123,10 +123,10 @@ describe('HtmlPdf', () => {
     });
 
     it('should proxy console messages', async () => {
-      const events = [];
+      const events: Runtime.ChromeConsoleApiMessage[] = [];
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeConsoleHandler: (event) => events.push(event),
+        runtimeConsoleHandler: (event: Runtime.ChromeConsoleApiMessage) => events.push(event),
       };
       const html = `
         <html>
@@ -151,7 +151,7 @@ describe('HtmlPdf', () => {
       let caughtException: Runtime.ChromeRuntimeException;
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeExceptionHandler: (event) => { caughtException = event; },
+        runtimeExceptionHandler: (event: Runtime.ChromeRuntimeException) => { caughtException = event; },
       };
       const html = `
         <html>
