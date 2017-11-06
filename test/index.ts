@@ -13,6 +13,7 @@ import { Readable } from 'stream';
 import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
+import { Runtime } from '../src/typings/chrome';
 
 // tslint:disable:no-var-requires
 chai.use(require('chai-string'));
@@ -119,6 +120,52 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.startWith('Cookies: status=Passed!');
+    });
+
+    it('should proxy console messages', async () => {
+      const events = [];
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        runtimeConsoleHandler: (event) => events.push(event),
+      };
+      const html = `
+        <html>
+          <body>
+            <script>
+              console.log('a');
+              console.warn({b: 5});
+            </script>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(events.length).to.equal(2);
+      expect(events[0]).to.have.property('type', 'log');
+      expect(events[0]).to.have.deep.property('args', [ { type: 'string', value: 'a' } ]);
+      expect(events[1]).to.have.property('type', 'warning');
+    });
+
+    it('should proxy unhandled exceptions', async () => {
+      const now = Date.now();
+      let caughtException: Runtime.ChromeRuntimeException;
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        runtimeExceptionHandler: (event) => { caughtException = event; },
+      };
+      const html = `
+        <html>
+          <body>
+            <script>
+              throw new Error('Oh no!');
+            </script>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(caughtException).to.not.be.undefined;
+      expect(caughtException.timestamp).to.be.greaterThan(now);
     });
 
     it('should timeout', async () => {

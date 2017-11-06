@@ -1,8 +1,7 @@
 'use strict';
 
-import { ChromeCookie } from './ChromeCookie';
-import { ChromePrintOptions } from './ChromePrintOptions';
 import * as CompletionTrigger from './CompletionTrigger';
+import { Network, Page, Runtime } from './typings/chrome';
 
 /**
  * PDF generation options.
@@ -56,7 +55,7 @@ export interface CreateOptions {
    * @type {ChromePrintOptions}
    * @memberof CreateOptions
    */
-  printOptions?: ChromePrintOptions;
+  printOptions?: Page.ChromePrintOptions;
 
   /**
    * An optional CompletionTrigger to wait for before
@@ -89,7 +88,21 @@ export interface CreateOptions {
    * @type {ChromeCookie[]}
    * @memberof CreateOptions
    */
-  cookies?: ChromeCookie[];
+  cookies?: Network.ChromeCookie[];
+
+  /**
+   * Set a callback to receive console messages.
+   *
+   * @memberof CreateOptions
+   */
+  runtimeConsoleHandler?: (value: Runtime.ChromeConsoleApiMessage) => void;
+
+  /**
+   * Set a callback to receive unhandled exceptions.
+   *
+   * @memberof CreateOptions
+   */
+  runtimeExceptionHandler?: (exception: Runtime.ChromeRuntimeException) => void;
 
   /**
    * A private flag to signify the operation has been canceled.

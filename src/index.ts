@@ -60,12 +60,23 @@ async function generate(html: string, options: CreateOptions): Promise<CreateRes
   await throwIfCanceled(options);
   const client = await CDP(options);
   try {
-    const {Network, Page} = client;
+    const {Network, Page, Runtime} = client;
     await throwIfCanceled(options);
     if (options.clearCache) {
       await Network.clearBrowserCache();
     }
-    await Page.enable(); // Enable Page events
+    await Promise.all([
+      Page.enable(), // Enable Page events
+      Runtime.enable(), // Enable Runtime events
+    ]);
+    if (options.runtimeConsoleHandler) {
+      await throwIfCanceled(options);
+      Runtime.consoleAPICalled(options.runtimeConsoleHandler);
+    }
+    if (options.runtimeExceptionHandler) {
+      await throwIfCanceled(options);
+      Runtime.exceptionThrown(options.runtimeExceptionHandler);
+    }
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
     if (options.cookies) {
       await throwIfCanceled(options);
