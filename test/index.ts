@@ -120,8 +120,8 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
       const pdf = await getParsedPdf(result.toBuffer());
       console.log(Buffer.from(pdf.getRawTextContent()).toString('hex'));
-      console.log(Buffer.from('Cookies: status=Passed!').toString('hex'));
-      expect(pdf.getRawTextContent()).to.startWith('Cookies: status=Passed!');
+      console.log(Buffer.from('Cookies:status=Passed!').toString('hex'));
+      expect(pdf.getRawTextContent()).to.startWith('Cookies:status=Passed!');
     });
 
     it('should proxy console messages', async () => {
