@@ -298,7 +298,7 @@ describe('HtmlPdf', () => {
                 setTimeout(() => {
                   document.getElementById('test').innerHTML = 'Passed!';
                   document.body.dispatchEvent(new Event('myEvent'));
-                }, 100);
+                }, 200);
               </script>
             </body>
           </html>
@@ -327,7 +327,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong event', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', '#test', 200),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Event('myEvent', '#test', 300),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -363,7 +363,7 @@ describe('HtmlPdf', () => {
                     document.getElementById('test').innerHTML = 'Callback!';
                     htmlPdfCb();
                   }
-                }, 100);
+                }, 200);
               </script>
             </body>
           </html>
@@ -392,7 +392,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong callback', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Callback('wrongCb', 200),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Callback('wrongCb', 300),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -427,7 +427,7 @@ describe('HtmlPdf', () => {
                   inserted.id = 'inserted';
                   inserted.innerText = 'Passed!';
                   document.body.insertBefore(inserted, document.getElementById('test'));
-                }, 100);
+                }, 200);
               </script>
             </body>
           </html>
@@ -456,7 +456,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening for the wrong element', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Element('div#derp', 200),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Element('div#derp', 300),
           };
           try {
             await HtmlPdf.create(html, options);
@@ -489,7 +489,7 @@ describe('HtmlPdf', () => {
                 setTimeout(() => {
                   document.getElementById('test').innerHTML = 'Variable!';
                   htmlPdfDone = true;
-                }, 100);
+                }, 200);
               </script>
             </body>
           </html>
@@ -518,7 +518,7 @@ describe('HtmlPdf', () => {
         it('should time out from listening to the wrong variable', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
-            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('wrongVar', 200),
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('wrongVar', 300),
           };
           try {
             await HtmlPdf.create(html, options);
