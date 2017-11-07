@@ -13,7 +13,8 @@ import { Readable } from 'stream';
 import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
-import { Runtime } from '../src/typings/chrome';
+import ConsoleAPICalled from '../src/typings/chrome/Runtime/ConsoleAPICalled';
+import ExceptionThrown from '../src/typings/chrome/Runtime/ExceptionThrown';
 
 // tslint:disable:no-var-requires
 chai.use(require('chai-string'));
@@ -123,10 +124,10 @@ describe('HtmlPdf', () => {
     });
 
     it('should proxy console messages', async () => {
-      const events: Runtime.ChromeConsoleApiMessage[] = [];
+      const events: ConsoleAPICalled[] = [];
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeConsoleHandler: (event: Runtime.ChromeConsoleApiMessage) => events.push(event),
+        runtimeConsoleHandler: (event: ConsoleAPICalled) => events.push(event),
       };
       const html = `
         <html>
@@ -148,10 +149,10 @@ describe('HtmlPdf', () => {
 
     it('should proxy unhandled exceptions', async () => {
       const now = Date.now();
-      let caughtException: Runtime.ChromeRuntimeException;
+      let caughtException: ExceptionThrown;
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeExceptionHandler: (event: Runtime.ChromeRuntimeException) => { caughtException = event; },
+        runtimeExceptionHandler: (event: ExceptionThrown) => { caughtException = event; },
       };
       const html = `
         <html>

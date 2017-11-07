@@ -1,17 +1,20 @@
 'use strict';
 
+import { CookieSameSite } from './CookieSameSite';
+import { TimeSinceEpoch } from './TimeSinceEpoch';
+
 /**
  * Chrome Network.setCookie() parameters.
  *
  * @export
- * @interface ChromeCookie
+ * @interface SetCookieOptions
  */
-export interface ChromeCookie {
+export default interface SetCookieOptions {
   /**
    * Cookie name.
    *
    * @type {string}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   name: string;
 
@@ -19,7 +22,7 @@ export interface ChromeCookie {
    * Cookie value.
    *
    * @type {string}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   value: string;
 
@@ -29,7 +32,7 @@ export interface ChromeCookie {
    * the created cookie.
    *
    * @type {string}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   url?: string;
 
@@ -37,7 +40,7 @@ export interface ChromeCookie {
    * Cookie domain.
    *
    * @type {string}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   domain?: string;
 
@@ -45,7 +48,7 @@ export interface ChromeCookie {
    * Cookie path.
    *
    * @type {string}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   path?: string;
 
@@ -53,7 +56,7 @@ export interface ChromeCookie {
    * True if cookie is secure.
    *
    * @type {boolean}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   secure?: boolean;
 
@@ -61,7 +64,7 @@ export interface ChromeCookie {
    * True if cookie is http-only.
    *
    * @type {boolean}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   httpOnly?: boolean;
 
@@ -69,7 +72,7 @@ export interface ChromeCookie {
    * Cookie SameSite type.
    *
    * @type {CookieSameSite}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   sameSite?: CookieSameSite;
 
@@ -77,22 +80,7 @@ export interface ChromeCookie {
    * Cookie expiration date, session cookie if not set.
    *
    * @type {TimeSinceEpoch}
-   * @memberof ChromeCookie
+   * @memberof SetCookieOptions
    */
   expires?: TimeSinceEpoch;
 }
-
-/**
- * UTC time in seconds, counted from January 1, 1970.
- *
- * @export
- */
-export type TimeSinceEpoch = number;
-
-/**
- * Represents the cookie's 'SameSite' status:
- * https://tools.ietf.org/html/draft-west-first-party-cookies
- *
- * @export
- */
-export type CookieSameSite = 'Strict' | 'Lax';

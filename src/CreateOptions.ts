@@ -1,7 +1,10 @@
 'use strict';
 
 import * as CompletionTrigger from './CompletionTrigger';
-import { Network, Page, Runtime } from './typings/chrome';
+import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
+import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
+import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
+import ExceptionThrown from './typings/chrome/Runtime/ExceptionThrown';
 
 /**
  * PDF generation options.
@@ -52,10 +55,10 @@ export interface CreateOptions {
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *
-   * @type {ChromePrintOptions}
+   * @type {PrintToPDFOptions}
    * @memberof CreateOptions
    */
-  printOptions?: Page.ChromePrintOptions;
+  printOptions?: PrintToPDFOptions;
 
   /**
    * An optional CompletionTrigger to wait for before
@@ -85,24 +88,24 @@ export interface CreateOptions {
   /**
    * Cookies to set.
    *
-   * @type {ChromeCookie[]}
+   * @type {SetCookieOptions[]}
    * @memberof CreateOptions
    */
-  cookies?: Network.ChromeCookie[];
+  cookies?: SetCookieOptions[];
 
   /**
    * Set a callback to receive console messages.
    *
    * @memberof CreateOptions
    */
-  runtimeConsoleHandler?: (value: Runtime.ChromeConsoleApiMessage) => void;
+  runtimeConsoleHandler?: (value: ConsoleAPICalled) => void;
 
   /**
    * Set a callback to receive unhandled exceptions.
    *
    * @memberof CreateOptions
    */
-  runtimeExceptionHandler?: (exception: Runtime.ChromeRuntimeException) => void;
+  runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
 
   /**
    * A private flag to signify the operation has been canceled.
