@@ -3,7 +3,7 @@
 import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
 
-import * as CompletionTrigger from './CompletionTrigger';
+import * as CompletionTrigger from './CompletionTriggers';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
 

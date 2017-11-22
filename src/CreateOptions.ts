@@ -1,6 +1,6 @@
 'use strict';
 
-import * as CompletionTrigger from './CompletionTrigger';
+import { CompletionTrigger } from './CompletionTriggers';
 import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
 import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
 import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
@@ -64,10 +64,10 @@ export interface CreateOptions {
    * An optional CompletionTrigger to wait for before
    * printing the rendered page to a PDF.
    *
-   * @type {CompletionTrigger.CompletionTrigger}
+   * @type {CompletionTrigger}
    * @memberof CreateOptions
    */
-  completionTrigger?: CompletionTrigger.CompletionTrigger;
+  completionTrigger?: CompletionTrigger;
 
   /**
    * The time in milliseconds to wait until timing out.
