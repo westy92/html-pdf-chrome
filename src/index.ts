@@ -66,42 +66,14 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
   await throwIfCanceled(options);
   const client = await CDP({ ...options, target: tab });
   try {
-    const {Network, Page, Runtime} = client;
-    await throwIfCanceled(options);
-    if (options.clearCache) {
-      await Network.clearBrowserCache();
-    }
-    await Promise.all([
-      Page.enable(), // Enable Page events
-      Runtime.enable(), // Enable Runtime events
-    ]);
-    if (options.runtimeConsoleHandler) {
-      await throwIfCanceled(options);
-      Runtime.consoleAPICalled(options.runtimeConsoleHandler);
-    }
-    if (options.runtimeExceptionHandler) {
-      await throwIfCanceled(options);
-      Runtime.exceptionThrown(options.runtimeExceptionHandler);
-    }
+    await beforeNavigate(options, client);
+    const {Page} = client;
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
-    if (options.cookies) {
-      await throwIfCanceled(options);
-      await Network.setCookies({cookies: options.cookies});
-    }
-    await throwIfCanceled(options);
     await Promise.all([
       Page.navigate({url}),
       Page.loadEventFired(),
     ]); // Resolve order varies
-    if (options.completionTrigger) {
-      await throwIfCanceled(options);
-      const waitResult = await options.completionTrigger.wait(client);
-      if (waitResult && waitResult.exceptionDetails) {
-        await throwIfCanceled(options);
-        throw new Error(waitResult.result.value);
-      }
-    }
-    await throwIfCanceled(options);
+    await afterNavigate(options, client);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
     await throwIfCanceled(options);
@@ -109,6 +81,58 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
   } finally {
     client.close();
   }
+}
+
+/**
+ * Code to execute before the page navigation.
+ *
+ * @param {CreateOptions} options the generation options.
+ * @param {*} client the Chrome client.
+ * @returns {Promise<void>} resolves if there we no errors or cancellations.
+ */
+async function beforeNavigate(options: CreateOptions, client: any): Promise<void> {
+  const {Network, Page, Runtime} = client;
+  await throwIfCanceled(options);
+  if (options.clearCache) {
+    await Network.clearBrowserCache();
+  }
+  // Enable events to be used here, in generate(), or in afterNavigate().
+  await Promise.all([
+    Page.enable(),
+    Runtime.enable(),
+  ]);
+  if (options.runtimeConsoleHandler) {
+    await throwIfCanceled(options);
+    Runtime.consoleAPICalled(options.runtimeConsoleHandler);
+  }
+  if (options.runtimeExceptionHandler) {
+    await throwIfCanceled(options);
+    Runtime.exceptionThrown(options.runtimeExceptionHandler);
+  }
+  if (options.cookies) {
+    await throwIfCanceled(options);
+    await Network.setCookies({cookies: options.cookies});
+  }
+  await throwIfCanceled(options);
+}
+
+/**
+ * Code to execute after the page navigation.
+ *
+ * @param {CreateOptions} options the generation options.
+ * @param {*} client the Chrome client.
+ * @returns {Promise<void>} resolves if there we no errors or cancellations.
+ */
+async function afterNavigate(options: CreateOptions, client: any): Promise<void> {
+  if (options.completionTrigger) {
+    await throwIfCanceled(options);
+    const waitResult = await options.completionTrigger.wait(client);
+    if (waitResult && waitResult.exceptionDetails) {
+      await throwIfCanceled(options);
+      throw new Error(waitResult.result.value);
+    }
+  }
+  await throwIfCanceled(options);
 }
 
 /**
