@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as PDFParser from 'pdf2json';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
+import * as toArray from 'stream-to-array';
 import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
@@ -55,10 +56,9 @@ describe('HtmlPdf', () => {
     });
 
     it('should handle a Chrome launch failure', async () => {
-      let launchStub: sinon.SinonStub;
+      const launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
       const error = new Error('failed!');
       try {
-        launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
         await HtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
@@ -594,21 +594,12 @@ describe('HtmlPdf', () => {
         expect(stream).to.be.an.instanceOf(Readable);
       });
 
-      it('should output a valid Stream', (done) => {
+      it('should output a valid Stream', async () => {
         const cr = new HtmlPdf.CreateResult('dGVzdA==');
         const stream = cr.toStream();
-        let bytes = new Buffer('');
-        stream.on('data', (chunk) => {
-          bytes = Buffer.concat([bytes, chunk]);
-        });
-        stream.on('end', () => {
-          try {
-            expect(bytes).to.deep.equal(cr.toBuffer());
-            done();
-          } catch (err) {
-            done(err);
-          }
-        });
+        const bytesArray = await toArray(stream);
+        const bytes = Buffer.concat(bytesArray);
+        expect(bytes).to.deep.equal(cr.toBuffer());
       });
     });
 
