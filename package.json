@@ -39,7 +39,7 @@
     "@types/chai-string": "^1.1.30",
     "@types/mocha": "^2.2.41",
     "@types/mock-fs": "^3.6.30",
-    "@types/node": "^8.0.9",
+    "@types/node": "^9.3.0",
     "@types/sinon": "^4.0.0",
     "@types/sinon-chai": "^2.7.27",
     "chai": "^4.1.0",
