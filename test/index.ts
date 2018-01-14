@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as PDFParser from 'pdf2json';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
-import * as tcpPortUsed from 'tcp-port-used';
 
 import * as HtmlPdf from '../src';
 import ConsoleAPICalled from '../src/typings/chrome/Runtime/ConsoleAPICalled';
@@ -29,20 +28,17 @@ describe('HtmlPdf', () => {
     let chrome: chromeLauncher.LaunchedChrome;
 
     before(async () => {
-      try {
-        // Start Chrome and wait for it to start listening for connections.
-        chrome = await chromeLauncher.launch({
-          chromeFlags: [
-            '--disable-gpu',
-            '--headless',
-          ],
-        });
-        port = chrome.port;
-        await tcpPortUsed.waitUntilUsed(port);
-      } catch (err) {
-        await chrome.kill();
-        throw err;
-      }
+      // Start Chrome and wait for it to start listening for connections.
+      chrome = await chromeLauncher.launch({
+        chromeFlags: [
+          '--disable-gpu',
+          '--headless',
+        ],
+        connectionPollInterval: 250,
+        logLevel: 'info',
+        maxConnectionRetries: 50,
+      });
+      port = chrome.port;
     });
 
     after(async () => {
