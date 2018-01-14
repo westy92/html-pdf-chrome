@@ -199,11 +199,11 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF with external CSS', async () => {
-      // #test:before{content:'Passed!';}
+      const css = "#test:before{content:'Passed!'}";
       const html = `
         <html>
           <head>
-            <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,I3Rlc3Q6YmVmb3Jle2NvbnRlbnQ6J1Bhc3NlZCEnO30=">
+            <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,${new Buffer(css).toString('base64')}">
           </head>
           <body>
             <div id="test"></div>
