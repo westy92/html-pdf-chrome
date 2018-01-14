@@ -105,4 +105,27 @@ export default interface PrintToPDFOptions {
    * @memberof PrintToPDFOptions
    */
   ignoreInvalidPageRanges?: boolean;
+
+  /**
+   * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them:
+   * - `date` formatted print date
+   * - `title` document title
+   * - `url` document location
+   * - `pageNumber` current page number
+   * - `totalPages` total pages in the document
+   *
+   *  For example, <span class=title></span> would generate span containing the title.
+   *
+   * @type {string}
+   * @memberof PrintToPDFOptions
+   */
+  headerTemplate?: string;
+
+  /**
+   * HTML template for the print footer. Should use the same format as the `headerTemplate`.
+   *
+   * @type {string}
+   * @memberof PrintToPDFOptions
+   */
+  footerTemplate?: string;
 }
