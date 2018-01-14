@@ -203,7 +203,7 @@ describe('HtmlPdf', () => {
       const html = `
         <html>
           <head>
-            <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,${new Buffer(css).toString('base64')}">
+            <link rel="stylesheet" href="data:text/css;charset=utf-8;base64,${Buffer.from(css).toString('base64')}">
           </head>
           <body>
             <div id="test"></div>
@@ -562,6 +562,8 @@ describe('HtmlPdf', () => {
 
   describe('CreateResult', () => {
 
+    const testBase64 = Buffer.from('test').toString('base64');
+
     describe('constructor', () => {
       it('should instanciate', () => {
         const result = new HtmlPdf.CreateResult('');
@@ -571,29 +573,29 @@ describe('HtmlPdf', () => {
 
     describe('toBase64', () => {
       it('should output a base64 string', () => {
-        const cr = new HtmlPdf.CreateResult('dGVzdA==');
-        expect(cr.toBase64()).to.equal('dGVzdA==');
+        const cr = new HtmlPdf.CreateResult(testBase64);
+        expect(cr.toBase64()).to.equal(testBase64);
       });
     });
 
     describe('toBuffer', () => {
       it('should output a Buffer', () => {
-        const cr = new HtmlPdf.CreateResult('dGVzdA==');
+        const cr = new HtmlPdf.CreateResult(testBase64);
         expect(cr.toBuffer()).to.deep.equal(Buffer.from('test'));
       });
     });
 
     describe('toStream', () => {
       it('should output a Readable Stream', () => {
-        const cr = new HtmlPdf.CreateResult('dGVzdA==');
+        const cr = new HtmlPdf.CreateResult(testBase64);
         const stream = cr.toStream();
         expect(stream).to.be.an.instanceOf(Readable);
       });
 
       it('should output a valid Stream', (done) => {
-        const cr = new HtmlPdf.CreateResult('dGVzdA==');
+        const cr = new HtmlPdf.CreateResult(testBase64);
         const stream = cr.toStream();
-        let bytes = new Buffer('');
+        let bytes = Buffer.from('');
         stream.on('data', (chunk) => {
           bytes = Buffer.concat([bytes, chunk]);
         });
@@ -614,7 +616,7 @@ describe('HtmlPdf', () => {
           mockFs({
             myDir: {},
           });
-          const cr = new HtmlPdf.CreateResult('dGVzdA==');
+          const cr = new HtmlPdf.CreateResult(testBase64);
           const filePath = 'myDir/file.pdf';
           await cr.toFile(filePath);
           const stats = fs.statSync(filePath);
@@ -629,7 +631,7 @@ describe('HtmlPdf', () => {
       it('should fail output to a nonexistent directory', async () => {
         try {
           mockFs();
-          const cr = new HtmlPdf.CreateResult('dGVzdA==');
+          const cr = new HtmlPdf.CreateResult(testBase64);
           await cr.toFile('myDir/file.pdf');
           expect.fail();
         } catch (err) {
