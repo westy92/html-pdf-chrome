@@ -34,9 +34,9 @@ describe('HtmlPdf', () => {
           '--disable-gpu',
           '--headless',
         ],
-        // chromePath: '/usr/bin/google-chrome-beta',
+        // chromePath: '/usr/bin/google-chrome-unstable',
         connectionPollInterval: 250,
-        logLevel: 'error',
+        logLevel: 'verbose',
         maxConnectionRetries: 50,
       });
       port = chrome.port;
@@ -245,8 +245,13 @@ describe('HtmlPdf', () => {
         port,
         printOptions: {
           displayHeaderFooter: true,
-          headerTemplate: 'Custom header!',
-          footerTemplate: 'Custom footer!',
+          headerTemplate: `
+            <div class="text center" style="color:red;">
+              Custom <b>header</b>!
+              Page <span class="pageNumber"></span> of <span class="totalPages"></span>.
+            </div>
+          `,
+          footerTemplate: '<div class="text center" style="color:green">Custom <i>footer</i>!</div>',
         },
       });
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);

@@ -10,7 +10,7 @@ git:
 addons:
   apt:
     packages:
-      - google-chrome-stable
+      - google-chrome-unstable
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
   - |
