@@ -33,15 +33,6 @@ describe('HtmlPdf', () => {
         chromeFlags: [
           '--disable-gpu',
           '--headless',
-          '--no-sandbox', // Temporary fix for Linux CI. https://travis-ci.org/westy92/html-pdf-chrome/builds/328781094
-          /*
-            Version: google-chrome-stable (63.0.3239.132-1)
-            OS: Ubuntu 14.04.5 LTS
-            Error: ChromeLauncher:error [0114/175052.939097:FATAL:zygote_host_impl_linux.cc(123)] No usable sandbox!
-            Update your kernel or see https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
-            for more information on developing with the SUID sandbox. If you want to live dangerously and need an immediate
-            workaround, you can try using --no-sandbox.
-          */
         ],
         connectionPollInterval: 250,
         logLevel: 'error',

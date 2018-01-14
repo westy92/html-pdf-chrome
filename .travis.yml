@@ -2,7 +2,7 @@ os:
   - linux
   - osx
 dist: trusty
-sudo: false
+sudo: required
 
 git:
   depth: 1
