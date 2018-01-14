@@ -34,6 +34,7 @@ describe('HtmlPdf', () => {
           '--disable-gpu',
           '--headless',
         ],
+        // chromePath: '/usr/bin/google-chrome-beta',
         connectionPollInterval: 250,
         logLevel: 'error',
         maxConnectionRetries: 50,
@@ -229,6 +230,28 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.contain('Page (0) Break').and.to.contain('Page (1) Break');
+    });
+
+    it('should generate a PDF with custom headers and footers', async () => {
+      const html = `
+        <html>
+          <body>
+            <div style="page-break-after:always">Page 1</div>
+            <div>Page 2</div>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, {
+        port,
+        printOptions: {
+          displayHeaderFooter: true,
+          headerTemplate: 'Custom header!',
+          footerTemplate: 'Custom footer!',
+        },
+      });
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.contain('Custom header!').and.to.contain('Custom footer!');
     });
 
     it('should generate a PDF from a local file', async () => {
