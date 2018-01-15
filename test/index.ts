@@ -5,6 +5,7 @@
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
+import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as PDFParser from 'pdf2json';
@@ -175,6 +176,19 @@ describe('HtmlPdf', () => {
         expect.fail();
       } catch (err) {
         expect(err.message).to.equal('HtmlPdf.create() timed out.');
+      }
+    });
+
+    it('should fail to reach an invalid page', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+      };
+      try {
+        const freePort = await getPort();
+        await HtmlPdf.create(`http://127.0.0.1:${freePort}`, options);
+        expect.fail();
+      } catch (err) {
+        expect(err.message).to.equal('HtmlPdf.create() page navigate failed.');
       }
     });
 

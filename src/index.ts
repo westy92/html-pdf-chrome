@@ -34,9 +34,8 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     }, myOptions.timeout);
   }
 
-  await throwIfCanceled(myOptions);
+  await throwIfCanceledOrFailed(myOptions);
   if (!myOptions.host && !myOptions.port) {
-    await throwIfCanceled(myOptions);
     chrome = await launchChrome(myOptions);
   }
 
@@ -63,7 +62,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult>  {
-  await throwIfCanceled(options);
+  await throwIfCanceledOrFailed(options);
   const client = await CDP({ ...options, target: tab });
   try {
     await beforeNavigate(options, client);
@@ -76,7 +75,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
     await afterNavigate(options, client);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
-    await throwIfCanceled(options);
+    await throwIfCanceledOrFailed(options);
     return new CreateResult(pdf.data);
   } finally {
     client.close();
@@ -92,28 +91,35 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
  */
 async function beforeNavigate(options: CreateOptions, client: any): Promise<void> {
   const {Network, Page, Runtime} = client;
-  await throwIfCanceled(options);
+  await throwIfCanceledOrFailed(options);
   if (options.clearCache) {
     await Network.clearBrowserCache();
   }
   // Enable events to be used here, in generate(), or in afterNavigate().
   await Promise.all([
+    Network.enable(),
     Page.enable(),
     Runtime.enable(),
   ]);
   if (options.runtimeConsoleHandler) {
-    await throwIfCanceled(options);
     Runtime.consoleAPICalled(options.runtimeConsoleHandler);
   }
   if (options.runtimeExceptionHandler) {
-    await throwIfCanceled(options);
     Runtime.exceptionThrown(options.runtimeExceptionHandler);
   }
+  Network.requestWillBeSent((e) => {
+    options._mainRequestId = options._mainRequestId || e.requestId;
+  });
+  Network.loadingFailed((e) => {
+    if (e.requestId === options._mainRequestId) {
+      options._navigateFailed = true;
+    }
+  });
   if (options.cookies) {
-    await throwIfCanceled(options);
+    await throwIfCanceledOrFailed(options);
     await Network.setCookies({cookies: options.cookies});
   }
-  await throwIfCanceled(options);
+  await throwIfCanceledOrFailed(options);
 }
 
 /**
@@ -125,25 +131,29 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
  */
 async function afterNavigate(options: CreateOptions, client: any): Promise<void> {
   if (options.completionTrigger) {
-    await throwIfCanceled(options);
+    await throwIfCanceledOrFailed(options);
     const waitResult = await options.completionTrigger.wait(client);
     if (waitResult && waitResult.exceptionDetails) {
-      await throwIfCanceled(options);
+      await throwIfCanceledOrFailed(options);
       throw new Error(waitResult.result.value);
     }
   }
-  await throwIfCanceled(options);
+  await throwIfCanceledOrFailed(options);
 }
 
 /**
- * Throws an exception if the operation has been canceled.
+ * Throws an exception if the operation has been canceled or the main page
+ * navigation failed.
  *
- * @param {CreateOptions} options the options which track cancellation.
- * @returns {Promise<void>} reject if canceled, resolve if not.
+ * @param {CreateOptions} options the options which track cancellation and failure.
+ * @returns {Promise<void>} rejects if canceled or failed, resolves if not.
  */
-async function throwIfCanceled(options: CreateOptions): Promise<void> {
+async function throwIfCanceledOrFailed(options: CreateOptions): Promise<void> {
   if (options._canceled) {
     throw new Error('HtmlPdf.create() timed out.');
+  }
+  if (options._navigateFailed) {
+    throw new Error('HtmlPdf.create() page navigate failed.');
   }
 }
 
