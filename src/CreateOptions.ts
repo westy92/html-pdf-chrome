@@ -1,7 +1,10 @@
 'use strict';
 
-import { ChromePrintOptions } from './ChromePrintOptions';
-import * as CompletionTrigger from './CompletionTrigger';
+import { CompletionTrigger } from './CompletionTriggers';
+import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
+import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
+import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
+import ExceptionThrown from './typings/chrome/Runtime/ExceptionThrown';
 
 /**
  * PDF generation options.
@@ -52,19 +55,19 @@ export interface CreateOptions {
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *
-   * @type {ChromePrintOptions}
+   * @type {PrintToPDFOptions}
    * @memberof CreateOptions
    */
-  printOptions?: ChromePrintOptions;
+  printOptions?: PrintToPDFOptions;
 
   /**
    * An optional CompletionTrigger to wait for before
    * printing the rendered page to a PDF.
    *
-   * @type {CompletionTrigger.CompletionTrigger}
+   * @type {CompletionTrigger}
    * @memberof CreateOptions
    */
-  completionTrigger?: CompletionTrigger.CompletionTrigger;
+  completionTrigger?: CompletionTrigger;
 
   /**
    * The time in milliseconds to wait until timing out.
@@ -75,10 +78,56 @@ export interface CreateOptions {
   timeout?: number;
 
   /**
+   * Clears Chrome's cache before loading a page.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  clearCache?: boolean;
+
+  /**
+   * Cookies to set.
+   *
+   * @type {SetCookieOptions[]}
+   * @memberof CreateOptions
+   */
+  cookies?: SetCookieOptions[];
+
+  /**
+   * Set a callback to receive console messages.
+   *
+   * @memberof CreateOptions
+   */
+  runtimeConsoleHandler?: (value: ConsoleAPICalled) => void;
+
+  /**
+   * Set a callback to receive unhandled exceptions.
+   *
+   * @memberof CreateOptions
+   */
+  runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
+
+  /**
    * A private flag to signify the operation has been canceled.
    *
    * @type {boolean}
    * @memberof CreateOptions
    */
   _canceled?: boolean;
+
+  /**
+   * A private variable to store the main page navigation requestId.
+   *
+   * @type {string}
+   * @memberof CreateOptions
+   */
+  _mainRequestId?: string;
+
+  /**
+   * A private flag to signify the main page navigation failed.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  _navigateFailed?: boolean;
 }

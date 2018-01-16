@@ -2,7 +2,7 @@ os:
   - linux
   - osx
 dist: trusty
-sudo: false
+sudo: required
 
 git:
   depth: 1
@@ -30,8 +30,8 @@ after_success:
 
 language: node_js
 node_js:
+  - 9
   - 8
-  - 7
   - 6
 
 cache:

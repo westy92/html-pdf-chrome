@@ -1,6 +1,6 @@
 {
   "name": "html-pdf-chrome",
-  "version": "0.3.0",
+  "version": "0.4.2",
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
@@ -37,15 +37,17 @@
   "devDependencies": {
     "@types/chai": "^4.0.1",
     "@types/chai-string": "^1.1.30",
+    "@types/get-port": "^3.2.0",
     "@types/mocha": "^2.2.41",
     "@types/mock-fs": "^3.6.30",
-    "@types/node": "^8.0.9",
-    "@types/sinon": "^2.3.3",
+    "@types/node": "^9.3.0",
+    "@types/sinon": "^4.0.0",
     "@types/sinon-chai": "^2.7.27",
     "chai": "^4.1.0",
     "chai-string": "^1.3.0",
-    "codecov": "^2.2.0",
+    "codecov": "^3.0.0",
     "del": "^3.0.0",
+    "get-port": "^3.2.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-spawn-mocha": "^4.0.0",
@@ -54,16 +56,15 @@
     "mocha": "^4.0.0",
     "mock-fs": "^4.3.0",
     "pdf2json": "^1.1.7",
-    "remap-istanbul": "^0.9.5",
+    "remap-istanbul": "^0.10.0",
     "sinon": "^4.0.0",
     "sinon-chai": "^2.12.0",
-    "tcp-port-used": "^0.1.2",
     "tslint": "^5.5.0",
     "tslint-microsoft-contrib": "^5.0.1",
     "typescript": "^2.4.2"
   },
   "dependencies": {
-    "chrome-launcher": "^0.8.0",
+    "chrome-launcher": "^0.10.0",
     "chrome-remote-interface": "^0.25.0"
   }
 }

@@ -7,9 +7,17 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceRoot}/src/index.ts",
+            "name": "Mocha Tests",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--timeout",
+                "15000",
+                "--colors",
+                "lib/test/**/*.js"
+            ],
             "outFiles": ["${workspaceRoot}/lib/**/*.js"],
+            "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": "default-build",
             "smartStep": true
         },
         {
