@@ -68,10 +68,19 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
     await beforeNavigate(options, client);
     const {Page} = client;
     const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
-    await Promise.all([
-      Page.navigate({url}),
-      Page.loadEventFired(),
-    ]); // Resolve order varies
+    // chrome has url length limit
+    if (url.length <= 2097152) {
+      await Promise.all([
+        Page.navigate({url}),
+        Page.loadEventFired(),
+      ]); // Resolve order varies
+    } else {
+      const {frameTree} = await Page.getResourceTree();
+      await Promise.all([
+        Page.setDocumentContent({html, frameId: frameTree.frame.id}),
+        Page.loadEventFired(),
+      ]); // Resolve order varies
+    }
     await afterNavigate(options, client);
     // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
     const pdf = await Page.printToPDF(options.printOptions);
