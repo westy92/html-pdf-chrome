@@ -230,34 +230,6 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).to.startWith('Passed!');
     });
 
-    it('should generate from a lengthy HTML string', async function() {
-      // 4 runs of this test could take some time
-      this.timeout(60000);
-      const filler = `
-        <p>
-          Bacon ipsum dolor amet fatback pastrami tongue short ribs jowl jerky meatloaf chuck pancetta pork pork loin tail cow brisket. Frankfurter chuck prosciutto tongue venison beef ribs filet mignon brisket turkey chicken hamburger ground round porchetta leberkas short ribs. Jerky doner ball tip, beef strip steak pancetta venison shankle boudin brisket. Rump leberkas biltong bresaola. Tongue burgdoggen strip steak beef ribs salami doner. Hamburger beef ribs shank, ribeye tail chuck pig turkey short loin shankle boudin cow. Cupim spare ribs turducken pastrami frankfurter jowl.
-          Shankle beef corned beef porchetta. Capicola kevin pork chop short ribs, ham hock pancetta shankle. Buffalo kielbasa turducken beef ribs tongue. Filet mignon kevin pork loin pastrami meatloaf. Alcatra sausage brisket burgdoggen flank filet mignon biltong short ribs pork chop jowl pork venison rump sirloin beef ribs.
-          Rump flank hamburger shank meatball alcatra ground round doner ham boudin. Beef pig pork chop bacon short loin ball tip rump, ground round frankfurter pork belly strip steak chicken landjaeger picanha. Ham frankfurter ball tip drumstick sausage doner salami. Venison alcatra kielbasa ribeye salami pork belly rump fatback cupim buffalo jerky pig bresaola. Picanha biltong brisket prosciutto hamburger kielbasa. Hamburger buffalo chuck spare ribs.
-          Strip steak short ribs bacon, hamburger drumstick tenderloin filet mignon ball tip. Jowl biltong tenderloin doner capicola, porchetta boudin pork loin prosciutto pastrami shankle pork belly. Short ribs t-bone capicola tail tri-tip turkey chicken pig fatback ham brisket bresaola. Jerky sausage tail, venison spare ribs prosciutto meatloaf beef ribs swine shoulder tri-tip sirloin salami cupim.
-          Capicola drumstick kielbasa pork jerky. Brisket chicken kielbasa salami flank short ribs, venison prosciutto swine bresaola ham spare ribs buffalo. Andouille chicken doner ball tip alcatra short loin burgdoggen. Capicola picanha strip steak meatball t-bone, bresaola cow ground round pastrami tenderloin tongue buffalo cupim prosciutto. Tongue spare ribs leberkas, pork pig jerky pancetta turducken kevin t-bone kielbasa boudin ribeye pork loin shankle. Tail drumstick turducken chuck shankle shank t-bone. Cow pastrami salami corned beef cupim alcatra, ham brisket sirloin meatloaf shankle.
-        </p>
-      `;
-      const html = `
-        <html>
-          <head>
-          </head>
-          <body>Passed!
-            ${filler.repeat(8192)}
-            END
-          </body>
-        </html>
-      `;
-      const result = await HtmlPdf.create(html, {port});
-      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-      /*const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).to.startWith('Passed!');*/
-    });
-
     it('should generate a PDF with multiple pages', async () => {
       const html = `
         <html>

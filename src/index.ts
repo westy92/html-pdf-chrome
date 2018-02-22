@@ -67,11 +67,9 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
   try {
     await beforeNavigate(options, client);
     const {Page} = client;
-    const url = /^(https?|file|data):/i.test(html) ? html : `data:text/html,${html}`;
-    // chrome has url length limit
-    if (url.length <= 2097152) {
+    if (/^(https?|file|data):/i.test(html)) {
       await Promise.all([
-        Page.navigate({url}),
+        Page.navigate({url: html}),
         Page.loadEventFired(),
       ]); // Resolve order varies
     } else {
