@@ -114,7 +114,7 @@ export default interface PrintToPDFOptions {
    * - `pageNumber` current page number
    * - `totalPages` total pages in the document
    *
-   *  For example, <span class=title></span> would generate span containing the title.
+   *  For example, `<span class="title"></span>` would generate span containing the title.
    *
    * @type {string}
    * @memberof PrintToPDFOptions

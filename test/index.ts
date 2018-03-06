@@ -235,9 +235,12 @@ describe('HtmlPdf', () => {
     it('should generate a PDF with custom headers and footers', async () => {
       const html = `
         <html>
+          <head>
+            <title>TITLE</title>
+          </head>
           <body>
-            <div style="page-break-after:always">Page 1</div>
-            <div>Page 2</div>
+            <div style="page-break-after:always">Page #1</div>
+            <div>Page #2</div>
           </body>
         </html>
       `;
@@ -249,6 +252,7 @@ describe('HtmlPdf', () => {
             <div class="text center" style="color:red;">
               Custom <b>header</b>!
               Page <span class="pageNumber"></span> of <span class="totalPages"></span>.
+              Title: <span class="title"></span>.
             </div>
           `,
           footerTemplate: '<div class="text center" style="color:green">Custom <i>footer</i>!</div>',
@@ -256,7 +260,11 @@ describe('HtmlPdf', () => {
       });
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).to.contain('Custom header!').and.to.contain('Custom footer!');
+      const pdfText = pdf.getRawTextContent();
+      expect(pdfText).to.contain('Custom header!').and.to.contain('Custom footer!');
+      expect(pdfText).to.contain('Page 1 of 2.').and.to.contain('Page 1 of 2.');
+      expect(pdfText).to.contain('Page #1').and.to.contain('Page #2');
+      expect(pdfText).to.contain('Title: TITLE.');
     });
 
     it('should generate a PDF from a local file', async () => {
