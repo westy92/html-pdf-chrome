@@ -36,7 +36,7 @@ describe('HtmlPdf', () => {
         ],
         chromePath: '/usr/bin/google-chrome-beta',
         connectionPollInterval: 250,
-        logLevel: 'verbose',
+        logLevel: 'error',
         maxConnectionRetries: 50,
       });
       port = chrome.port;
