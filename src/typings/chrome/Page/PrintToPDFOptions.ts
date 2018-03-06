@@ -2,7 +2,6 @@
 
 /**
  * Chrome Page.printToPDF options.
- * Note: these require Chrome >= 60.
  *
  * @export
  * @interface PrintToPDFOptions
@@ -107,14 +106,15 @@ export default interface PrintToPDFOptions {
   ignoreInvalidPageRanges?: boolean;
 
   /**
-   * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them:
+   * HTML template for the print header.
+   * Should be valid HTML markup with following classes used to inject printing values into them:
    * - `date` formatted print date
    * - `title` document title
    * - `url` document location
    * - `pageNumber` current page number
    * - `totalPages` total pages in the document
    *
-   *  For example, `<span class="title"></span>` would generate span containing the title.
+   * For example, `<span class="title"></span>` would generate a span containing the title.
    *
    * @type {string}
    * @memberof PrintToPDFOptions
@@ -128,4 +128,13 @@ export default interface PrintToPDFOptions {
    * @memberof PrintToPDFOptions
    */
   footerTemplate?: string;
+
+  /**
+   * Whether or not to prefer page size as defined by css.
+   * Defaults to false, in which case the content will be scaled to fit the paper size.
+   *
+   * @type {boolean}
+   * @memberof PrintToPDFOptions
+   */
+  preferCSSPageSize?: boolean;
 }
