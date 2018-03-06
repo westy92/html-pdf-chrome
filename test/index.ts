@@ -34,7 +34,8 @@ describe('HtmlPdf', () => {
           '--disable-gpu',
           '--headless',
         ],
-        chromePath: '/usr/bin/google-chrome-beta',
+        // uncomment if using Chrome Beta
+        // chromePath: '/usr/bin/google-chrome-beta',
         connectionPollInterval: 250,
         logLevel: 'error',
         maxConnectionRetries: 50,
