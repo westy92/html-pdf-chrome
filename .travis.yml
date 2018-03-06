@@ -10,7 +10,7 @@ git:
 addons:
   apt:
     packages:
-      - google-chrome-beta
+      - google-chrome-stable
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
   - |
