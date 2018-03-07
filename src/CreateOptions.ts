@@ -114,4 +114,20 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   _canceled?: boolean;
+
+  /**
+   * A private variable to store the main page navigation requestId.
+   *
+   * @type {string}
+   * @memberof CreateOptions
+   */
+  _mainRequestId?: string;
+
+  /**
+   * A private flag to signify the main page navigation failed.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  _navigateFailed?: boolean;
 }
