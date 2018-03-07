@@ -125,6 +125,43 @@ const html = template(templateData);
 const pdf = await htmlPdf.create(html, options);
 ```
 
+### Custom Headers and Footers
+
+_Note: Requires Chrome 65 or later._
+
+You can optionally provide an HTML template for a custom header and/or footer.
+
+A few classes can be used to inject printing values:
+
+* `date` - formatted print date
+* `title` - document title
+* `url` - document location
+* `pageNumber` - current page number
+* `totalPages` - total pages in the document
+
+You can tweak the margins with the `printOptions` of `marginTop`, `marginBottom`, `marginLeft`, and `marginRight`.
+
+At this time, you must inline any images using [base64 encoding](http://www.bigfastblog.com/embed-base64-encoded-images-inline-in-html).
+
+You can view how Chrome lays out the templates [here](https://cs.chromium.org/chromium/src/components/printing/resources/print_preview_page.html).
+
+#### Example
+
+```js
+const pdf = await htmlPdf.create(html, {
+  port,
+  printOptions: {
+    displayHeaderFooter: true,
+    headerTemplate: `
+      <div class="text center">
+        Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+      </div>
+    `,
+    footerTemplate: '<div class="text center">Custom footer!</div>',
+  },
+});
+```
+
 ### Trigger Render Completion
 
 There are a few `CompletionTrigger` types that wait for something to occur before triggering PDF printing.
