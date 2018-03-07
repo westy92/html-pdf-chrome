@@ -139,6 +139,10 @@ A few classes can be used to inject printing values:
 * `pageNumber` - current page number
 * `totalPages` - total pages in the document
 
+You can tweak the margins with the `printOptions` of `marginTop`, `marginBottom`, `marginLeft`, and `marginRight`.
+
+At this time, you must inline any images using [base64 encoding](http://www.bigfastblog.com/embed-base64-encoded-images-inline-in-html).
+
 You can view how Chrome lays out the templates [here](https://cs.chromium.org/chromium/src/components/printing/resources/print_preview_page.html).
 
 #### Example
