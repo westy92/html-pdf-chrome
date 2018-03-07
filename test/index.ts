@@ -240,8 +240,8 @@ describe('HtmlPdf', () => {
             <title>TITLE</title>
           </head>
           <body>
-            <div style="page-break-after:always">Page #1</div>
-            <div>Page #2</div>
+            <div style="page-break-after:always">Page - 1</div>
+            <div>Page - 2</div>
           </body>
         </html>
       `;
@@ -264,7 +264,7 @@ describe('HtmlPdf', () => {
       const pdfText = pdf.getRawTextContent();
       expect(pdfText).to.contain('Custom header!').and.to.contain('Custom footer!');
       expect(pdfText).to.contain('Page 1 of 2.').and.to.contain('Page 2 of 2.');
-      expect(pdfText).to.contain('Page #1').and.to.contain('Page #2');
+      expect(pdfText).to.contain('Page - 1').and.to.contain('Page - 2');
       expect(pdfText).to.contain('Title: TITLE.');
     });
 
