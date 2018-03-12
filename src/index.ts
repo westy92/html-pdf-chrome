@@ -28,7 +28,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
   let chrome: LaunchedChrome;
 
   myOptions._canceled = false;
-  if (myOptions.timeout >= 0) {
+  if (myOptions.timeout != null && myOptions.timeout >= 0) {
     setTimeout(() => {
       myOptions._canceled = true;
     }, myOptions.timeout);

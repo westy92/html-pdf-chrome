@@ -54,10 +54,9 @@ describe('HtmlPdf', () => {
     });
 
     it('should handle a Chrome launch failure', async () => {
-      let launchStub: sinon.SinonStub;
       const error = new Error('failed!');
+      const launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
       try {
-        launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
         await HtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
