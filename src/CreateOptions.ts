@@ -108,6 +108,14 @@ export interface CreateOptions {
   runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
 
   /**
+   * Set page url when rendering raw HTML.
+   *
+   * @type {string}
+   * @memberof CreateOptions
+   */
+  url?: string;
+
+  /**
    * A private flag to signify the operation has been canceled.
    *
    * @type {boolean}

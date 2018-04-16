@@ -74,6 +74,9 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
       ]); // Resolve order varies
     } else {
       const {frameTree} = await Page.getResourceTree();
+      if (options.url) {
+        await Page.navigate({url: options.url});
+      }
       await Promise.all([
         Page.setDocumentContent({html, frameId: frameTree.frame.id}),
         Page.loadEventFired(),
