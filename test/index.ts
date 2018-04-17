@@ -296,6 +296,63 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).to.contain('Facebook');
     });
 
+    it('should fail CORS without URL', async () => {
+      const events: ConsoleAPICalled[] = [];
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        runtimeConsoleHandler: (event: ConsoleAPICalled) => events.push(event),
+        completionTrigger: new HtmlPdf.CompletionTrigger.Callback(),
+      };
+      const html = `
+        <html>
+          <body>
+            <script>
+              fetch('https://www.w3schools.com/jquery/demo_test_post.asp', {
+                method: 'post',
+                headers: {
+                  'Accept': 'application/json, text/plain, */*',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({a: 7, str: 'Some string: &=&'})
+              }).catch(err => console.error(err)).then(res => htmlPdfCb());
+            </script>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(events[0]).to.have.nested.property('args[0].description', 'TypeError: Failed to fetch');
+    });
+
+    it('should pass CORS with URL', async () => {
+      const events: ConsoleAPICalled[] = [];
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        runtimeConsoleHandler: (event: ConsoleAPICalled) => events.push(event),
+        completionTrigger: new HtmlPdf.CompletionTrigger.Callback(),
+        url: 'https://www.w3schools.com/',
+      };
+      const html = `
+        <html>
+          <body>
+            <script>
+              fetch('https://www.w3schools.com/jquery/demo_test_post.asp', {
+                method: 'post',
+                headers: {
+                  'Accept': 'application/json, text/plain, */*',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({a: 7, str: 'Some string: &=&'})
+              }).catch(err => console.error(err)).then(res => htmlPdfCb());
+            </script>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(events).to.be.an('array').that.is.empty;
+    });
+
     describe('CompletionTrigger', () => {
 
       const timeoutErrorMessage = 'CompletionTrigger timed out.';
