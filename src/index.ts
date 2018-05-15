@@ -75,7 +75,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
     } else {
       const {frameTree} = await Page.getResourceTree();
       if (options.url) {
-        await Page.navigate({url: options.url});
+        await Page.navigate({url: options.url, frameId: frameTree.frame.id});
       }
       await Promise.all([
         Page.setDocumentContent({html, frameId: frameTree.frame.id}),
