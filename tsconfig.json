@@ -4,5 +4,6 @@
     "module": "commonjs",
     "declaration": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
   }
 }
