@@ -602,7 +602,7 @@ describe('HtmlPdf', () => {
 
       const length = 10;
       it(`should concurrently generate ${length} PDFs`, async () => {
-        const input = Array.from({length}, (v, i) => `${i}`);
+        const input = Array.from({length}, (_, i) => `${i}`);
         const results = await Promise.all(input.map(createAndParse));
         expect(results).to.deep.equal(input);
       });
