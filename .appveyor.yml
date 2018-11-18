@@ -13,6 +13,7 @@ environment:
 install:
   - choco install googlechrome --ignore-checksums 
   - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version)
+  - refreshenv # refresh PATH just in case
   - node --version
   - npm --version
   - npm install
