@@ -8,7 +8,7 @@ dist: trusty
 sudo: required
 
 git:
-  depth: 1
+  depth: 5
 
 addons:
   chrome: stable
