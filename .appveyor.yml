@@ -1,7 +1,7 @@
 # don't build tags, it's redundant
 skip_tags: true
 
-clone_depth: 1
+clone_depth: 5
 
 environment:
   matrix:
