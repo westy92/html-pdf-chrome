@@ -5,7 +5,7 @@
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
-import * as getPort from 'get-port';
+import getPort = require('get-port');
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as PDFParser from 'pdf2json';
