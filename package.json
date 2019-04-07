@@ -47,7 +47,7 @@
     "chai-string": "^1.3.0",
     "codecov": "^3.0.0",
     "del": "^4.0.0",
-    "get-port": "^4.0.0",
+    "get-port": "^5.0.0",
     "gulp": "^4.0.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-spawn-mocha": "^5.0.0",
