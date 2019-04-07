@@ -37,7 +37,6 @@
   "devDependencies": {
     "@types/chai": "^4.0.1",
     "@types/chai-string": "^1.1.30",
-    "@types/get-port": "^4.0.0",
     "@types/mocha": "^5.0.0",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "^11.9.0",
