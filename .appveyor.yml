@@ -10,9 +10,13 @@ environment:
     - nodejs_version: 10
     - nodejs_version: 8
     
+platform:
+  - x86
+  - x64
+    
 install:
   - choco install googlechrome --ignore-checksums 
-  - ps: Install-Product node $env:nodejs_version
+  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:PLATFORM
   - node --version
   - npm --version
   - npm install
