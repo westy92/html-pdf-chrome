@@ -63,7 +63,7 @@
     "typescript": "^3.0.1"
   },
   "dependencies": {
-    "chrome-launcher": "^0.10.0",
+    "chrome-launcher": "^0.11.0",
     "chrome-remote-interface": "^0.27.0"
   }
 }
