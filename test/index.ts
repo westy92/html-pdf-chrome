@@ -125,7 +125,7 @@ describe('HtmlPdf', () => {
       const options: HtmlPdf.CreateOptions = {
         port,
         extraHTTPHeaders: {
-          'Authorization': 'Bearer 123',
+          'Authorization': 'Bearer',
           'X-Custom-Test-Header': 'Passed1!',
         },
       };
@@ -134,7 +134,7 @@ describe('HtmlPdf', () => {
       const pdf = await getParsedPdf(result.toBuffer());
       const rawTextContent = pdf.getRawTextContent();
 
-      expect(rawTextContent).to.contain('Authorization').and.to.contain('Bearer 123');
+      expect(rawTextContent).to.contain('Authorization').and.to.contain('Bearer');
       expect(rawTextContent).to.contain('X-Custom-Test-Header').and.to.contain('Passed1!');
     });
 
