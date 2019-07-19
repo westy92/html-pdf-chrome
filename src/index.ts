@@ -122,6 +122,9 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
       options._navigateFailed = true;
     }
   });
+  if (options.extraHTTPHeaders) {
+    Network.setExtraHTTPHeaders({headers: options.extraHTTPHeaders});
+  }
   if (options.cookies) {
     await throwIfCanceledOrFailed(options);
     await Network.setCookies({cookies: options.cookies});
