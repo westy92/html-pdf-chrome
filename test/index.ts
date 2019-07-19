@@ -121,21 +121,21 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).to.startWith('Cookies:status=Passed!');
     });
 
-    it('should generate a PDF and send extra http headers', async () => {
+    it('should generate a PDF and send extra HTTP headers', async () => {
       const options: HtmlPdf.CreateOptions = {
         port,
         extraHTTPHeaders: {
-            'X-Custom-Test-Header1' : 'Passed1!',
-            'X-Custom-Test-Header2' : 'Passed2!',
+          'Authorization': 'Bearer 123',
+          'X-Custom-Test-Header': 'Passed1!',
         },
       };
 
-      const result = await HtmlPdf.create('http://httpbin.org/headers', options);
+      const result = await HtmlPdf.create('https://httpbin.org/headers', options);
       const pdf = await getParsedPdf(result.toBuffer());
       const rawTextContent = pdf.getRawTextContent();
 
-      expect(rawTextContent).to.contain('X-Custom-Test-Header1').and.to.contain('Passed1!');
-      expect(rawTextContent).to.contain('X-Custom-Test-Header2').and.to.contain('Passed2!');
+      expect(rawTextContent).to.contain('Authorization').and.to.contain('Bearer 123');
+      expect(rawTextContent).to.contain('X-Custom-Test-Header').and.to.contain('Passed1!');
     });
 
     it('should proxy console messages', async () => {
