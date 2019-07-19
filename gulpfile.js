@@ -9,13 +9,11 @@ var remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul');
 
 const tsProject = ts.createProject('tsconfig.json');
 
-gulp.task('clean', () => {
+function clean() {
   return del(['coverage', 'lib']);
-});
+}
 
-gulp.task('default', ['lint', 'scripts', 'test', 'coverage'], () => {});
-
-gulp.task('scripts', () => {
+function scripts() {
   return gulp.src(['src/**/*.ts', 'test/**/*.ts'], { base: '.' })
     .pipe(sourcemaps.init())
     .pipe(tsProject())
@@ -23,9 +21,9 @@ gulp.task('scripts', () => {
       sourceRoot: '..',
     }))
     .pipe(gulp.dest('lib'));
-});
+}
 
-gulp.task('lint', ['scripts'], () => {
+function lint() {
   return gulp.src(['src/**/*.ts', 'test/**/*.ts'])
     .pipe(gulpTsLint({
       configuration: './tslint.json',
@@ -37,9 +35,18 @@ gulp.task('lint', ['scripts'], () => {
       emitError: false,
       summarizeFailureOutput: true,
     }));
-});
+}
 
-gulp.task('coverage', ['test'], () => {
+function test() {
+  return gulp.src('lib/test/**/*.js', {read: false})
+    .pipe(mocha({
+      istanbul: true,
+      timeout: 15000,
+      retries: 4,
+    }));
+}
+
+function coverage() {
   return gulp.src('coverage/coverage-final.json')
     .pipe(remapIstanbul({
       reports: {
@@ -49,13 +56,12 @@ gulp.task('coverage', ['test'], () => {
         'json': 'coverage/coverage-remapped.json',
       }
     }));
-});
+}
 
-gulp.task('test', ['scripts'], () =>
-  gulp.src('lib/test/**/*.js', {read: false})
-    .pipe(mocha({
-      istanbul: true,
-      timeout: 15000,
-      retries: 4,
-    }))
-);
+const js = gulp.series(lint, scripts);
+const build = gulp.series(clean, js, test, coverage);
+
+exports.clean = clean;
+exports.lint = lint;
+exports.build = build;
+exports.default = build;

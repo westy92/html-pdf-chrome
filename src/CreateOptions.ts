@@ -94,6 +94,14 @@ export interface CreateOptions {
   cookies?: SetCookieOptions[];
 
   /**
+   * Extra HTTP headers to send when making a request.
+   *
+   * @type {[key: string]: string}
+   * @memberof CreateOptions
+   */
+  extraHTTPHeaders?: { [key: string]: string; };
+
+  /**
    * Set a callback to receive console messages.
    *
    * @memberof CreateOptions

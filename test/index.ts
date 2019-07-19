@@ -5,7 +5,7 @@
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
-import * as getPort from 'get-port';
+import getPort = require('get-port');
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as PDFParser from 'pdf2json';
@@ -35,6 +35,8 @@ describe('HtmlPdf', () => {
           '--disable-gpu',
           '--headless',
         ],
+        // uncomment if using Chrome Beta
+        // chromePath: '/usr/bin/google-chrome-beta',
         connectionPollInterval: 250,
         logLevel: 'error',
         maxConnectionRetries: 50,
@@ -52,10 +54,9 @@ describe('HtmlPdf', () => {
     });
 
     it('should handle a Chrome launch failure', async () => {
-      let launchStub: sinon.SinonStub;
       const error = new Error('failed!');
+      const launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
       try {
-        launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
         await HtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
@@ -118,6 +119,23 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.startWith('Cookies:status=Passed!');
+    });
+
+    it('should generate a PDF and send extra http headers', async () => {
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        extraHTTPHeaders: {
+            'X-Custom-Test-Header1' : 'Passed1!',
+            'X-Custom-Test-Header2' : 'Passed2!',
+        },
+      };
+
+      const result = await HtmlPdf.create('http://httpbin.org/headers', options);
+      const pdf = await getParsedPdf(result.toBuffer());
+      const rawTextContent = pdf.getRawTextContent();
+
+      expect(rawTextContent).to.contain('X-Custom-Test-Header1').and.to.contain('Passed1!');
+      expect(rawTextContent).to.contain('X-Custom-Test-Header2').and.to.contain('Passed2!');
     });
 
     it('should proxy console messages', async () => {
@@ -243,6 +261,41 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf.getRawTextContent()).to.contain('Page (0) Break').and.to.contain('Page (1) Break');
+    });
+
+    it('should generate a PDF with custom headers and footers', async () => {
+      const html = `
+        <html>
+          <head>
+            <title>TITLE</title>
+          </head>
+          <body>
+            <div style="page-break-after:always">P1</div>
+            <div>P2</div>
+          </body>
+        </html>
+      `;
+      const result = await HtmlPdf.create(html, {
+        port,
+        printOptions: {
+          displayHeaderFooter: true,
+          headerTemplate: `
+            <div class="text center" style="color:red;">
+              Custom <b>header</b>!
+              Page <span class="pageNumber"></span> of <span class="totalPages"></span>.
+              Title: <span class="title"></span>.
+            </div>
+          `,
+          footerTemplate: '<div class="text center" style="color:green">Custom <i>footer</i>!</div>',
+        },
+      });
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const pdf = await getParsedPdf(result.toBuffer());
+      const pdfText = pdf.getRawTextContent();
+      expect(pdfText).to.contain('Custom header!').and.to.contain('Custom footer!');
+      expect(pdfText).to.contain('Page 1 of 2.').and.to.contain('Page 2 of 2.');
+      expect(pdfText).to.contain('P1').and.to.contain('P2');
+      expect(pdfText).to.contain('Title: TITLE.');
     });
 
     it('should generate a PDF from a local file', async () => {
@@ -566,7 +619,7 @@ describe('HtmlPdf', () => {
 
       const length = 10;
       it(`should concurrently generate ${length} PDFs`, async () => {
-        const input = Array.from({length}, (v, i) => `${i}`);
+        const input = Array.from({length}, (_, i) => `${i}`);
         const results = await Promise.all(input.map(createAndParse));
         expect(results).to.deep.equal(input);
       });

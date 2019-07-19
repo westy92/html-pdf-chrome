@@ -20,8 +20,8 @@ export class Timer extends CompletionTrigger {
     super(timeout);
   }
 
-  public async wait(client: any): Promise<any> {
-    return new Promise((resolve) => {
+  public async wait(): Promise<void> {
+    return new Promise<void>((resolve) => {
       setTimeout(resolve, this.timeout);
     });
   }

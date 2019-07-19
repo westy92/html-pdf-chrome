@@ -1,3 +1,6 @@
+# don't build tags, it's redundant
+if: tag IS blank
+
 os:
   - linux
   - osx
@@ -5,19 +8,12 @@ dist: trusty
 sudo: required
 
 git:
-  depth: 1
+  depth: 5
 
 addons:
-  apt:
-    packages:
-      - google-chrome-stable
+  chrome: stable
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
-  - |
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew tap caskroom/versions > /dev/null
-      brew cask install google-chrome
-    fi
 
 before_script:
 #  - greenkeeper-lockfile-update
@@ -30,9 +26,10 @@ after_success:
 
 language: node_js
 node_js:
-  - 9
+  - 12
+  - 11
+  - 10
   - 8
-  - 6
 
 cache:
   directories:

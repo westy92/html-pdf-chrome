@@ -1,11 +1,11 @@
 {
   "name": "html-pdf-chrome",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp scripts"
+    "prepublishOnly": "gulp"
   },
   "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
   "homepage": "https://github.com/westy92/html-pdf-chrome",
@@ -37,34 +37,33 @@
   "devDependencies": {
     "@types/chai": "^4.0.1",
     "@types/chai-string": "^1.1.30",
-    "@types/get-port": "^3.2.0",
-    "@types/mocha": "^2.2.41",
+    "@types/mocha": "^5.0.0",
     "@types/mock-fs": "^3.6.30",
-    "@types/node": "^9.3.0",
-    "@types/sinon": "^4.0.0",
-    "@types/sinon-chai": "^2.7.27",
+    "@types/node": "^12.0.0",
+    "@types/sinon": "^7.0.0",
+    "@types/sinon-chai": "^3.2.0",
     "chai": "^4.1.0",
     "chai-string": "^1.3.0",
     "codecov": "^3.0.0",
-    "del": "^3.0.0",
-    "get-port": "^3.2.0",
-    "gulp": "^3.9.1",
+    "del": "^5.0.0",
+    "get-port": "^5.0.0",
+    "gulp": "^4.0.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-spawn-mocha": "^5.0.0",
     "gulp-tslint": "^8.0.0",
-    "gulp-typescript": "^3.2.1",
-    "mocha": "^5.0.0",
-    "mock-fs": "^4.3.0",
+    "gulp-typescript": "^5.0.0",
+    "mocha": "^6.0.0",
+    "mock-fs": "^4.5.0",
     "pdf2json": "^1.1.7",
-    "remap-istanbul": "^0.10.0",
-    "sinon": "^4.0.0",
-    "sinon-chai": "^2.12.0",
+    "remap-istanbul": "^0.13.0",
+    "sinon": "^7.0.0",
+    "sinon-chai": "^3.0.0",
     "tslint": "^5.5.0",
-    "tslint-microsoft-contrib": "^5.0.1",
-    "typescript": "^2.4.2"
+    "tslint-microsoft-contrib": "^6.0.0",
+    "typescript": "^3.0.1"
   },
   "dependencies": {
-    "chrome-launcher": "^0.10.0",
-    "chrome-remote-interface": "^0.25.0"
+    "chrome-launcher": "^0.11.0",
+    "chrome-remote-interface": "^0.27.0"
   }
 }
