@@ -125,6 +125,22 @@ const html = template(templateData);
 const pdf = await htmlPdf.create(html, options);
 ```
 
+### HTTP Headers
+
+Specify additional headers you wish to send with your request via `CreateOptions.extraHTTPHeaders`.
+
+```js
+const options: HtmlPdf.CreateOptions = {
+  port: 9222, // port Chrome is listening on
+  extraHTTPHeaders: {
+    'Authorization': 'Bearer 123',
+    'X-Custom-Test-Header': 'This is great!',
+  },
+};
+
+const pdf = await HtmlPdf.create('https://httpbin.org/headers', options);
+```
+
 ### Custom Headers and Footers
 
 _Note: Requires Chrome 65 or later._
