@@ -124,18 +124,18 @@ describe('HtmlPdf', () => {
     it('should generate a PDF and send extra http headers', async () => {
       const options: HtmlPdf.CreateOptions = {
         port,
-        extraHTTPHeaders: [
-          {
-            name: 'X-Custom-Test-Header',
-            value: 'Passed!'
-          },
-        ],
+        extraHTTPHeaders: {
+            'X-Custom-Test-Header1' : 'Passed1!',
+            'X-Custom-Test-Header2' : 'Passed2!',
+        },
       };
 
       const result = await HtmlPdf.create('http://httpbin.org/headers', options);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf.getRawTextContent()).to.contains('X-Custom-Test-Header');
-      expect(pdf.getRawTextContent()).to.contains('Passed!');
+      const rawTextContent = pdf.getRawTextContent();
+
+      expect(rawTextContent).to.contain('X-Custom-Test-Header1').and.to.contain('Passed1!');
+      expect(rawTextContent).to.contain('X-Custom-Test-Header2').and.to.contain('Passed2!');
     });
 
     it('should proxy console messages', async () => {

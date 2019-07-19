@@ -1,7 +1,6 @@
 'use strict';
 
 import { CompletionTrigger } from './CompletionTriggers';
-import ExtraHTTPHeader from './typings/chrome/Network/ExtraHTTPHeader';
 import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
 import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
 import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
@@ -97,10 +96,10 @@ export interface CreateOptions {
   /**
    * Extra HTTP headers to send when making a request.
    *
-   * @type {ExtraHTTPHeader[]}
+   * @type {[key: string]: string}
    * @memberof CreateOptions
    */
-  extraHTTPHeaders?: ExtraHTTPHeader[];
+  extraHTTPHeaders?: { [key: string]: string; };
 
   /**
    * Set a callback to receive console messages.

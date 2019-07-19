@@ -122,19 +122,9 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
       options._navigateFailed = true;
     }
   });
-
-  if (options.extraHTTPHeaders){
-    // function which reduces the extra http headers array to an object
-    let convertHeaders = (array, keyField, valueField) => {
-      return array.reduce((obj, item) => {
-        obj[item[keyField]] = item[valueField];
-        return obj
-      }, {});
-    }
-
-    Network.setExtraHTTPHeaders({headers : convertHeaders(options.extraHTTPHeaders, 'name','value')})
+  if (options.extraHTTPHeaders) {
+    Network.setExtraHTTPHeaders({headers: options.extraHTTPHeaders});
   }
-
   if (options.cookies) {
     await throwIfCanceledOrFailed(options);
     await Network.setCookies({cookies: options.cookies});
