@@ -27,7 +27,6 @@ after_success:
 language: node_js
 node_js:
   - 12
-  - 11
   - 10
   - 8
 
