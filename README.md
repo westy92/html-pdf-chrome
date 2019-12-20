@@ -68,11 +68,13 @@ const pdf = await htmlPdf.create(html, options);
 await pdf.toFile('test.pdf');
 const base64 = pdf.toBase64();
 const buffer = pdf.toBuffer();
+const stream = pdf.toStream();
 
 // Promise
 htmlPdf.create(html, options).then((pdf) => pdf.toFile('test.pdf'));
 htmlPdf.create(html, options).then((pdf) => pdf.toBase64());
 htmlPdf.create(html, options).then((pdf) => pdf.toBuffer());
+htmlPdf.create(html, options).then((pdf) => pdf.toStream());
 ```
 
 JavaScript:
@@ -88,6 +90,7 @@ const options = {
 htmlPdf.create(html, options).then((pdf) => pdf.toFile('test.pdf'));
 htmlPdf.create(html, options).then((pdf) => pdf.toBase64());
 htmlPdf.create(html, options).then((pdf) => pdf.toBuffer());
+htmlPdf.create(html, options).then((pdf) => pdf.toStream());
 ```
 
 View the full documentation in the source code.
