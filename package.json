@@ -52,7 +52,7 @@
     "gulp-spawn-mocha": "^6.0.0",
     "gulp-tslint": "^8.0.0",
     "gulp-typescript": "^5.0.0",
-    "mocha": "^6.0.0",
+    "mocha": "^7.0.1",
     "mock-fs": "^4.5.0",
     "pdf2json": "^1.1.7",
     "remap-istanbul": "^0.13.0",
