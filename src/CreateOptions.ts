@@ -111,12 +111,12 @@ export interface CreateOptions {
   failOnHTTP4xx?: boolean;
 
    /**
-   * Set to true if a 5xx status code on the main request should lead to a failure.
-   * Not setting this will assume "true"
-   *
-   * @type {boolean}
-   * @memberof CreateOptions
-   */
+    * Set to true if a 5xx status code on the main request should lead to a failure.
+    * Not setting this will assume "true"
+    *
+    * @type {boolean}
+    * @memberof CreateOptions
+    */
   failOnHTTP5xx?: boolean;
 
   /**
@@ -146,9 +146,6 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   requestWillBeSentHandler?: (e: any) => void;
-
-
-
 
   /**
    * A private flag to signify the operation has been canceled.

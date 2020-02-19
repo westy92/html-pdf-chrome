@@ -119,7 +119,7 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
     if (options.requestWillBeSentHandler) {
       options.requestWillBeSentHandler(e);
     }
-    
+
   });
   Network.loadingFailed((e) => {
     if (e.requestId === options._mainRequestId) {
@@ -133,7 +133,7 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
     if (e.requestId === options._mainRequestId) {
       options._responseStatusCode = e.response.status;
       if (true === options.dumpMainResponseObjectToConsole) {
-        console.log("RESPONSE TO MAIN REQUEST", e.response);
+        console.log('RESPONSE TO MAIN REQUEST', e.response);
       }
     }
   });
@@ -180,11 +180,11 @@ async function throwIfCanceledOrFailed(options: CreateOptions): Promise<void> {
   if (options._navigateFailed) {
     throw new Error('HtmlPdf.create() page navigate failed.');
   }
-  if (options._responseStatusCode != null && false != options.failOnHTTP4xx && options._responseStatusCode >= 400 && options._responseStatusCode <= 499) {
-    throw new Error('HtmlPdf.create() status code '+options._responseStatusCode);
+  if (options._responseStatusCode !== null && false !== options.failOnHTTP4xx && options._responseStatusCode >= 400 && options._responseStatusCode <= 499) {
+    throw new Error('HtmlPdf.create() status code ' + options._responseStatusCode);
   }
-  if (options._responseStatusCode != null && false != options.failOnHTTP5xx && options._responseStatusCode >= 500 && options._responseStatusCode <= 599) {
-    throw new Error('HtmlPdf.create() status code '+options._responseStatusCode);
+  if (options._responseStatusCode != null && false !== options.failOnHTTP5xx && options._responseStatusCode >= 500 && options._responseStatusCode <= 599) {
+    throw new Error('HtmlPdf.create() status code ' + options._responseStatusCode);
   }
 }
 
