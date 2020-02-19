@@ -54,6 +54,7 @@
     "gulp-typescript": "^5.0.0",
     "mocha": "^7.0.1",
     "mock-fs": "^4.5.0",
+    "mockttp": "^0.19.2",
     "pdf2json": "^1.1.7",
     "remap-istanbul": "^0.13.0",
     "sinon": "^8.0.0",
