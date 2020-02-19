@@ -121,6 +121,9 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
     if (e.requestId === options._mainRequestId) {
       options._navigateFailed = true;
     }
+    if (options.loadingFailedHandler) {
+      options.loadingFailedHandler(e.requestId, e.errorText);
+    }
   });
   if (options.extraHTTPHeaders) {
     Network.setExtraHTTPHeaders({headers: options.extraHTTPHeaders});

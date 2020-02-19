@@ -115,6 +115,9 @@ export interface CreateOptions {
    */
   runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
 
+  loadingFailedHandler?: (requestId: number, errorText: string) => void;
+
+  
   /**
    * A private flag to signify the operation has been canceled.
    *
