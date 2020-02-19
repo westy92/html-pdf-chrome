@@ -132,9 +132,6 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   Network.responseReceived((e) => {
     if (e.requestId === options._mainRequestId) {
       options._responseStatusCode = e.response.status;
-      if (true === options.dumpMainResponseObjectToConsole) {
-        console.log('RESPONSE TO MAIN REQUEST', e.response);
-      }
     }
   });
   if (options.extraHTTPHeaders) {
