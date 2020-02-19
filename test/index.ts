@@ -313,6 +313,141 @@ describe('HtmlPdf', () => {
       expect(pdf.getRawTextContent()).to.contain('Facebook');
     });
 
+    describe('Http', async () => {
+
+      const baseOptions: HtmlPdf.CreateOptions = {
+        port,
+      };
+
+      const mockServer = require('mockttp').getLocal(); // {debug: true}
+      const mockServerPort = await getPort();
+      const mockUrl = `http://127.0.0.1:${mockServerPort}/mocked-path`;
+
+      before(() => {
+        mockServer.start(mockServerPort);
+      });
+      after(() => {
+        mockServer.stop();
+      });
+
+      it('should trigger loadingFailedHandler', (done) => {
+        const myOptions = Object.assign({}, baseOptions);
+        let alreadyReceivedLoadingFailedHandler = false;
+
+        myOptions.loadingFailedHandler = () => {
+          alreadyReceivedLoadingFailedHandler = true;
+          done();
+        };
+
+        const html = `
+          <html>
+            <body>
+              <img src="http://thisdomaindoesnotexistforsureibelieveatleast.com/blah.png">
+            </body>
+          </html>
+        `;
+
+        mockServer.get('/mocked-path')
+          .thenReply(200, html)
+          .then(async () => {
+
+            await HtmlPdf.create(mockUrl, myOptions).catch((err) => {
+              done(err);
+            }).then(() => {
+              if (!alreadyReceivedLoadingFailedHandler) {
+                done('Did not receive loadingFailedHandler call');
+              }
+            });
+
+          });
+
+      });
+
+      const statusCodeBasedTest = async (statusCodeToSend: number, expectFail: boolean, options: HtmlPdf.CreateOptions) => {
+
+        const myOptions = Object.assign({}, options);
+
+        const p = new Promise(async (resolve, reject) =>  {
+
+          mockServer.get('/mocked-path').thenReply(statusCodeToSend, 'A mocked response').then(async () => {
+            let alreadyFailed = false;
+
+            await HtmlPdf.create(mockUrl, myOptions).catch((err) => {
+              alreadyFailed = true;
+              if (!expectFail) {
+                reject(`Did not expect failure: ${err}`);
+              } else {
+                resolve();
+              }
+            }).then(() => {
+              if (alreadyFailed) {
+                return;
+              }
+              if (expectFail) {
+                reject(`create was supposed to fail but did not`);
+              } else {
+                resolve();
+              }
+            });
+
+          });
+
+        });
+
+        return p;
+      };
+
+      it('should fail on HTTP 4xx', (done) => {
+        statusCodeBasedTest(403, true, baseOptions)
+          .then(() => { done(); })
+          .catch((err) => { done(err); });
+      });
+
+      it('should fail on HTTP 5xx', (done) => {
+        statusCodeBasedTest(500, true, baseOptions)
+          .then(() => { done(); })
+          .catch((err) => { done(err); });
+      });
+
+      it('should NOT fail on HTTP 4xx if failOnHTTP5xx is false', (done) => {
+        baseOptions.failOnHTTP5xx = false;
+        statusCodeBasedTest(500, false, baseOptions)
+          .then(() => { done(); })
+          .catch((err) => { done(err); });
+      });
+
+      it('should NOT fail on HTTP 4xx if failOnHTTP4xx is false', (done) => {
+        baseOptions.failOnHTTP4xx = false;
+        statusCodeBasedTest(403, false, baseOptions)
+          .then(() => { done(); })
+          .catch((err) => { done(err); });
+      });
+
+      it('should trigger requestWillBeSentHandler', (done) => {
+        const myOptions = Object.assign({}, baseOptions);
+        let alreadyReceivedRequestWillBeSentHandler = false;
+        myOptions.requestWillBeSentHandler = () => {
+          done();
+          alreadyReceivedRequestWillBeSentHandler = true;
+        };
+
+        mockServer.get('/mocked-path')
+          .thenReply(200, 'A mocked response')
+          .then(async () => {
+
+            await HtmlPdf.create(mockUrl, myOptions).catch((err) => {
+              done(err);
+            }).then(() => {
+              if (!alreadyReceivedRequestWillBeSentHandler) {
+                done('Did not receive requestWillBeSentHandler call');
+              }
+            });
+          });
+
+      });
+
+    });
+
     describe('CompletionTrigger', () => {
 
       const timeoutErrorMessage = 'CompletionTrigger timed out.';
