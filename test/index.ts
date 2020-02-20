@@ -334,7 +334,10 @@ describe('HtmlPdf', () => {
         const myOptions = Object.assign({}, baseOptions);
         let alreadyReceivedLoadingFailedHandler = false;
 
-        myOptions.loadingFailedHandler = () => {
+        myOptions.loadingFailedHandler = (e) => {
+          expect(e.requestId).to.not.be.null;
+          expect(e.timestamp).to.not.be.null;
+          expect(e.type).to.not.be.null;
           alreadyReceivedLoadingFailedHandler = true;
           done();
         };
@@ -426,7 +429,13 @@ describe('HtmlPdf', () => {
       it('should trigger requestWillBeSentHandler', (done) => {
         const myOptions = Object.assign({}, baseOptions);
         let alreadyReceivedRequestWillBeSentHandler = false;
-        myOptions.requestWillBeSentHandler = () => {
+        myOptions.requestWillBeSentHandler = (e) => {
+          expect(e.initiator).to.not.null;
+          expect(e.requestId).to.not.null;
+          expect(e.loaderId).to.not.null;
+          expect(e.timestamp).to.not.null;
+          expect(e.wallTime).to.not.null;
+          expect(e.request).to.not.null;
           done();
           alreadyReceivedRequestWillBeSentHandler = true;
         };

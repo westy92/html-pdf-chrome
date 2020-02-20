@@ -1,6 +1,8 @@
 'use strict';
 
 import { CompletionTrigger } from './CompletionTriggers';
+import LoadingFailed from './typings/chrome/Network/LoadingFailed';
+import RequestWillBeSent from './typings/chrome/Network/RequestWillBeSent';
 import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
 import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
 import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
@@ -138,14 +140,14 @@ export interface CreateOptions {
    *
    * @memberof CreateOptions
    */
-  loadingFailedHandler?: (requestId: number, errorText: string) => void;
+  loadingFailedHandler?: (e: LoadingFailed) => void;
 
   /**
    * Set a callback to receive information about requests which will be sent
    *
    * @memberof CreateOptions
    */
-  requestWillBeSentHandler?: (e: any) => void;
+  requestWillBeSentHandler?: (e: RequestWillBeSent) => void;
 
   /**
    * A private flag to signify the operation has been canceled.

@@ -126,7 +126,7 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
       options._navigateFailed = true;
     }
     if (options.loadingFailedHandler) {
-      options.loadingFailedHandler(e.requestId, e.errorText);
+      options.loadingFailedHandler(e);
     }
   });
   Network.responseReceived((e) => {
