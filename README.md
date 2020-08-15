@@ -22,6 +22,10 @@ HTML to PDF converter via Chrome/Chromium.
 npm install --save html-pdf-chrome
 ```
 
+## Security
+
+This library is **_NOT_** meant to accept untrusted user input. Doing so may have serious security risks such as Server-Side Request Forgery (SSRF).
+
 ## Usage
 
 __Note:__ It is _strongly_ recommended that you keep Chrome running side-by-side with Node.js.  There is significant overhead starting up Chrome for each PDF generation which can be easily avoided.
