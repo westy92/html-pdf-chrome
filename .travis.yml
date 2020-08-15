@@ -4,8 +4,11 @@ if: tag IS blank
 os:
   - linux
   - osx
-dist: trusty
+dist: xenial
 sudo: required
+
+services:
+  - xvfb
 
 git:
   depth: 5
@@ -26,7 +29,7 @@ after_success:
 
 language: node_js
 node_js:
-  - 13
+  - 14
   - 12
   - 10
 
