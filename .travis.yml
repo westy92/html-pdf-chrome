@@ -4,8 +4,11 @@ if: tag IS blank
 os:
   - linux
   - osx
-dist: trusty
+dist: xenial
 sudo: required
+
+services:
+  - xvfb
 
 git:
   depth: 5
@@ -15,12 +18,8 @@ addons:
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
 
-# https://github.com/GoogleChrome/chrome-launcher#continuous-integration
 before_script:
-  - export DISPLAY=:99.0
-  - export CHROME_PATH="$(pwd)/chrome-linux/chrome"
-  - sh -e /etc/init.d/xvfb start
-  - sleep 3 # wait for xvfb to boot
+#  - greenkeeper-lockfile-update
 
 after_script:
 #  - greenkeeper-lockfile-upload
