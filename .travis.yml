@@ -15,8 +15,12 @@ addons:
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
 
+# https://github.com/GoogleChrome/chrome-launcher#continuous-integration
 before_script:
-#  - greenkeeper-lockfile-update
+  - export DISPLAY=:99.0
+  - export CHROME_PATH="$(pwd)/chrome-linux/chrome"
+  - sh -e /etc/init.d/xvfb start
+  - sleep 3 # wait for xvfb to boot
 
 after_script:
 #  - greenkeeper-lockfile-upload
