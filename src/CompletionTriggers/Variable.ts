@@ -29,10 +29,15 @@ export class Variable extends CompletionTrigger {
       awaitPromise: true,
       expression: `
         new Promise((resolve, reject) => {
-          Object.defineProperty(window, '${varName}', {
+          if (window[${JSON.stringify(varName)}] === true) {
+            // Already done
+            resolve();
+            return;
+          }
+          Object.defineProperty(window, ${JSON.stringify(varName)}, {
             set: (val) => { if (val === true) resolve(); }
           });
-          setTimeout(() => reject('${this.timeoutMessage}'), ${this.timeout});
+          setTimeout(() => reject(${JSON.stringify(this.timeoutMessage)}), ${this.timeout});
         })`,
     });
   }
