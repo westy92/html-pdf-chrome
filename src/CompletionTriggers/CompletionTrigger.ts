@@ -16,8 +16,8 @@ export abstract class CompletionTrigger {
    * @memberof CompletionTrigger
    */
   constructor(
-    protected timeout = 1000,
-    protected timeoutMessage = 'CompletionTrigger timed out.',
+    protected timeout: number = 1000,
+    protected timeoutMessage: string = 'CompletionTrigger timed out.',
   ) {}
 
   /**
@@ -28,6 +28,6 @@ export abstract class CompletionTrigger {
    * @returns {Promise<any>} resolves if triggered, rejects on error or timeout.
    * @memberof CompletionTrigger
    */
-  public abstract async wait(client: any): Promise<any>;
+  public abstract wait(client: any): Promise<any>;
 
 }
