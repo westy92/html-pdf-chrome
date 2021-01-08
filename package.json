@@ -64,6 +64,6 @@
   },
   "dependencies": {
     "chrome-launcher": "0.13.2",
-    "chrome-remote-interface": "^0.28.0"
+    "chrome-remote-interface": "^0.29.0"
   }
 }
