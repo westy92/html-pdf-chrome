@@ -4,6 +4,7 @@
 
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
+import { Protocol } from 'devtools-protocol';
 import * as fs from 'fs';
 import getPort = require('get-port');
 import * as mockFs from 'mock-fs';
@@ -13,8 +14,6 @@ import * as sinon from 'sinon';
 import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
-import ConsoleAPICalled from '../src/typings/chrome/Runtime/ConsoleAPICalled';
-import ExceptionThrown from '../src/typings/chrome/Runtime/ExceptionThrown';
 
 // tslint:disable:no-var-requires
 chai.use(require('chai-string'));
@@ -139,10 +138,10 @@ describe('HtmlPdf', () => {
     });
 
     it('should proxy console messages', async () => {
-      const events: ConsoleAPICalled[] = [];
+      const events: Protocol.Runtime.ConsoleAPICalledEvent[] = [];
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeConsoleHandler: (event: ConsoleAPICalled) => events.push(event),
+        runtimeConsoleHandler: (event: Protocol.Runtime.ConsoleAPICalledEvent) => events.push(event),
       };
       const html = `
         <html>
@@ -164,10 +163,10 @@ describe('HtmlPdf', () => {
 
     it('should proxy unhandled exceptions', async () => {
       const now = Date.now();
-      let caughtException: ExceptionThrown;
+      let caughtException: Protocol.Runtime.ExceptionThrownEvent;
       const options: HtmlPdf.CreateOptions = {
         port,
-        runtimeExceptionHandler: (event: ExceptionThrown) => { caughtException = event; },
+        runtimeExceptionHandler: (event: Protocol.Runtime.ExceptionThrownEvent) => { caughtException = event; },
       };
       const html = `
         <html>

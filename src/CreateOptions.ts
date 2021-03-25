@@ -1,10 +1,7 @@
 'use strict';
 
+import { Protocol } from 'devtools-protocol';
 import { CompletionTrigger } from './CompletionTriggers';
-import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
-import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
-import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
-import ExceptionThrown from './typings/chrome/Runtime/ExceptionThrown';
 
 /**
  * PDF generation options.
@@ -55,10 +52,10 @@ export interface CreateOptions {
    * The options to pass to Chrome's Page.printToPDF.
    * Note: these require Chrome >= 60.
    *
-   * @type {PrintToPDFOptions}
+   * @type {Protocol.Page.PrintToPDFRequest}
    * @memberof CreateOptions
    */
-  printOptions?: PrintToPDFOptions;
+  printOptions?: Protocol.Page.PrintToPDFRequest;
 
   /**
    * An optional CompletionTrigger to wait for before
@@ -88,10 +85,10 @@ export interface CreateOptions {
   /**
    * Cookies to set.
    *
-   * @type {SetCookieOptions[]}
+   * @type {Protocol.Network.SetCookieRequest[]}
    * @memberof CreateOptions
    */
-  cookies?: SetCookieOptions[];
+  cookies?: Protocol.Network.SetCookieRequest[];
 
   /**
    * Extra HTTP headers to send when making a request.
@@ -106,14 +103,14 @@ export interface CreateOptions {
    *
    * @memberof CreateOptions
    */
-  runtimeConsoleHandler?: (value: ConsoleAPICalled) => void;
+  runtimeConsoleHandler?: (value: Protocol.Runtime.ConsoleAPICalledEvent) => void;
 
   /**
    * Set a callback to receive unhandled exceptions.
    *
    * @memberof CreateOptions
    */
-  runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
+  runtimeExceptionHandler?: (exception: Protocol.Runtime.ExceptionThrownEvent) => void;
 
   /**
    * A private flag to signify the operation has been canceled.

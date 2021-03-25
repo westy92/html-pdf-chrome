@@ -36,7 +36,8 @@
   },
   "dependencies": {
     "chrome-launcher": "0.13.2",
-    "chrome-remote-interface": "^0.30.0"
+    "chrome-remote-interface": "^0.30.0",
+    "devtools-protocol": "0.0.866105"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
