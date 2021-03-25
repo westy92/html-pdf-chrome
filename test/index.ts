@@ -592,6 +592,28 @@ describe('HtmlPdf', () => {
           }
         });
 
+        it('should not time out if the variable is already set', async () => {
+          const alreadySetHtml = `
+            <html>
+              <body>
+                <div id="test">Failed!</div>
+                <script>
+                  document.getElementById('test').innerHTML = 'Variable!';
+                  alreadySet = true;
+                </script>
+              </body>
+            </html>
+          `;
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.Variable('alreadySet', 300),
+          };
+          const result = await HtmlPdf.create(alreadySetHtml, options);
+          expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+          const pdf = await getParsedPdf(result.toBuffer());
+          expect(pdf.getRawTextContent()).startsWith('Variable!');
+        });
+
         it('should generate correctly after being triggered', async () => {
           const options: HtmlPdf.CreateOptions = {
             port,
