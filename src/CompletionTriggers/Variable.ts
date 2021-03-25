@@ -29,6 +29,11 @@ export class Variable extends CompletionTrigger {
       awaitPromise: true,
       expression: `
         new Promise((resolve, reject) => {
+          // check if already set
+          if (window['${varName}'] === true) {
+            resolve();
+            return;
+          }
           Object.defineProperty(window, '${varName}', {
             set: (val) => { if (val === true) resolve(); }
           });
