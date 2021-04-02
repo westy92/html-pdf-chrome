@@ -46,7 +46,6 @@ export class LifecycleEvent extends CompletionTrigger {
         }
       });
     });
-    return Promise.resolve();
   }
 
   public async wait(_client: any): Promise<any> {
