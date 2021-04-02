@@ -4,7 +4,7 @@ import { Protocol } from 'devtools-protocol';
 import { CompletionTrigger } from './CompletionTrigger';
 
 /**
- * Waits for a Chrome Lifecycle Event to be triggered.
+ * Waits for a Chrome page lifecycle event.
  * Some examples include:
  *  - init
  *  - DOMContentLoaded
@@ -35,7 +35,7 @@ export class LifecycleEvent extends CompletionTrigger {
 
   #eventPromise: Promise<void>;
 
-  public async init(client: any): Promise<any> {
+  public async init(client: any): Promise<void> {
     const eName = this.eventName || 'firstMeaningfulPaint';
     const {Page} = client;
     await Page.setLifecycleEventsEnabled({ enabled: true });

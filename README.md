@@ -193,7 +193,7 @@ There are a few `CompletionTrigger` types that wait for something to occur befor
 * Element - waits for an element to be injected into the DOM
 * Event - waits for an Event to fire
 * Timer - waits a specified amount of time
-* LifecycleEvent - waits for a Chrome Lifecycle Event to fire
+* LifecycleEvent - waits for a Chrome page lifecycle event
 * Variable - waits for a variable to be set to `true`
 * Custom - extend `htmlPdf.CompletionTrigger.CompletionTrigger`
 
@@ -221,7 +221,7 @@ new htmlPdf.CompletionTrigger.Event(
 ),
 
 new htmlPdf.CompletionTrigger.LifecycleEvent(
-  'networkIdle', // name of the event to listen for
+  'networkIdle', // name of the Chrome lifecycle event to listen for. Defaults to 'firstMeaningfulPaint'.
   5000 // optional timeout (milliseconds)
 ),
 
