@@ -542,6 +542,55 @@ describe('HtmlPdf', () => {
 
       });
 
+      describe('LifecycleEvent', () => {
+
+        const html = `
+          <html>
+            <body>
+              <div id="test">Passed!</div>
+            </body>
+          </html>
+        `;
+
+        it('should time out', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.LifecycleEvent('networkIdle', 1),
+          };
+          try {
+            await HtmlPdf.create(html, options);
+            expect.fail();
+          } catch (err) {
+            expect(err.message).to.equal(timeoutErrorMessage);
+          }
+        });
+
+        it('should time out from listening to the wrong event', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.LifecycleEvent('invalidEvent', 300),
+          };
+          try {
+            await HtmlPdf.create(html, options);
+            expect.fail();
+          } catch (err) {
+            expect(err.message).to.equal(timeoutErrorMessage);
+          }
+        });
+
+        it('should generate correctly after being triggered', async () => {
+          const options: HtmlPdf.CreateOptions = {
+            port,
+            completionTrigger: new HtmlPdf.CompletionTrigger.LifecycleEvent('firstContentfulPaint'),
+          };
+          const result = await HtmlPdf.create(html, options);
+          expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+          const pdf = await getParsedPdf(result.toBuffer());
+          expect(pdf.getRawTextContent()).startsWith('Passed!');
+        });
+
+      });
+
       describe('Variable', () => {
 
         const html = `

@@ -129,6 +129,10 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
     await throwIfCanceledOrFailed(options);
     await Network.setCookies({cookies: options.cookies});
   }
+  if (options.completionTrigger) {
+    await throwIfCanceledOrFailed(options);
+    await options.completionTrigger.init(client);
+  }
   await throwIfCanceledOrFailed(options);
 }
 
