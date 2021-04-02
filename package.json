@@ -1,6 +1,6 @@
 {
   "name": "html-pdf-chrome",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "lib/src/index.js",
   "scripts": {
@@ -37,7 +37,7 @@
   "dependencies": {
     "chrome-launcher": "0.13.2",
     "chrome-remote-interface": "^0.30.0",
-    "devtools-protocol": "0.0.866105"
+    "devtools-protocol": "0.0.868034"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
