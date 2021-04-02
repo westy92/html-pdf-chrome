@@ -26,6 +26,10 @@ npm install --save html-pdf-chrome
 
 This library is **_NOT_** meant to accept untrusted user input. Doing so may have serious security risks such as Server-Side Request Forgery (SSRF).
 
+### CORS
+
+If you run into CORS issues, try using the `--disable-web-security` Chrome flag, either when you start Chrome externally, or in `options.chromeFlags`. This option should only be used if you fully trust the code you are executing during a print job!
+
 ## Usage
 
 __Note:__ It is _strongly_ recommended that you keep Chrome running side-by-side with Node.js.  There is significant overhead starting up Chrome for each PDF generation which can be easily avoided.
