@@ -21,6 +21,16 @@ export abstract class CompletionTrigger {
   ) {}
 
   /**
+   * Optional hook to initialize the CompletionTrigger before navigation.
+   * @param _client the Chrome connection information.
+   * @returns {Promise<any>} resolves if initialized, rejects on error.
+   * @memberof CompletionTrigger
+   */
+  public init(_client: any): Promise<void> {
+    return Promise.resolve();
+  }
+
+  /**
    * Abstracts away the trigger logic.
    *
    * @abstract
