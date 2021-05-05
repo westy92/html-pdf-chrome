@@ -135,4 +135,12 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   _navigateFailed?: boolean;
+
+  /**
+   * A private flag to signify the connection to Chrome was lost.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+   _connectionLost?: boolean;
 }

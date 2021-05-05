@@ -4,6 +4,7 @@
 
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
+import * as Chrome from 'chrome-remote-interface/lib/chrome';
 import { Protocol } from 'devtools-protocol';
 import * as fs from 'fs';
 import getPort = require('get-port');
@@ -50,6 +51,38 @@ describe('HtmlPdf', () => {
     it('should spawn Chrome and generate a PDF', async () => {
       const result = await HtmlPdf.create('<p>hello!</p>');
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should not hang if connection to Chrome is lost', async () => {
+      const launchStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method)  {
+        const result = Chrome.prototype.send.wrappedMethod.apply(this, arguments);
+        if (method === 'Network.clearBrowserCache') {
+          return myChrome.kill().then(() => result);
+        } else {
+          return result;
+        }
+      });
+
+      const myChrome = await chromeLauncher.launch({
+        chromeFlags: [
+          '--disable-gpu',
+          '--headless',
+        ],
+      });
+
+      const options: HtmlPdf.CreateOptions = {
+        port: myChrome.port,
+        clearCache: true, // trigger chrome to die with method override
+      };
+
+      try {
+        await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
+        expect.fail();
+      } catch (err) {
+        expect(err.message).to.equal('HtmlPdf.create() connection lost.');
+      } finally {
+        launchStub.restore();
+      }
     });
 
     it('should handle a Chrome launch failure', async () => {
