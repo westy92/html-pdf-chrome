@@ -2,15 +2,18 @@
 
 // tslint:disable:no-unused-expression
 
+import 'source-map-support/register';
+
 import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as Chrome from 'chrome-remote-interface/lib/chrome';
 import { Protocol } from 'devtools-protocol';
 import * as fs from 'fs';
-import getPort = require('get-port');
+import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as PDFParser from 'pdf2json';
+import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
 
@@ -87,41 +90,45 @@ describe('HtmlPdf', () => {
 
     it('should handle a Chrome launch failure', async () => {
       const error = new Error('failed!');
-      const launchStub = sinon.stub(chromeLauncher, 'launch').callsFake(() => Promise.reject(error));
       try {
-        await HtmlPdf.create('<p>hello!</p>');
+        const mockedHtmlPdf = proxyquire('../src', {
+          'chrome-launcher': {
+            launch: sinon.stub().rejects(error)
+          }
+        });
+        await mockedHtmlPdf.create('<p>hello!</p>');
         expect.fail();
       } catch (err) {
         expect(err).to.equal(error);
-      } finally {
-        launchStub.restore();
       }
     });
 
     it('should use running Chrome to generate a PDF (specify port)', async () => {
-      const launchStub = sinon.stub(chromeLauncher, 'launch');
-      try {
-        const result = await HtmlPdf.create('<p>hello!</p>', {port});
-        expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-        expect(launchStub).to.not.have.been.called;
-        const pdf = await getParsedPdf(result.toBuffer());
-        expect(pdf.getRawTextContent()).to.startWith('hello!');
-      } finally {
-        launchStub.restore();
-      }
+      const launchStub = sinon.stub();
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: launchStub,
+        }
+      });
+      const result = await mockedHtmlPdf.create('<p>hello!</p>', {port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(launchStub).to.not.have.been.called;
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.startWith('hello!');
     });
 
     it('should use running Chrome to generate a PDF (specify host and port)', async () => {
-      const launchStub = sinon.stub(chromeLauncher, 'launch');
-      try {
-        const result = await HtmlPdf.create('<p>hello!</p>', {host: 'localhost', port});
-        expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-        expect(launchStub).to.not.have.been.called;
-        const pdf = await getParsedPdf(result.toBuffer());
-        expect(pdf.getRawTextContent()).to.startWith('hello!');
-      } finally {
-        launchStub.restore();
-      }
+      const launchStub = sinon.stub();
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: launchStub,
+        }
+      });
+      const result = await mockedHtmlPdf.create('<p>hello!</p>', {host: 'localhost', port});
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(launchStub).to.not.have.been.called;
+      const pdf = await getParsedPdf(result.toBuffer());
+      expect(pdf.getRawTextContent()).to.startWith('hello!');
     });
 
     it('should generate a PDF with Chrome options', async () => {
