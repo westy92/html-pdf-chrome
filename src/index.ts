@@ -66,7 +66,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
 async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult> {
   await throwIfCanceledOrFailed(options);
   const client = await CDP({ ...options, target: tab });
-  const connectionLost = new Promise<CreateResult>((_, reject) => {
+  const connectionLost = new Promise<never>((_, reject) => {
     client.on('disconnect', () => {
       options._connectionLost = true;
       reject(new Error('HtmlPdf.create() connection lost.'));
