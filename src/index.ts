@@ -44,7 +44,9 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     try {
       return await generate(html, myOptions, tab);
     } finally {
-      await CDP.Close({ ...myOptions, id: tab.id });
+      if (!myOptions._connectionLost) {
+        await CDP.Close({ ...myOptions, id: tab.id });
+      }
     }
   } finally {
     if (chrome) {
@@ -61,32 +63,46 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @param {any} tab the tab to use.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
-async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult>  {
+async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult> {
   await throwIfCanceledOrFailed(options);
   const client = await CDP({ ...options, target: tab });
-  try {
-    await beforeNavigate(options, client);
-    const {Page} = client;
-    if (/^(https?|file|data):/i.test(html)) {
-      await Promise.all([
-        Page.navigate({url: html}),
-        Page.loadEventFired(),
-      ]); // Resolve order varies
-    } else {
-      const {frameTree} = await Page.getResourceTree();
-      await Promise.all([
-        Page.setDocumentContent({html, frameId: frameTree.frame.id}),
-        Page.loadEventFired(),
-      ]); // Resolve order varies
+  const connectionLost = new Promise<CreateResult>((_, reject) => {
+    client.on('disconnect', () => {
+      options._connectionLost = true;
+      reject(new Error('HtmlPdf.create() connection lost.'));
+    });
+  });
+
+  async function generateInternal() {
+    try {
+      await beforeNavigate(options, client);
+      const {Page} = client;
+      if (/^(https?|file|data):/i.test(html)) {
+        await Promise.all([
+          Page.navigate({url: html}),
+          Page.loadEventFired(),
+        ]); // Resolve order varies
+      } else {
+        const {frameTree} = await Page.getResourceTree();
+        await Promise.all([
+          Page.setDocumentContent({html, frameId: frameTree.frame.id}),
+          Page.loadEventFired(),
+        ]); // Resolve order varies
+      }
+      await afterNavigate(options, client);
+      // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
+      const pdf = await Page.printToPDF(options.printOptions);
+      await throwIfCanceledOrFailed(options);
+      return new CreateResult(pdf.data);
+    } finally {
+      client.close();
     }
-    await afterNavigate(options, client);
-    // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
-    const pdf = await Page.printToPDF(options.printOptions);
-    await throwIfCanceledOrFailed(options);
-    return new CreateResult(pdf.data);
-  } finally {
-    client.close();
   }
+
+  return Promise.race([
+    connectionLost,
+    generateInternal(),
+  ]);
 }
 
 /**
