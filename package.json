@@ -4,13 +4,12 @@
   "description": "HTML to PDF converter via Chrome/Chromium",
   "main": "dist/src/index.js",
   "scripts": {
-    "all": "npm run clean && npm run build && npm run lint && npm run coverage",
+    "all": "npm run clean && npm run build && npm run lint && npm run test",
     "build": "tsc",
     "clean": "rimraf coverage lib",
-    "coverage": "nyc npm run test",
     "lint": "eslint . --ext .ts",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "test": "mocha"
+    "test": "nyc mocha"
   },
   "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
   "homepage": "https://github.com/westy92/html-pdf-chrome",
