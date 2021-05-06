@@ -19,10 +19,10 @@ import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
 
-// tslint:disable:no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 chai.use(require('chai-string'));
 chai.use(require('sinon-chai'));
-// tslint:enable:no-var-requires
+/* eslint-enable @typescript-eslint/no-var-requires */
 const expect = chai.expect;
 
 describe('HtmlPdf', () => {
@@ -58,6 +58,7 @@ describe('HtmlPdf', () => {
 
     it('should not hang if connection to Chrome is lost', async () => {
       const launchStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method)  {
+        // eslint-disable-next-line prefer-rest-params
         const result = Chrome.prototype.send.wrappedMethod.apply(this, arguments);
         if (method === 'Network.clearBrowserCache') {
           return myChrome.kill().then(() => result);
@@ -338,7 +339,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF from a local file', async () => {
-      const filePath = path.join('file://', __dirname, '../../test/test.html');
+      const filePath = path.join('file://', __dirname, 'test.html');
       const result = await HtmlPdf.create(filePath, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());

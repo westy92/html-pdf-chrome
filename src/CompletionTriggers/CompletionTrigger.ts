@@ -23,7 +23,7 @@ export abstract class CompletionTrigger {
   /**
    * Optional hook to initialize the CompletionTrigger before navigation.
    * @param _client the Chrome connection information.
-   * @returns {Promise<any>} resolves if initialized, rejects on error.
+   * @returns {Promise<void>} resolves if initialized, rejects on error.
    * @memberof CompletionTrigger
    */
   public init(_client: any): Promise<void> {

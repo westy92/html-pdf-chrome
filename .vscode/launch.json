@@ -5,20 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Unit Tests",
             "type": "node",
             "request": "launch",
-            "name": "Mocha Tests",
-            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-            "args": [
-                "--timeout",
-                "15000",
-                "--colors",
-                "lib/test/**/*.js"
-            ],
-            "outFiles": ["${workspaceRoot}/lib/**/*.js"],
-            "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "default-build",
-            "smartStep": true
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "test"],
+            "cwd": "${workspaceRoot}"
         },
         {
             "type": "node",
