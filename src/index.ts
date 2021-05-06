@@ -2,6 +2,7 @@
 
 import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
+import { Readable, Stream } from 'stream';
 
 import * as CompletionTrigger from './CompletionTriggers';
 import { CreateOptions } from './CreateOptions';
@@ -53,6 +54,20 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
       await chrome.kill();
     }
   }
+}
+
+function createToStream(html: string, options?: CreateOptions): Stream {
+  const stream = new Readable();
+  (async () => {
+    try {
+      const result = await create(html, options);
+      stream.push(result.toBase64(), 'base64');
+      stream.push(null);
+    } catch (e) {
+      stream.emit('error', e);
+    }
+  })();
+  return stream;
 }
 
 /**
