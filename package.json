@@ -6,7 +6,7 @@
   "scripts": {
     "all": "npm run clean && npm run build && npm run lint && npm run test",
     "build": "tsc",
-    "clean": "rimraf coverage lib",
+    "clean": "rimraf coverage dist",
     "lint": "eslint . --ext .ts",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
     "test": "nyc mocha"
@@ -36,12 +36,12 @@
   "license": "MIT",
   "typings": "dist/src/index.d.ts",
   "engines": {
-    "node": ">= 6"
+    "node": ">= 12"
   },
   "dependencies": {
     "chrome-launcher": "^0.13.4",
     "chrome-remote-interface": "^0.30.0",
-    "devtools-protocol": "0.0.878340"
+    "devtools-protocol": "0.0.880455"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
