@@ -113,14 +113,6 @@ export interface CreateOptions {
   runtimeExceptionHandler?: (exception: Protocol.Runtime.ExceptionThrownEvent) => void;
 
   /**
-   * A private flag to signify the operation has been canceled.
-   *
-   * @type {boolean}
-   * @memberof CreateOptions
-   */
-  _canceled?: boolean;
-
-  /**
    * A private variable to store the main page navigation requestId.
    *
    * @type {string}
@@ -129,18 +121,10 @@ export interface CreateOptions {
   _mainRequestId?: string;
 
   /**
-   * A private flag to signify the main page navigation failed.
+   * A private flag to signify that generation failed or timed out.
    *
-   * @type {boolean}
+   * @type {Error}
    * @memberof CreateOptions
    */
-  _navigateFailed?: boolean;
-
-  /**
-   * A private flag to signify the connection to Chrome was lost.
-   *
-   * @type {boolean}
-   * @memberof CreateOptions
-   */
-   _connectionLost?: boolean;
+    _exitCondition?: Error;
 }

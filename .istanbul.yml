@@ -1,7 +1,0 @@
-verbose: false
-instrumentation:
-    root: ./lib/src
-reporting:
-    print: none
-    reports:
-        - json

@@ -2,8 +2,10 @@
 
 import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
+import Protocol from 'devtools-protocol';
 
 import * as CompletionTrigger from './CompletionTriggers';
+import { ConnectionLostError } from './ConnectionLostError';
 import { CreateOptions } from './CreateOptions';
 import { CreateResult } from './CreateResult';
 
@@ -25,16 +27,11 @@ export { CompletionTrigger, CreateOptions, CreateResult };
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = Object.assign({}, options);
+  // make sure these aren't set externally
+  delete myOptions._exitCondition;
+  delete myOptions._mainRequestId;
   let chrome: LaunchedChrome;
 
-  myOptions._canceled = false;
-  if (myOptions.timeout != null && myOptions.timeout >= 0) {
-    setTimeout(() => {
-      myOptions._canceled = true;
-    }, myOptions.timeout);
-  }
-
-  await throwIfCanceledOrFailed(myOptions);
   if (!myOptions.host && !myOptions.port) {
     chrome = await launchChrome(myOptions);
   }
@@ -44,7 +41,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     try {
       return await generate(html, myOptions, tab);
     } finally {
-      if (!myOptions._connectionLost) {
+      if (!(myOptions._exitCondition instanceof ConnectionLostError)) {
         await CDP.Close({ ...myOptions, id: tab.id });
       }
     }
@@ -64,13 +61,21 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult> {
-  await throwIfCanceledOrFailed(options);
+  await throwIfExitCondition(options);
   const client = await CDP({ ...options, target: tab });
-  const connectionLost = new Promise<never>((_, reject) => {
+  const connectionLostOrTimeout = new Promise<never>((_, reject) => {
     client.on('disconnect', () => {
-      options._connectionLost = true;
-      reject(new Error('HtmlPdf.create() connection lost.'));
+      const error = new ConnectionLostError();
+      options._exitCondition = error;
+      reject(error);
     });
+    if (options.timeout != null && options.timeout >= 0) {
+      setTimeout(() => {
+        const error = new Error('HtmlPdf.create() timed out.');
+        options._exitCondition = error;
+        reject(error);
+      }, options.timeout);
+    }
   });
 
   async function generateInternal() {
@@ -92,7 +97,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
       await afterNavigate(options, client);
       // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
       const pdf = await Page.printToPDF(options.printOptions);
-      await throwIfCanceledOrFailed(options);
+      await throwIfExitCondition(options);
       return new CreateResult(pdf.data);
     } finally {
       client.close();
@@ -100,7 +105,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
   }
 
   return Promise.race([
-    connectionLost,
+    connectionLostOrTimeout,
     generateInternal(),
   ]);
 }
@@ -114,7 +119,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
  */
 async function beforeNavigate(options: CreateOptions, client: any): Promise<void> {
   const {Network, Page, Runtime} = client;
-  await throwIfCanceledOrFailed(options);
+  await throwIfExitCondition(options);
   if (options.clearCache) {
     await Network.clearBrowserCache();
   }
@@ -130,26 +135,25 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   if (options.runtimeExceptionHandler) {
     Runtime.exceptionThrown(options.runtimeExceptionHandler);
   }
-  Network.requestWillBeSent((e) => {
+  Network.requestWillBeSent((e: Protocol.Network.RequestWillBeSentEvent) => {
     options._mainRequestId = options._mainRequestId || e.requestId;
   });
-  Network.loadingFailed((e) => {
+  Network.loadingFailed((e: Protocol.Network.LoadingFailedEvent) => {
     if (e.requestId === options._mainRequestId) {
-      options._navigateFailed = true;
+      options._exitCondition = new Error('HtmlPdf.create() page navigate failed.');
     }
   });
   if (options.extraHTTPHeaders) {
     Network.setExtraHTTPHeaders({headers: options.extraHTTPHeaders});
   }
+  const promises = [throwIfExitCondition(options)];
   if (options.cookies) {
-    await throwIfCanceledOrFailed(options);
-    await Network.setCookies({cookies: options.cookies});
+    promises.push(Network.setCookies({cookies: options.cookies}));
   }
   if (options.completionTrigger) {
-    await throwIfCanceledOrFailed(options);
-    await options.completionTrigger.init(client);
+    promises.push(options.completionTrigger.init(client));
   }
-  await throwIfCanceledOrFailed(options);
+  await Promise.all(promises);
 }
 
 /**
@@ -161,14 +165,14 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
  */
 async function afterNavigate(options: CreateOptions, client: any): Promise<void> {
   if (options.completionTrigger) {
-    await throwIfCanceledOrFailed(options);
+    await throwIfExitCondition(options);
     const waitResult = await options.completionTrigger.wait(client);
     if (waitResult && waitResult.exceptionDetails) {
-      await throwIfCanceledOrFailed(options);
+      await throwIfExitCondition(options);
       throw new Error(waitResult.result.value);
     }
   }
-  await throwIfCanceledOrFailed(options);
+  await throwIfExitCondition(options);
 }
 
 /**
@@ -178,12 +182,9 @@ async function afterNavigate(options: CreateOptions, client: any): Promise<void>
  * @param {CreateOptions} options the options which track cancellation and failure.
  * @returns {Promise<void>} rejects if canceled or failed, resolves if not.
  */
-async function throwIfCanceledOrFailed(options: CreateOptions): Promise<void> {
-  if (options._canceled) {
-    throw new Error('HtmlPdf.create() timed out.');
-  }
-  if (options._navigateFailed) {
-    throw new Error('HtmlPdf.create() page navigate failed.');
+async function throwIfExitCondition(options: CreateOptions): Promise<void> {
+  if (options._exitCondition) {
+    throw options._exitCondition;
   }
 }
 

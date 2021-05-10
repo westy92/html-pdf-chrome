@@ -3,6 +3,10 @@ skip_tags: true
 
 clone_depth: 5
 
+branches:
+  only:
+    - master
+
 environment:
   matrix:
     - nodejs_version: 16

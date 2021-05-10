@@ -2,10 +2,14 @@
   "name": "html-pdf-chrome",
   "version": "0.7.0",
   "description": "HTML to PDF converter via Chrome/Chromium",
-  "main": "lib/src/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
-    "test": "gulp",
-    "prepublishOnly": "gulp"
+    "all": "npm run clean && npm run build && npm run lint && npm run test",
+    "build": "tsc",
+    "clean": "rimraf coverage dist",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "test": "nyc mocha"
   },
   "author": "Seth Westphal <seth@sethwestphal.com> (http://www.sethwestphal.com/)",
   "homepage": "https://github.com/westy92/html-pdf-chrome",
@@ -30,14 +34,14 @@
     "nodejs"
   ],
   "license": "MIT",
-  "typings": "lib/src/index.d.ts",
+  "typings": "dist/src/index.d.ts",
   "engines": {
-    "node": ">= 6"
+    "node": ">= 12"
   },
   "dependencies": {
     "chrome-launcher": "^0.13.4",
     "chrome-remote-interface": "^0.30.0",
-    "devtools-protocol": "0.0.878340"
+    "devtools-protocol": "0.0.880455"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
@@ -49,26 +53,23 @@
     "@types/sinon": "^10.0.0",
     "@types/sinon-chai": "^3.2.0",
     "@types/source-map-support": "^0.5.3",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
     "chai": "^4.1.0",
     "chai-string": "^1.3.0",
     "codecov": "^3.0.0",
-    "del": "^6.0.0",
+    "eslint": "^7.25.0",
     "get-port": "^5.0.0",
-    "gulp": "^4.0.0",
-    "gulp-sourcemaps": "^3.0.0",
-    "gulp-spawn-mocha": "^6.0.0",
-    "gulp-tslint": "^8.0.0",
-    "gulp-typescript": "^6.0.0-alpha.1",
     "mocha": "^8.1.1",
     "mock-fs": "^4.5.0",
-    "pdf2json": "^1.1.7",
+    "nyc": "^15.1.0",
+    "pdfjs-dist": "^2.7.570",
     "proxyquire": "^2.1.3",
-    "remap-istanbul": "^0.13.0",
+    "rimraf": "^3.0.2",
     "sinon": "^10.0.0",
     "sinon-chai": "^3.0.0",
     "source-map-support": "^0.5.19",
-    "tslint": "^6.1.3",
-    "tslint-microsoft-contrib": "^6.0.0",
-    "typescript": "^4.1.3"
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
   }
 }
