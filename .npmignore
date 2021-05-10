@@ -1,7 +1,7 @@
 .appveyor.yml
-.eslintrc.js
+.eslintrc.json
 .istanbul.yml
-.mocharc.jsonc
+.mocharc.json
 .nyc_output/
 .nycrc
 .travis.yml
@@ -10,4 +10,3 @@ coverage/
 dist/test/
 test/
 tsconfig.json
-tslint.json
