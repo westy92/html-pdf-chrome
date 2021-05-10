@@ -80,7 +80,7 @@ describe('HtmlPdf', () => {
       };
 
       try {
-        await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
+        await HtmlPdf.create('<p>hello!</p>', options);
         expect.fail();
       } catch (err) {
         expect(err.message).to.equal('HtmlPdf.create() connection lost.');
@@ -143,6 +143,19 @@ describe('HtmlPdf', () => {
       };
       const result = await HtmlPdf.create('<p>hello!</p>', options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+    });
+
+    it('should generate without a response object if not using a path', async () => {
+      const result = await HtmlPdf.create('<p>hello!</p>', { port });
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(result.response).to.be.undefined;
+    });
+
+    it('should generate with a response object if using a path', async () => {
+      const url = 'https://www.google.com/';
+      const result = await HtmlPdf.create(url, { port });
+      expect(result.response.url).to.equal(url);
+      expect(result.response.status).to.equal(200);
     });
 
     it('should generate a PDF with cookies', async () => {
@@ -253,7 +266,7 @@ describe('HtmlPdf', () => {
       const html = `
         <html>
           <head>
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
           </head>
           <body>
             <div id="test">Failed!</div>

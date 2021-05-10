@@ -26,12 +26,9 @@ export { CompletionTrigger, CreateOptions, CreateResult };
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
-  const myOptions = Object.assign({}, options);
-  // make sure these aren't set externally
-  delete myOptions._exitCondition;
-  delete myOptions._mainRequestId;
-  let chrome: LaunchedChrome;
+  const myOptions = normalizeCreateOptions(options);
 
+  let chrome: LaunchedChrome;
   if (!myOptions.host && !myOptions.port) {
     chrome = await launchChrome(myOptions);
   }
@@ -98,7 +95,7 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
       // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
       const pdf = await Page.printToPDF(options.printOptions);
       await throwIfExitCondition(options);
-      return new CreateResult(pdf.data);
+      return new CreateResult(pdf.data, options._mainRequestResponse);
     } finally {
       client.close();
     }
@@ -141,6 +138,11 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   Network.loadingFailed((e: Protocol.Network.LoadingFailedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._exitCondition = new Error('HtmlPdf.create() page navigate failed.');
+    }
+  });
+  Network.responseReceived((e: Protocol.Network.ResponseReceivedEvent) => {
+    if (e.requestId === options._mainRequestId) {
+      options._mainRequestResponse = e.response;
     }
   });
   if (options.extraHTTPHeaders) {
@@ -186,6 +188,17 @@ async function throwIfExitCondition(options: CreateOptions): Promise<void> {
   if (options._exitCondition) {
     throw options._exitCondition;
   }
+}
+
+function normalizeCreateOptions(options: CreateOptions): CreateOptions {
+  const myOptions = Object.assign({}, options); // clone
+
+  // make sure these aren't set externally
+  delete myOptions._exitCondition;
+  delete myOptions._mainRequestId;
+  delete myOptions._mainRequestResponse;
+
+  return myOptions;
 }
 
 /**

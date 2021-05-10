@@ -121,10 +121,18 @@ export interface CreateOptions {
   _mainRequestId?: string;
 
   /**
+   * A private variable to store the main page navigation response.
+   *
+   * @type {Protocol.Network.Response}
+   * @memberof CreateOptions
+   */
+  _mainRequestResponse?: Protocol.Network.Response;
+
+  /**
    * A private flag to signify that generation failed or timed out.
    *
    * @type {Error}
    * @memberof CreateOptions
    */
-    _exitCondition?: Error;
+  _exitCondition?: Error;
 }
