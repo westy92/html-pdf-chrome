@@ -14,7 +14,7 @@ HTML to PDF converter via Chrome/Chromium.
 
 * Latest Chrome/Chromium
 * Windows, macOS, or Linux
-* A [currenly supported version of Node.js](https://nodejs.org/en/about/releases/)
+* A [currently supported version of Node.js](https://nodejs.org/en/about/releases/)
 
 ## Installation
 
