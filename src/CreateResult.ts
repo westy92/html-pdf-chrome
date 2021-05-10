@@ -1,5 +1,6 @@
 'use strict';
 
+import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
 import { Readable, Stream } from 'stream';
 
@@ -40,13 +41,20 @@ export class CreateResult {
   private data: string;
 
   /**
+   * The main page network response, if any.
+   */
+   readonly response?: Protocol.Network.Response;
+
+  /**
    * Creates an instance of CreateResult.
    * @param {string} data base64 PDF data
+   * @param {Protocol.Network.Response} response the main page network response, if any.
    *
    * @memberof CreateResult
    */
-  public constructor(data: string) {
+  public constructor(data: string, response?: Protocol.Network.Response) {
     this.data = data;
+    this.response = response;
   }
 
   /**
