@@ -116,6 +116,20 @@ const url = 'https://github.com/westy92/html-pdf-chrome';
 const pdf = await htmlPdf.create(url, options);
 ```
 
+### Using Markdown
+
+```js
+import * as htmlPdf from 'html-pdf-chrome';
+import * as marked from 'marked';
+
+const options: htmlPdf.CreateOptions = {
+  port: 9222, // port Chrome is listening on
+};
+
+const html = marked('# Hello [World](https://www.google.com/)!');
+const pdf = await htmlPdf.create(html, options);
+```
+
 ### Using a Template Engine
 
 Pug (formerly known as Jade)
