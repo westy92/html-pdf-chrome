@@ -1,8 +1,8 @@
 {
   "name": "html-pdf-chrome",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "HTML to PDF converter via Chrome/Chromium",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "all": "npm run clean && npm run build && npm run lint && npm run test",
     "build": "tsc",
@@ -35,14 +35,14 @@
     "nodejs"
   ],
   "license": "MIT",
-  "typings": "dist/src/index.d.ts",
+  "typings": "dist/index.d.ts",
   "engines": {
     "node": ">= 12"
   },
   "dependencies": {
     "chrome-launcher": "^0.13.4",
     "chrome-remote-interface": "^0.30.0",
-    "devtools-protocol": "0.0.880455"
+    "devtools-protocol": "0.0.882324"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
