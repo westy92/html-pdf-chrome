@@ -40,9 +40,9 @@
     "node": ">= 12"
   },
   "dependencies": {
-    "chrome-launcher": "^0.13.4",
+    "chrome-launcher": "^0.14.0",
     "chrome-remote-interface": "^0.30.0",
-    "devtools-protocol": "0.0.882324"
+    "devtools-protocol": "0.0.884712"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
