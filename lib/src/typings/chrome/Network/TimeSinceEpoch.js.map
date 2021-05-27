@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Network/TimeSinceEpoch.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC","file":"TimeSinceEpoch.js","sourcesContent":["'use strict';\n\n/**\n * UTC time in seconds, counted from January 1, 1970.\n *\n * @export\n */\nexport type TimeSinceEpoch = number;\n"],"sourceRoot":"../../../../.."}

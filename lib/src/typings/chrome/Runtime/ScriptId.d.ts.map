@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Runtime/ScriptId.ts"],"names":[],"mappings":"AAEA;;;;GAIG;AACH,oBAAY,QAAQ,GAAG,MAAM,CAAC","file":"ScriptId.d.ts","sourcesContent":["'use strict';\n\n/**\n * Unique script identifier.\n *\n * @export\n */\nexport type ScriptId = string;\n"],"sourceRoot":"../../../../.."}

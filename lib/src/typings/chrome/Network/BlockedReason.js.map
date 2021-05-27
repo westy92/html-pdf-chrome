@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Network/BlockedReason.ts"],"names":[],"mappings":"","file":"BlockedReason.js","sourcesContent":["export type BlockedReason = 'other' | 'csp' | 'mixed-content' | 'origin' | 'inspector' | 'subresource-filter' | 'content-type' | 'collapsed-by-client';\n"],"sourceRoot":"../../../../.."}

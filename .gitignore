@@ -37,7 +37,7 @@ jspm_packages
 .node_repl_history
 
 # Transpiled files
-lib
+#lib
 
 # phpStorm files
 .idea

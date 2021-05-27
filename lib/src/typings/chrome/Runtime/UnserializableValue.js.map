@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Runtime/UnserializableValue.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC","file":"UnserializableValue.js","sourcesContent":["'use strict';\n\n/**\n * Primitive value which cannot be JSON-stringified.\n *\n * @export\n */\nexport type UnserializableValue = 'Infinity' | 'NaN' | '-Infinity' | '-0';\n"],"sourceRoot":"../../../../.."}
