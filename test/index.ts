@@ -47,8 +47,8 @@ describe('HtmlPdf', () => {
       port = chrome.port;
     });
 
-    after(async () => {
-      await chrome.kill();
+    after(() => {
+      chrome.kill();
     });
 
     it('should spawn Chrome and generate a PDF', async () => {
