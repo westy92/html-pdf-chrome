@@ -1,7 +1,7 @@
 # html-pdf-chrome
 
 [![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://badge.fury.io/js/html-pdf-chrome)
-[![Linux & Mac Build Status](https://travis-ci.org/westy92/html-pdf-chrome.svg?branch=master)](https://travis-ci.org/westy92/html-pdf-chrome/)
+[![Linux & Mac Build Status](https://travis-ci.com/westy92/html-pdf-chrome.svg?branch=master)](https://travis-ci.com/westy92/html-pdf-chrome/)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/westy92/html-pdf-chrome?branch=master&svg=true)](https://ci.appveyor.com/project/westy92/html-pdf-chrome)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9395ded652937f958a41/maintainability)](https://codeclimate.com/github/westy92/html-pdf-chrome/maintainability)
 [![Code Coverage](https://codecov.io/gh/westy92/html-pdf-chrome/branch/master/graph/badge.svg)](https://codecov.io/gh/westy92/html-pdf-chrome)
