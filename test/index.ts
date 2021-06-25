@@ -48,7 +48,11 @@ describe('HtmlPdf', () => {
     });
 
     after(async () => {
-      await chrome.kill();
+      try {
+        await chrome.kill();
+      } catch (err) {
+        // safe to ignore 
+      }
     });
 
     it('should spawn Chrome and generate a PDF', async () => {

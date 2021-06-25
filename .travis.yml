@@ -4,8 +4,8 @@ if: tag IS blank
 os:
   - linux
   - osx
+  - windows
 dist: xenial
-sudo: required
 
 services:
   - xvfb
@@ -21,6 +21,12 @@ addons:
   chrome: stable
 before_install:
 #  - npm install -g greenkeeper-lockfile@1
+- |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        choco install googlechrome --ignore-checksums
+        ;;
+    esac
 
 before_script:
 #  - greenkeeper-lockfile-update
