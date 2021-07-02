@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
-import * as pdfjs from 'pdfjs-dist/es5/build/pdf';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';

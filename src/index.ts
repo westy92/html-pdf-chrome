@@ -54,10 +54,10 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
  *
  * @param {string} html the HTML string or URL.
  * @param {CreateOptions} options the generation options.
- * @param {any} tab the tab to use.
+ * @param {CDP.Target} tab the tab to use.
  * @returns {Promise<CreateResult>} the generated PDF data.
  */
-async function generate(html: string, options: CreateOptions, tab: any): Promise<CreateResult> {
+async function generate(html: string, options: CreateOptions, tab: CDP.Target): Promise<CreateResult> {
   await throwIfExitCondition(options);
   const client = await CDP({ ...options, target: tab });
   const connectionLostOrTimeout = new Promise<never>((_, reject) => {
@@ -82,13 +82,13 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
       if (/^(https?|file|data):/i.test(html)) {
         await Promise.all([
           Page.navigate({url: html}),
-          Page.loadEventFired(),
+          client['Page.loadEventFired'](),
         ]); // Resolve order varies
       } else {
         const {frameTree} = await Page.getResourceTree();
         await Promise.all([
           Page.setDocumentContent({html, frameId: frameTree.frame.id}),
-          Page.loadEventFired(),
+          client['Page.loadEventFired'](),
         ]); // Resolve order varies
       }
       await afterNavigate(options, client);
@@ -111,10 +111,10 @@ async function generate(html: string, options: CreateOptions, tab: any): Promise
  * Code to execute before the page navigation.
  *
  * @param {CreateOptions} options the generation options.
- * @param {*} client the Chrome client.
+ * @param {CDP.Client} client the Chrome client.
  * @returns {Promise<void>} resolves if there we no errors or cancellations.
  */
-async function beforeNavigate(options: CreateOptions, client: any): Promise<void> {
+async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promise<void> {
   const {Network, Page, Runtime} = client;
   await throwIfExitCondition(options);
   if (options.clearCache) {
@@ -122,25 +122,25 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   }
   // Enable events to be used here, in generate(), or in afterNavigate().
   await Promise.all([
-    Network.enable(),
+    Network.enable({}),
     Page.enable(),
     Runtime.enable(),
   ]);
   if (options.runtimeConsoleHandler) {
-    Runtime.consoleAPICalled(options.runtimeConsoleHandler);
+    client['Runtime.consoleAPICalled'](options.runtimeConsoleHandler);
   }
   if (options.runtimeExceptionHandler) {
-    Runtime.exceptionThrown(options.runtimeExceptionHandler);
+    client['Runtime.exceptionThrown'](options.runtimeExceptionHandler);
   }
-  Network.requestWillBeSent((e: Protocol.Network.RequestWillBeSentEvent) => {
+  client['Network.requestWillBeSent']((e: Protocol.Network.RequestWillBeSentEvent) => {
     options._mainRequestId = options._mainRequestId || e.requestId;
   });
-  Network.loadingFailed((e: Protocol.Network.LoadingFailedEvent) => {
+  client['Network.loadingFailed']((e: Protocol.Network.LoadingFailedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._exitCondition = new Error('HtmlPdf.create() page navigate failed.');
     }
   });
-  Network.responseReceived((e: Protocol.Network.ResponseReceivedEvent) => {
+  client['Network.responseReceived']((e: Protocol.Network.ResponseReceivedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._mainRequestResponse = e.response;
     }
@@ -162,10 +162,10 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
  * Code to execute after the page navigation.
  *
  * @param {CreateOptions} options the generation options.
- * @param {*} client the Chrome client.
+ * @param {CDP.Client} client the Chrome client.
  * @returns {Promise<void>} resolves if there we no errors or cancellations.
  */
-async function afterNavigate(options: CreateOptions, client: any): Promise<void> {
+async function afterNavigate(options: CreateOptions, client: CDP.Client): Promise<void> {
   if (options.completionTrigger) {
     await throwIfExitCondition(options);
     const waitResult = await options.completionTrigger.wait(client);
