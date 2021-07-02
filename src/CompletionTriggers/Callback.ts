@@ -1,5 +1,8 @@
 'use strict';
 
+import * as CDP from 'chrome-remote-interface';
+import Protocol from 'devtools-protocol';
+
 import { CompletionTrigger } from './CompletionTrigger';
 
 /**
@@ -22,7 +25,7 @@ export class Callback extends CompletionTrigger {
     super(timeout);
   }
 
-  public async wait(client: any): Promise<any> {
+  public async wait(client: CDP.Client): Promise<Protocol.Runtime.EvaluateResponse> {
     const {Runtime} = client;
     const cbName = this.callbackName || 'htmlPdfCb';
     return Runtime.evaluate({

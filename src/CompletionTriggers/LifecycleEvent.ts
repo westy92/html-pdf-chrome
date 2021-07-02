@@ -1,6 +1,8 @@
 'use strict';
 
-import { Protocol } from 'devtools-protocol';
+import * as CDP from 'chrome-remote-interface';
+import Protocol from 'devtools-protocol';
+
 import { CompletionTrigger } from './CompletionTrigger';
 
 /**
@@ -35,12 +37,12 @@ export class LifecycleEvent extends CompletionTrigger {
 
   #eventPromise: Promise<void>;
 
-  public async init(client: any): Promise<void> {
+  public async init(client: CDP.Client): Promise<void> {
     const eName = this.eventName || 'firstMeaningfulPaint';
     const {Page} = client;
     await Page.setLifecycleEventsEnabled({ enabled: true });
     this.#eventPromise = new Promise((resolve) => {
-      Page.lifecycleEvent((args: Protocol.Page.LifecycleEventEvent) => {
+      client['Page.lifecycleEvent']((args: Protocol.Page.LifecycleEventEvent) => {
         if (args.name === eName) {
           resolve();
         }
@@ -48,10 +50,10 @@ export class LifecycleEvent extends CompletionTrigger {
     });
   }
 
-  public async wait(_client: any): Promise<any> {
+  public async wait(_client: CDP.Client): Promise<void> {
     return Promise.race([
       this.#eventPromise,
-      new Promise((_, reject) => setTimeout(() => reject(new Error(this.timeoutMessage)), this.timeout)),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error(this.timeoutMessage)), this.timeout)),
     ]);
   }
 

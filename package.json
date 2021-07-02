@@ -41,8 +41,8 @@
   },
   "dependencies": {
     "chrome-launcher": "^0.14.0",
-    "chrome-remote-interface": "^0.30.1",
-    "devtools-protocol": "0.0.888392"
+    "chrome-remote-interface": "^0.31.0",
+    "@types/chrome-remote-interface": "^0.31.1"
   },
   "devDependencies": {
     "@types/chai": "^4.0.1",
@@ -61,7 +61,7 @@
     "codecov": "^3.0.0",
     "eslint": "^7.25.0",
     "get-port": "^5.0.0",
-    "mocha": "^8.1.1",
+    "mocha": "^9.0.1",
     "mock-fs": "^5.0.0",
     "nyc": "^15.1.0",
     "pdfjs-dist": "^2.7.570",
