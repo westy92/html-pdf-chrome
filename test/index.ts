@@ -13,6 +13,7 @@ import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
+import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
@@ -848,5 +849,5 @@ async function getParsedPdf(buffer: Buffer): Promise<Array<string>> {
   const pdf = await pdfjs.getDocument(buffer).promise;
   const pages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)))
   const textPages = await Promise.all(pages.map((page) => page.getTextContent()));
-  return textPages.map(({ items }) => items.map(({ str }) => str).join(''));
+  return textPages.map(({ items }) => (items as Array<TextItem>).map(({ str }) => str).join(''));
 }
