@@ -8,7 +8,7 @@ import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as Chrome from 'chrome-remote-interface/lib/chrome';
 import { Protocol } from 'devtools-protocol';
-import dns from 'dns';
+import * as dns from 'dns';
 import * as fs from 'fs';
 import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
