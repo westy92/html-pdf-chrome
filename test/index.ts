@@ -8,6 +8,7 @@ import * as chai from 'chai';
 import * as chromeLauncher from 'chrome-launcher';
 import * as Chrome from 'chrome-remote-interface/lib/chrome';
 import { Protocol } from 'devtools-protocol';
+import dns from 'dns';
 import * as fs from 'fs';
 import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
@@ -25,6 +26,13 @@ chai.use(require('chai-string'));
 chai.use(require('sinon-chai'));
 /* eslint-enable @typescript-eslint/no-var-requires */
 const expect = chai.expect;
+
+const NODE_MAJOR_VERSION = process.versions.node.split('.')[0];
+if (parseInt(NODE_MAJOR_VERSION) >= 17) {
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/55904
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dns as any).setDefaultResultOrder('ipv4first');
+}
 
 describe('HtmlPdf', () => {
 
