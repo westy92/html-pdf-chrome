@@ -27,8 +27,8 @@ chai.use(require('sinon-chai'));
 /* eslint-enable @typescript-eslint/no-var-requires */
 const expect = chai.expect;
 
-const NODE_MAJOR_VERSION = process.versions.node.split('.')[0];
-if (parseInt(NODE_MAJOR_VERSION) >= 17) {
+const NODE_VERSION = parseFloat(process.versions.node);
+if (NODE_VERSION >= 17) {
   // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/55904
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dns as any).setDefaultResultOrder('ipv4first');
