@@ -139,7 +139,9 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   }
   if (options.cookies) {
     await throwIfCanceledOrFailed(options);
+    console.log("Setting cookies", options.cookies);
     await Network.setCookies({cookies: options.cookies});
+    console.log("Completed setting cookies", options.cookies);
   }
   await throwIfCanceledOrFailed(options);
 }
