@@ -123,7 +123,7 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
  * @returns {Promise<void>} resolves if there we no errors or cancellations.
  */
 async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promise<void> {
-  const {Network, Page, Runtime} = client;
+  const {Emulation, Network, Page, Runtime} = client;
   await throwIfExitCondition(options);
   if (options.clearCache) {
     await Network.clearBrowserCache();
@@ -155,6 +155,9 @@ async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promi
   });
   if (options.extraHTTPHeaders) {
     Network.setExtraHTTPHeaders({headers: options.extraHTTPHeaders});
+  }
+  if (options.deviceMetrics) {
+    Emulation.setDeviceMetricsOverride(options.deviceMetrics);
   }
   const promises = [throwIfExitCondition(options)];
   if (options.cookies) {

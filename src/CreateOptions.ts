@@ -65,6 +65,12 @@ export interface CreateOptions {
   screenshotOptions?: Protocol.Page.CaptureScreenshotRequest;
 
   /**
+   * The options to pass to Chrome's Emulation.setDeviceMetricsOverride.
+   * Used when generating screenshot images.
+   */
+  deviceMetrics?: Protocol.Emulation.SetDeviceMetricsOverrideRequest;
+
+  /**
    * An optional CompletionTrigger to wait for before
    * printing the rendered page to a PDF or image.
    *

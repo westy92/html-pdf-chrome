@@ -395,15 +395,13 @@ describe('HtmlPdf', () => {
 
       const options: HtmlPdf.CreateOptions = {
         port,
-        screenshotOptions: {
-          clip: {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 50,
-            scale: 1,
-          },
+        deviceMetrics: {
+          width: 100,
+          height: 50,
+          deviceScaleFactor: 0,
+          mobile: false,
         },
+        screenshotOptions: {},
       };
 
       const result = await HtmlPdf.create(html, options);
