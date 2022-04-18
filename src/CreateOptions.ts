@@ -50,7 +50,6 @@ export interface CreateOptions {
 
   /**
    * The options to pass to Chrome's Page.printToPDF.
-   * Note: these require Chrome >= 60.
    *
    * @type {Protocol.Page.PrintToPDFRequest}
    * @memberof CreateOptions
@@ -58,8 +57,16 @@ export interface CreateOptions {
   printOptions?: Protocol.Page.PrintToPDFRequest;
 
   /**
+   * The options to pass to Chrome's Page.captureScreenshot.
+   * 
+   * @type {Protocol.Page.CaptureScreenshotRequest}
+   * @memberof CreateOptions
+   */
+  screenshotOptions?: Protocol.Page.CaptureScreenshotRequest;
+
+  /**
    * An optional CompletionTrigger to wait for before
-   * printing the rendered page to a PDF.
+   * printing the rendered page to a PDF or image.
    *
    * @type {CompletionTrigger}
    * @memberof CreateOptions

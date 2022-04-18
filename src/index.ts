@@ -18,12 +18,12 @@ const DEFAULT_CHROME_FLAGS = [
 export { CompletionTrigger, CreateOptions, CreateResult };
 
 /**
- * Generates a PDF from the given HTML string, launching Chrome as necessary.
+ * Generates a PDF or screenshot from the given HTML string, launching Chrome as necessary.
  *
  * @export
  * @param {string} html the HTML string.
  * @param {Options} [options] the generation options.
- * @returns {Promise<CreateResult>} the generated PDF data.
+ * @returns {Promise<CreateResult>} the generated PDF or screenshot data.
  */
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = normalizeCreateOptions(options);
@@ -50,12 +50,12 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
 }
 
 /**
- * Connects to Chrome and generates a PDF from HTML or a URL.
+ * Connects to Chrome and generates a PDF of screenshot from HTML or a URL.
  *
  * @param {string} html the HTML string or URL.
  * @param {CreateOptions} options the generation options.
  * @param {CDP.Target} tab the tab to use.
- * @returns {Promise<CreateResult>} the generated PDF data.
+ * @returns {Promise<CreateResult>} the generated PDF or screenshot data.
  */
 async function generate(html: string, options: CreateOptions, tab: CDP.Target): Promise<CreateResult> {
   await throwIfExitCondition(options);
@@ -92,10 +92,18 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
         ]); // Resolve order varies
       }
       await afterNavigate(options, client);
-      // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
-      const pdf = await Page.printToPDF(options.printOptions);
+      let base64Result: string;
+      if (options.screenshotOptions) {
+        // https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
+        const screenshot = await Page.captureScreenshot(options.screenshotOptions)
+        base64Result = screenshot.data
+      } else {
+        // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
+        const pdf = await Page.printToPDF(options.printOptions);
+        base64Result = pdf.data
+      }
       await throwIfExitCondition(options);
-      return new CreateResult(pdf.data, options._mainRequestResponse);
+      return new CreateResult(base64Result, options._mainRequestResponse);
     } finally {
       client.close();
     }
