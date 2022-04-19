@@ -387,8 +387,11 @@ describe('HtmlPdf', () => {
     it('should generate a Screenshot', async () => {
       const html = `
         <html>
+          <head>
+            <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto&lang=en">
+          </head>
           <body>
-            <p style="font-family: Arial, sans-serif;">hello!</p>
+            <p style="font-family: Roboto;">hello!</p>
           </body>
         </html>
       `;
