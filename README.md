@@ -6,7 +6,7 @@
 [![Code Coverage](https://codecov.io/gh/westy92/html-pdf-chrome/branch/master/graph/badge.svg)](https://codecov.io/gh/westy92/html-pdf-chrome)
 [![Known Vulnerabilities](https://snyk.io/test/github/westy92/html-pdf-chrome/badge.svg)](https://snyk.io/test/github/westy92/html-pdf-chrome)
 
-HTML to PDF converter via Chrome/Chromium.
+HTML to PDF or image (jpeg, png, webp) converter via Chrome/Chromium.
 
 ## Prerequisites
 
@@ -100,6 +100,42 @@ htmlPdf.create(html, options).then((pdf) => pdf.toStream());
 ```
 
 View the full documentation in the source code.
+
+### Saving as a Screenshot
+
+By default, pages are saved as a PDF. To save as a screenshot instead, supply `screenshotOptions`.
+All supported options can be viewed [here](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot).
+
+```js
+const htmlPdf = require('html-pdf-chrome');
+
+const html = '<p>Hello, world!</p>';
+const options = {
+  port: 9222, // port Chrome is listening on
+  screenshotOptions: {
+    format: 'png', // png, jpeg, or webp. Optional, defaults to png.
+    // quality: 100, // Optional, quality percent (jpeg only)
+
+    // optional, defaults to entire window
+    clip: {
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 200,
+      scale: 1,
+    },
+  },
+  // Optional. Options here: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
+  deviceMetrics: {
+    width: 1000,
+    height: 1000,
+    deviceScaleFactor: 0,
+    mobile: false,
+  },
+};
+
+htmlPdf.create(html, options).then((pdf) => pdf.toFile('test.png'));
+```
 
 ### Using an External Site
 

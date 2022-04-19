@@ -16,10 +16,14 @@ import * as path from 'path';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import * as proxyquire from 'proxyquire';
+import * as resemble from 'resemblejs';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
+import * as util from 'util';
 
 import * as HtmlPdf from '../src';
+
+const resembleCompare = util.promisify(resemble.compare);
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 chai.use(require('chai-string'));
@@ -378,6 +382,32 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf[0]).to.contain('Facebook');
+    });
+
+    it('should generate a Screenshot', async () => {
+      const html = `
+        <html>
+          <body>
+            <img src="https://via.placeholder.com/75"></img>
+          </body>
+        </html>
+      `;
+
+      const options: HtmlPdf.CreateOptions = {
+        port,
+        deviceMetrics: {
+          width: 100,
+          height: 100,
+          deviceScaleFactor: 0,
+          mobile: false,
+        },
+        screenshotOptions: {},
+      };
+
+      const result = await HtmlPdf.create(html, options);
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      const diff = await resembleCompare(result.toBuffer(), 'test/screenshot.png', {});
+      expect(diff.rawMisMatchPercentage).to.equal(0);
     });
 
     describe('CompletionTrigger', () => {

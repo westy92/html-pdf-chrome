@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { Readable, Stream } from 'stream';
 
 /**
- * Allows exporting of PDF data to multiple formats.
+ * Allows exporting of PDF or image data to multiple formats.
  *
  * @export
  * @class CreateResult
@@ -32,7 +32,7 @@ export class CreateResult {
   }
 
   /**
-   * Base64-encoded PDF data.
+   * Base64-encoded data.
    *
    * @private
    * @type {string}
@@ -47,7 +47,7 @@ export class CreateResult {
 
   /**
    * Creates an instance of CreateResult.
-   * @param {string} data base64 PDF data
+   * @param {string} data base64 data
    * @param {Protocol.Network.Response} response the main page network response, if any.
    *
    * @memberof CreateResult
@@ -58,9 +58,9 @@ export class CreateResult {
   }
 
   /**
-   * Get the base64 PDF data.
+   * Get the base64 data.
    *
-   * @returns {string} base64 PDF data.
+   * @returns {string} base64 data.
    *
    * @memberof CreateResult
    */
@@ -69,9 +69,9 @@ export class CreateResult {
   }
 
   /**
-   * Get a Buffer of the PDF data.
+   * Get a Buffer of the data.
    *
-   * @returns {Buffer} PDF data.
+   * @returns {Buffer} data.
    *
    * @memberof CreateResult
    */
@@ -80,9 +80,9 @@ export class CreateResult {
   }
 
   /**
-   * Get a Stream of the PDF data.
+   * Get a Stream of the data.
    *
-   * @returns {Stream} Stream of PDF data.
+   * @returns {Stream} Stream of data.
    *
    * @memberof CreateResult
    */
@@ -94,7 +94,7 @@ export class CreateResult {
   }
 
   /**
-   * Saves the PDF to a file.
+   * Saves the result to a file.
    *
    * @param {string} filename the filename.
    * @returns {Promise<void>} resolves upon successful create.
