@@ -387,11 +387,8 @@ describe('HtmlPdf', () => {
     it('should generate a Screenshot', async () => {
       const html = `
         <html>
-          <head>
-            <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto&lang=en">
-          </head>
           <body>
-            <p style="font-family: Roboto;">hello!</p>
+            <img src="https://via.placeholder.com/75"></img>
           </body>
         </html>
       `;
@@ -400,7 +397,7 @@ describe('HtmlPdf', () => {
         port,
         deviceMetrics: {
           width: 100,
-          height: 50,
+          height: 100,
           deviceScaleFactor: 0,
           mobile: false,
         },
