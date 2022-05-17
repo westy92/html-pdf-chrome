@@ -1,5 +1,7 @@
 import { CompletionTrigger } from './CompletionTriggers';
 import LoadingFailed from './typings/chrome/Network/LoadingFailed';
+import LoadingFinished from './typings/chrome/Network/LoadingFinished';
+import ResponseReceived from './typings/chrome/Network/ResponseReceived';
 import RequestWillBeSent from './typings/chrome/Network/RequestWillBeSent';
 import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
 import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
@@ -126,6 +128,18 @@ export interface CreateOptions {
      * @memberof CreateOptions
      */
     loadingFailedHandler?: (e: LoadingFailed) => void;
+    /**
+     * Set a callback to receive information about completed requests
+     *
+     * @memberof CreateOptions
+     */
+    loadingFinishedHandler?: (e: LoadingFinished) => void;
+    /**
+     * Set a callback to receive information about received response
+     *
+     * @memberof CreateOptions
+     */
+    responseReceivedHandler?: (e: ResponseReceived) => void;
     /**
      * Set a callback to receive information about requests which will be sent
      *

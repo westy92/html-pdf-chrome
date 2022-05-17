@@ -129,9 +129,18 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
       options.loadingFailedHandler(e);
     }
   });
+
+  Network.loadingFinished((e) => {
+    if (options.loadingFinishedHandler) {
+      options.loadingFinishedHandler(e);
+    }
+  });
   Network.responseReceived((e) => {
     if (e.requestId === options._mainRequestId) {
       options._responseStatusCode = e.response.status;
+    }
+    if (options.responseReceivedHandler) {
+      options.responseReceivedHandler(e);
     }
   });
   if (options.extraHTTPHeaders) {
@@ -139,9 +148,7 @@ async function beforeNavigate(options: CreateOptions, client: any): Promise<void
   }
   if (options.cookies) {
     await throwIfCanceledOrFailed(options);
-    console.log("Setting cookies", options.cookies);
     await Network.setCookies({cookies: options.cookies});
-    console.log("Completed setting cookies", options.cookies);
   }
   await throwIfCanceledOrFailed(options);
 }
