@@ -381,14 +381,14 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create('https://m.facebook.com/', {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.contain('Facebook');
+      expect(pdf[0]).to.contain('Meta');
     });
 
     it('should generate a Screenshot', async () => {
       const html = `
         <html>
           <body>
-            <img src="https://via.placeholder.com/75"></img>
+            <img src="https://westy92.github.io/html-pdf-chrome/test/75.png"></img>
           </body>
         </html>
       `;
