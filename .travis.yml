@@ -5,7 +5,7 @@ os:
   - linux
   - osx
   - windows
-dist: xenial
+dist: focal
 
 services:
   - xvfb
