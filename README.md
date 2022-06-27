@@ -1,10 +1,11 @@
 # html-pdf-chrome
 
-[![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://badge.fury.io/js/html-pdf-chrome)
+[![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://www.npmjs.com/package/html-pdf-chrome)
 [![Build Status](https://app.travis-ci.com/westy92/html-pdf-chrome.svg?branch=master)](https://app.travis-ci.com/github/westy92/html-pdf-chrome)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9395ded652937f958a41/maintainability)](https://codeclimate.com/github/westy92/html-pdf-chrome/maintainability)
 [![Code Coverage](https://codecov.io/gh/westy92/html-pdf-chrome/branch/master/graph/badge.svg)](https://codecov.io/gh/westy92/html-pdf-chrome)
 [![Known Vulnerabilities](https://snyk.io/test/github/westy92/html-pdf-chrome/badge.svg)](https://snyk.io/test/github/westy92/html-pdf-chrome)
+[![Funding Status](https://img.shields.io/github/sponsors/westy92)](https://github.com/sponsors/westy92)
 
 HTML to PDF or image (jpeg, png, webp) converter via Chrome/Chromium.
 
