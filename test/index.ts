@@ -14,16 +14,14 @@ import * as getPort from 'get-port';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
+import * as pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import * as proxyquire from 'proxyquire';
-import * as resemble from 'resemblejs';
 import * as sinon from 'sinon';
 import { Readable } from 'stream';
-import * as util from 'util';
 
 import * as HtmlPdf from '../src';
-
-const resembleCompare = util.promisify(resemble.compare);
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 chai.use(require('chai-string'));
@@ -406,8 +404,10 @@ describe('HtmlPdf', () => {
 
       const result = await HtmlPdf.create(html, options);
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
-      const diff = await resembleCompare(result.toBuffer(), 'test/screenshot.png', {});
-      expect(diff.rawMisMatchPercentage).to.equal(0);
+      const img1 = PNG.sync.read(result.toBuffer());
+      const img2 = PNG.sync.read(fs.readFileSync('test/screenshot.png'));
+      const diff = pixelmatch(img1.data, img2.data, null, 100, 100);
+      expect(diff).to.equal(0);
     });
 
     describe('CompletionTrigger', () => {
