@@ -398,7 +398,7 @@ describe('HtmlPdf', () => {
         deviceMetrics: {
           width: 100,
           height: 100,
-          deviceScaleFactor: 0,
+          deviceScaleFactor: 1,
           mobile: false,
         },
         screenshotOptions: {},
