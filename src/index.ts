@@ -130,7 +130,7 @@ async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promi
   }
   // Enable events to be used here, in generate(), or in afterNavigate().
   await Promise.all([
-    Network.enable({}),
+    Network.enable(),
     Page.enable(),
     Runtime.enable(),
   ]);
