@@ -82,13 +82,13 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
       if (/^(https?|file|data):/i.test(html)) {
         await Promise.all([
           Page.navigate({url: html}),
-          client['Page.loadEventFired'](),
+          Page.loadEventFired(),
         ]); // Resolve order varies
       } else {
         const {frameTree} = await Page.getResourceTree();
         await Promise.all([
           Page.setDocumentContent({html, frameId: frameTree.frame.id}),
-          client['Page.loadEventFired'](),
+          Page.loadEventFired(),
         ]); // Resolve order varies
       }
       await afterNavigate(options, client);
@@ -135,20 +135,20 @@ async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promi
     Runtime.enable(),
   ]);
   if (options.runtimeConsoleHandler) {
-    client['Runtime.consoleAPICalled'](options.runtimeConsoleHandler);
+    Runtime.consoleAPICalled(options.runtimeConsoleHandler);
   }
   if (options.runtimeExceptionHandler) {
-    client['Runtime.exceptionThrown'](options.runtimeExceptionHandler);
+    Runtime.exceptionThrown(options.runtimeExceptionHandler);
   }
-  client['Network.requestWillBeSent']((e: Protocol.Network.RequestWillBeSentEvent) => {
+  Network.requestWillBeSent((e: Protocol.Network.RequestWillBeSentEvent) => {
     options._mainRequestId = options._mainRequestId || e.requestId;
   });
-  client['Network.loadingFailed']((e: Protocol.Network.LoadingFailedEvent) => {
+  Network.loadingFailed((e: Protocol.Network.LoadingFailedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._exitCondition = new Error('HtmlPdf.create() page navigate failed.');
     }
   });
-  client['Network.responseReceived']((e: Protocol.Network.ResponseReceivedEvent) => {
+  Network.responseReceived((e: Protocol.Network.ResponseReceivedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._mainRequestResponse = e.response;
     }

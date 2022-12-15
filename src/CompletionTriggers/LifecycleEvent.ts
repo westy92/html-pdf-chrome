@@ -42,7 +42,7 @@ export class LifecycleEvent extends CompletionTrigger {
     const {Page} = client;
     await Page.setLifecycleEventsEnabled({ enabled: true });
     this.#eventPromise = new Promise((resolve) => {
-      client['Page.lifecycleEvent']((args: Protocol.Page.LifecycleEventEvent) => {
+      Page.lifecycleEvent((args: Protocol.Page.LifecycleEventEvent) => {
         if (args.name === eName) {
           resolve();
         }
