@@ -1,10 +1,8 @@
-.appveyor.yml
 .eslintrc.json
-.istanbul.yml
+.github/
 .mocharc.json
 .nyc_output/
 .nycrc
-.travis.yml
 .vscode/
 coverage/
 dist/test/
