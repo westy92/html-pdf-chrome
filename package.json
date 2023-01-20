@@ -43,7 +43,7 @@
     "node": ">= 14"
   },
   "dependencies": {
-    "@types/chrome-remote-interface": "^0.31.5",
+    "@types/chrome-remote-interface": "^0.31.9",
     "chrome-launcher": "^0.15.1",
     "chrome-remote-interface": "^0.32.0"
   },
