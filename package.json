@@ -68,7 +68,7 @@
     "mocha": "^10.0.0",
     "mock-fs": "^5.0.0",
     "nyc": "^15.1.0",
-    "pdfjs-dist": "3.2.146",
+    "pdfjs-dist": "3.3.122",
     "pixelmatch": "^5.3.0",
     "pngjs": "^6.0.0",
     "proxyquire": "^2.1.3",
