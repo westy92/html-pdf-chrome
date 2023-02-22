@@ -46,6 +46,7 @@ describe('HtmlPdf', () => {
         chromeFlags: [
           '--disable-gpu',
           '--headless',
+          '--no-sandbox',
         ],
         // uncomment if using Chrome Beta
         // chromePath: '/usr/bin/google-chrome-beta',
