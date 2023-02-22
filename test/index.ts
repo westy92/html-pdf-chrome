@@ -50,7 +50,7 @@ describe('HtmlPdf', () => {
         ],
         // uncomment if using Chrome Beta
         // chromePath: '/usr/bin/google-chrome-beta',
-        connectionPollInterval: 250,
+        connectionPollInterval: 500,
         logLevel: 'error',
         maxConnectionRetries: 50,
       });
