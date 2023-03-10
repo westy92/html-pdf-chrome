@@ -165,7 +165,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate with a response object if using a path', async () => {
-      const url = 'https://www.google.com/';
+      const url = 'https://m.facebook.com/';
       const result = await HtmlPdf.create(url, { port });
       expect(result.response.url).to.equal(url);
       expect(result.response.status).to.equal(200);
@@ -882,7 +882,8 @@ describe('HtmlPdf', () => {
 });
 
 async function getParsedPdf(buffer: Buffer): Promise<Array<string>> {
-  const pdf = await pdfjs.getDocument(buffer).promise;
+  const bytes = new Uint8Array(buffer);
+  const pdf = await pdfjs.getDocument(bytes).promise;
   const pages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)))
   const textPages = await Promise.all(pages.map((page) => page.getTextContent()));
   return textPages.map(({ items }) => (items as Array<TextItem>).map(({ str }) => str).join(''));
