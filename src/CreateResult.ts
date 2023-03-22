@@ -2,7 +2,7 @@
 
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
-import { Readable, Stream } from 'stream';
+import { Readable } from 'stream';
 
 /**
  * Allows exporting of PDF or image data to multiple formats.
@@ -80,13 +80,13 @@ export class CreateResult {
   }
 
   /**
-   * Get a Stream of the data.
+   * Get a Stream (Readable) of the data.
    *
-   * @returns {Stream} Stream of data.
+   * @returns {Readable} Stream of data.
    *
    * @memberof CreateResult
    */
-  public toStream(): Stream {
+  public toStream(): Readable {
     const stream = new Readable();
     stream.push(this.data, 'base64');
     stream.push(null);
