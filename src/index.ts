@@ -44,7 +44,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     }
   } finally {
     if (chrome) {
-      await chrome.kill();
+      chrome.kill();
     }
   }
 }

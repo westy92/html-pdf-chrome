@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [14, 16, 18, 19] # TODO upgrade lockfileVersion to 3 when 14 hits EOL.
+        node-version: [16, 18, 19, 20]
 
     steps:
     - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     - name: Upload Code Coverage
-      if: ${{ matrix.node-version == '18' && matrix.os == 'ubuntu-latest' }}
+      if: ${{ matrix.node-version == '20' && matrix.os == 'ubuntu-latest' }}
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage/coverage-final.json
