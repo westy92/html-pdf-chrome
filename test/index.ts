@@ -58,7 +58,7 @@ describe('HtmlPdf', () => {
 
     after(async () => {
       try {
-        await chrome.kill();
+        chrome.kill();
       } catch (err) {
         // safe to ignore 
       }
@@ -74,10 +74,9 @@ describe('HtmlPdf', () => {
         // eslint-disable-next-line prefer-rest-params
         const result = Chrome.prototype.send.wrappedMethod.apply(this, arguments);
         if (method === 'Network.clearBrowserCache') {
-          return myChrome.kill().then(() => result);
-        } else {
-          return result;
+          myChrome.kill();
         }
+        return result;
       });
 
       const myChrome = await chromeLauncher.launch({
