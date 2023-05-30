@@ -40,7 +40,7 @@
   "license": "MIT",
   "typings": "dist/index.d.ts",
   "engines": {
-    "node": ">= 16"
+    "node": ">= 18"
   },
   "dependencies": {
     "@types/chrome-remote-interface": "^0.31.9",
