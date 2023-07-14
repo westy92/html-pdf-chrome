@@ -164,7 +164,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate with a response object if using a path', async () => {
-      const url = 'https://m.facebook.com/';
+      const url = 'https://www.facebook.com/lite';
       const result = await HtmlPdf.create(url, { port });
       expect(result.response.url).to.equal(url);
       expect(result.response.status).to.equal(200);
@@ -375,7 +375,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF from an external site', async () => {
-      const result = await HtmlPdf.create('https://m.facebook.com/', {port});
+      const result = await HtmlPdf.create('https://www.facebook.com/lite', {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
       expect(pdf[0]).to.contain('Meta');
