@@ -385,7 +385,7 @@ describe('HtmlPdf', () => {
       const html = `
         <html>
           <body>
-            <img src="https://github.com/westy92/html-pdf-chrome/raw/master/test/75.png"></img>
+            <img src="https://github.com/westy92/html-pdf-chrome/raw/main/test/75.png"></img>
           </body>
         </html>
       `;
