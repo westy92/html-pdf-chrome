@@ -29,4 +29,5 @@ jobs:
       if: ${{ matrix.node-version == '21' && matrix.os == 'ubuntu-latest' }}
       uses: codecov/codecov-action@v4
       with:
-        file: ./coverage/coverage-final.json
+        files: ./coverage/coverage-final.json
+        token: ${{ secrets.CODECOV_TOKEN }}
