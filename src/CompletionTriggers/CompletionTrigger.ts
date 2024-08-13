@@ -40,6 +40,6 @@ export abstract class CompletionTrigger {
    * @returns {Promise<any>} resolves if triggered, rejects on error or timeout.
    * @memberof CompletionTrigger
    */
-  public abstract wait(client: CDP.Client): Promise<any>;
+  public abstract wait(client: CDP.Client): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 }

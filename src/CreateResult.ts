@@ -26,7 +26,11 @@ export class CreateResult {
   private static async writeFile(filename: string, data: Buffer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       fs.writeFile(filename, data, (err) => {
-        err ? reject(err) : resolve();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
   }
@@ -43,7 +47,7 @@ export class CreateResult {
   /**
    * The main page network response, if any.
    */
-   readonly response?: Protocol.Network.Response;
+  readonly response?: Protocol.Network.Response;
 
   /**
    * Creates an instance of CreateResult.
