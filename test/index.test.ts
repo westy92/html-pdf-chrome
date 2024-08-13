@@ -1,6 +1,6 @@
 'use strict';
 
-// tslint:disable:no-unused-expression
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 
 import 'source-map-support/register';
 
@@ -23,10 +23,10 @@ import { Readable } from 'stream';
 
 import * as HtmlPdf from '../src';
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 chai.use(require('chai-string'));
 chai.use(require('sinon-chai'));
-/* eslint-enable @typescript-eslint/no-var-requires */
+/* eslint-enable @typescript-eslint/no-require-imports */
 const expect = chai.expect;
 
 const NODE_VERSION = parseFloat(process.versions.node);
@@ -59,7 +59,7 @@ describe('HtmlPdf', () => {
     after(async () => {
       try {
         chrome.kill();
-      } catch (err) {
+      } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
         // safe to ignore 
       }
     });
