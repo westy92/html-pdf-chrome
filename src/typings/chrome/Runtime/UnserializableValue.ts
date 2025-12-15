@@ -6,3 +6,4 @@
  * @export
  */
 export type UnserializableValue = 'Infinity' | 'NaN' | '-Infinity' | '-0';
+

@@ -1,5 +1,7 @@
 'use strict';
 
+import * as CDP from 'chrome-remote-interface';
+
 /**
  * Defines a trigger that signifies page render completion.
  *
@@ -16,18 +18,28 @@ export abstract class CompletionTrigger {
    * @memberof CompletionTrigger
    */
   constructor(
-    protected timeout = 1000,
-    protected timeoutMessage = 'CompletionTrigger timed out.',
+    protected timeout: number = 1000,
+    protected timeoutMessage: string = 'CompletionTrigger timed out.',
   ) {}
+
+  /**
+   * Optional hook to initialize the CompletionTrigger before navigation.
+   * @param {CDP.Client} _client the Chrome connection information.
+   * @returns {Promise<void>} resolves if initialized, rejects on error.
+   * @memberof CompletionTrigger
+   */
+  public init(_client: CDP.Client): Promise<void> {
+    return Promise.resolve();
+  }
 
   /**
    * Abstracts away the trigger logic.
    *
    * @abstract
-   * @param {*} client the Chrome connection information.
+   * @param {CDP.Client} client the Chrome connection information.
    * @returns {Promise<any>} resolves if triggered, rejects on error or timeout.
    * @memberof CompletionTrigger
    */
-  public abstract async wait(client: any): Promise<any>;
+  public abstract wait(client: CDP.Client): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 }

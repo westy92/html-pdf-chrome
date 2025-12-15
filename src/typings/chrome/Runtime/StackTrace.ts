@@ -42,3 +42,4 @@ export default interface StackTrace {
    */
   promiseCreationFrame?: CallFrame;
 }
+

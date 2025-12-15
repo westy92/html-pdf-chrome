@@ -12,7 +12,6 @@ import { Timestamp } from './Timestamp';
  * @interface ConsoleAPICalled
  */
 export default interface ConsoleAPICalled {
-
   /**
    * Type of the call.
    *
@@ -63,3 +62,4 @@ export default interface ConsoleAPICalled {
    */
   context?: string;
 }
+

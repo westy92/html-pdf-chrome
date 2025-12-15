@@ -1,5 +1,8 @@
 'use strict';
 
+import * as CDP from 'chrome-remote-interface';
+import Protocol from 'devtools-protocol';
+
 import { CompletionTrigger } from './CompletionTrigger';
 
 /**
@@ -22,13 +25,18 @@ export class Variable extends CompletionTrigger {
     super(timeout);
   }
 
-  public async wait(client: any): Promise<any> {
+  public async wait(client: CDP.Client): Promise<Protocol.Runtime.EvaluateResponse> {
     const {Runtime} = client;
     const varName = this.variableName || 'htmlPdfDone';
     return Runtime.evaluate({
       awaitPromise: true,
       expression: `
         new Promise((resolve, reject) => {
+          // check if already set
+          if (window['${varName}'] === true) {
+            resolve();
+            return;
+          }
           Object.defineProperty(window, '${varName}', {
             set: (val) => { if (val === true) resolve(); }
           });

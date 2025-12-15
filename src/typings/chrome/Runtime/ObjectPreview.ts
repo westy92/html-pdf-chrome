@@ -24,7 +24,7 @@ export default interface ObjectPreview {
    * @type {('array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error')}
    * @memberof ObjectPreview
    */
-  subtype?: 'array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error';
+  subtype?: 'array' | 'null' | 'node' | 'regexp' | 'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error';
 
   /**
    * String representation of the object.
@@ -58,3 +58,4 @@ export default interface ObjectPreview {
    */
   entries?: EntryPreview[];
 }
+

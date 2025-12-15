@@ -6,3 +6,4 @@
  * @export
  */
 export type RemoteObjectId = string;
+

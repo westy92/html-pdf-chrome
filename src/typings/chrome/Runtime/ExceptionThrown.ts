@@ -24,3 +24,4 @@ export default interface ExceptionThrown {
    */
   exceptionDetails: ExceptionDetails;
 }
+

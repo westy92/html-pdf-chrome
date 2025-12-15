@@ -23,3 +23,4 @@ export default interface EntryPreview {
    */
   value: ObjectPreview;
 }
+

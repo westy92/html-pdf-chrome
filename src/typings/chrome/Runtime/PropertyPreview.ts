@@ -18,7 +18,7 @@ export default interface PropertyPreview {
   /**
    * Object type. Accessor means that the property itself is an accessor property.
    *
-   * @type {Allowed}
+   * @type {('object' | 'function' | 'undefined' | 'string' | 'number' | 'boolean' | 'symbol' | 'accessor')}
    * @memberof PropertyPreview
    */
   type: 'object' | 'function' | 'undefined' | 'string' | 'number' | 'boolean' | 'symbol' | 'accessor';
@@ -45,5 +45,6 @@ export default interface PropertyPreview {
    * @type {('array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error')}
    * @memberof PropertyPreview
    */
-  subtype?: 'array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error';
+  subtype?: 'array' | 'null' | 'node' | 'regexp' | 'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error';
 }
+

@@ -36,7 +36,7 @@ export default interface CallFrame {
   /**
    * JavaScript script line number (0-based).
    *
-   * @type {integer}
+   * @type {number}
    * @memberof CallFrame
    */
   lineNumber: number;
@@ -44,8 +44,9 @@ export default interface CallFrame {
   /**
    * JavaScript script column number (0-based).
    *
-   * @type {integer}
+   * @type {number}
    * @memberof CallFrame
    */
   columnNumber: number;
 }
+

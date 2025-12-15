@@ -1,10 +1,11 @@
 'use strict';
 
+import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
-import { Readable, Stream } from 'stream';
+import { Readable } from 'stream';
 
 /**
- * Allows exporting of PDF data to multiple formats.
+ * Allows exporting of PDF or image data to multiple formats.
  *
  * @export
  * @class CreateResult
@@ -25,13 +26,17 @@ export class CreateResult {
   private static async writeFile(filename: string, data: Buffer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       fs.writeFile(filename, data, (err) => {
-        err ? reject(err) : resolve();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
   }
 
   /**
-   * Base64-encoded PDF data.
+   * Base64-encoded data.
    *
    * @private
    * @type {string}
@@ -40,19 +45,26 @@ export class CreateResult {
   private data: string;
 
   /**
+   * The main page network response, if any.
+   */
+  readonly response?: Protocol.Network.Response;
+
+  /**
    * Creates an instance of CreateResult.
-   * @param {string} data base64 PDF data
+   * @param {string} data base64 data
+   * @param {Protocol.Network.Response} response the main page network response, if any.
    *
    * @memberof CreateResult
    */
-  public constructor(data: string) {
+  public constructor(data: string, response?: Protocol.Network.Response) {
     this.data = data;
+    this.response = response;
   }
 
   /**
-   * Get the base64 PDF data.
+   * Get the base64 data.
    *
-   * @returns {string} base64 PDF data.
+   * @returns {string} base64 data.
    *
    * @memberof CreateResult
    */
@@ -61,9 +73,9 @@ export class CreateResult {
   }
 
   /**
-   * Get a Buffer of the PDF data.
+   * Get a Buffer of the data.
    *
-   * @returns {Buffer} PDF data.
+   * @returns {Buffer} data.
    *
    * @memberof CreateResult
    */
@@ -72,13 +84,13 @@ export class CreateResult {
   }
 
   /**
-   * Get a Stream of the PDF data.
+   * Get a Stream (Readable) of the data.
    *
-   * @returns {Stream} Stream of PDF data.
+   * @returns {Readable} Stream of data.
    *
    * @memberof CreateResult
    */
-  public toStream(): Stream {
+  public toStream(): Readable {
     const stream = new Readable();
     stream.push(this.data, 'base64');
     stream.push(null);
@@ -86,7 +98,7 @@ export class CreateResult {
   }
 
   /**
-   * Saves the PDF to a file.
+   * Saves the result to a file.
    *
    * @param {string} filename the filename.
    * @returns {Promise<void>} resolves upon successful create.

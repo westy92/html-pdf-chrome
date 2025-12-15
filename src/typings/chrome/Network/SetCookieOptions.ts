@@ -84,3 +84,4 @@ export default interface SetCookieOptions {
    */
   expires?: TimeSinceEpoch;
 }
+

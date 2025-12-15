@@ -37,3 +37,4 @@ export default interface CustomPreview {
    */
   configObjectId?: RemoteObjectId;
 }
+

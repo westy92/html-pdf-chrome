@@ -7,3 +7,4 @@
  * @export
  */
 export type CookieSameSite = 'Strict' | 'Lax';
+

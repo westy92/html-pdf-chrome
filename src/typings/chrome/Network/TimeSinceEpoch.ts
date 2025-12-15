@@ -6,3 +6,4 @@
  * @export
  */
 export type TimeSinceEpoch = number;
+

@@ -38,6 +38,7 @@ jspm_packages
 
 # Transpiled files
 #lib
+dist
 
 # phpStorm files
 .idea

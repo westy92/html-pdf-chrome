@@ -138,3 +138,4 @@ export default interface PrintToPDFOptions {
    */
   preferCSSPageSize?: boolean;
 }
+

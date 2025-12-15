@@ -1,5 +1,8 @@
 'use strict';
 
+import * as CDP from 'chrome-remote-interface';
+import Protocol from 'devtools-protocol';
+
 import { CompletionTrigger } from './CompletionTrigger';
 
 /**
@@ -23,7 +26,7 @@ export class Event extends CompletionTrigger {
     super(timeout);
   }
 
-  public async wait(client: any): Promise<any> {
+  public async wait(client: CDP.Client): Promise<Protocol.Runtime.EvaluateResponse> {
     const {Runtime} = client;
     const selector = this.cssSelector ? `querySelector('${this.cssSelector}')` : 'body';
     return Runtime.evaluate({

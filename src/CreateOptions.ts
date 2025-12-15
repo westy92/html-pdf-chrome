@@ -1,13 +1,11 @@
 'use strict';
 
+import { Protocol } from 'devtools-protocol';
 import { CompletionTrigger } from './CompletionTriggers';
 import LoadingFailed from './typings/chrome/Network/LoadingFailed';
 import LoadingFinished from './typings/chrome/Network/LoadingFinished';
 import RequestWillBeSent from './typings/chrome/Network/RequestWillBeSent';
 import ResponseReceived from './typings/chrome/Network/ResponseReceived';
-import SetCookieOptions from './typings/chrome/Network/SetCookieOptions';
-import PrintToPDFOptions from './typings/chrome/Page/PrintToPDFOptions';
-import ConsoleAPICalled from './typings/chrome/Runtime/ConsoleAPICalled';
 import ExceptionThrown from './typings/chrome/Runtime/ExceptionThrown';
 
 /**
@@ -57,16 +55,29 @@ export interface CreateOptions {
 
   /**
    * The options to pass to Chrome's Page.printToPDF.
-   * Note: these require Chrome >= 60.
    *
-   * @type {PrintToPDFOptions}
+   * @type {Protocol.Page.PrintToPDFRequest}
    * @memberof CreateOptions
    */
-  printOptions?: PrintToPDFOptions;
+  printOptions?: Protocol.Page.PrintToPDFRequest;
+
+  /**
+   * The options to pass to Chrome's Page.captureScreenshot.
+   * 
+   * @type {Protocol.Page.CaptureScreenshotRequest}
+   * @memberof CreateOptions
+   */
+  screenshotOptions?: Protocol.Page.CaptureScreenshotRequest;
+
+  /**
+   * The options to pass to Chrome's Emulation.setDeviceMetricsOverride.
+   * Used when generating screenshot images.
+   */
+  deviceMetrics?: Protocol.Emulation.SetDeviceMetricsOverrideRequest;
 
   /**
    * An optional CompletionTrigger to wait for before
-   * printing the rendered page to a PDF.
+   * printing the rendered page to a PDF or image.
    *
    * @type {CompletionTrigger}
    * @memberof CreateOptions
@@ -92,10 +103,10 @@ export interface CreateOptions {
   /**
    * Cookies to set.
    *
-   * @type {SetCookieOptions[]}
+   * @type {Protocol.Network.SetCookieRequest[]}
    * @memberof CreateOptions
    */
-  cookies?: SetCookieOptions[];
+  cookies?: Protocol.Network.SetCookieRequest[];
 
   /**
    * Extra HTTP headers to send when making a request.
@@ -128,7 +139,7 @@ export interface CreateOptions {
    *
    * @memberof CreateOptions
    */
-  runtimeConsoleHandler?: (value: ConsoleAPICalled) => void;
+  runtimeConsoleHandler?: (value: Protocol.Runtime.ConsoleAPICalledEvent) => void;
 
   /**
    * Set a callback to receive unhandled exceptions.
@@ -182,9 +193,9 @@ export interface CreateOptions {
   _mainRequestId?: string;
 
   /**
-   * A private flag to signify the main page navigation failed.
+   * A private variable to store the main page navigation response.
    *
-   * @type {boolean}
+   * @type {Protocol.Network.Response}
    * @memberof CreateOptions
    */
   _navigateFailed?: boolean;
@@ -196,4 +207,15 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   _responseStatusCode?: number;
+
+  _mainRequestResponse?: Protocol.Network.Response;
+
+  /**
+   * A private flag to signify that generation failed or timed out.
+   *
+   * @type {Error}
+   * @memberof CreateOptions
+   */
+  _exitCondition?: Error;
+
 }

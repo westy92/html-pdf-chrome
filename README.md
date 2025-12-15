@@ -1,26 +1,33 @@
 # html-pdf-chrome
 
-[![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://badge.fury.io/js/html-pdf-chrome)
-[![Linux & Mac Build Status](https://travis-ci.org/westy92/html-pdf-chrome.svg?branch=master)](https://travis-ci.org/westy92/html-pdf-chrome/)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/westy92/html-pdf-chrome?branch=master&svg=true)](https://ci.appveyor.com/project/westy92/html-pdf-chrome)
+[![npm version](https://badge.fury.io/js/html-pdf-chrome.svg)](https://www.npmjs.com/package/html-pdf-chrome)
+[![Build Status](https://github.com/westy92/html-pdf-chrome/actions/workflows/github-actions.yml/badge.svg)](https://github.com/westy92/html-pdf-chrome/actions/workflows/github-actions.yml?query=branch%3Amaster)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9395ded652937f958a41/maintainability)](https://codeclimate.com/github/westy92/html-pdf-chrome/maintainability)
 [![Code Coverage](https://codecov.io/gh/westy92/html-pdf-chrome/branch/master/graph/badge.svg)](https://codecov.io/gh/westy92/html-pdf-chrome)
-[![Dependency Status](https://david-dm.org/westy92/html-pdf-chrome.svg)](https://david-dm.org/westy92/html-pdf-chrome)
 [![Known Vulnerabilities](https://snyk.io/test/github/westy92/html-pdf-chrome/badge.svg)](https://snyk.io/test/github/westy92/html-pdf-chrome)
+[![Funding Status](https://img.shields.io/github/sponsors/westy92)](https://github.com/sponsors/westy92)
 
-HTML to PDF converter via Chrome/Chromium.
+HTML to PDF or image (jpeg, png, webp) converter via Chrome/Chromium.
 
 ## Prerequisites
 
-* Latest Chrome/Chromium (latest recommended, 61 or higher required but some features may not work)
+* Latest Chrome/Chromium
 * Windows, macOS, or Linux
-* Node.js 6 or later (we only test on 10+, mileage may vary)
+* A [currently supported version of Node.js](https://nodejs.org/en/about/releases/)
 
 ## Installation
 
 ```bash
 npm install --save html-pdf-chrome
 ```
+
+## Security
+
+This library is **_NOT_** meant to accept untrusted user input. Doing so may have serious security risks such as Server-Side Request Forgery (SSRF).
+
+### CORS
+
+If you run into CORS issues, try using the `--disable-web-security` Chrome flag, either when you start Chrome externally, or in `options.chromeFlags`. This option should only be used if you fully trust the code you are executing during a print job!
 
 ## Usage
 
@@ -95,6 +102,42 @@ htmlPdf.create(html, options).then((pdf) => pdf.toStream());
 
 View the full documentation in the source code.
 
+### Saving as a Screenshot
+
+By default, pages are saved as a PDF. To save as a screenshot instead, supply `screenshotOptions`.
+All supported options can be viewed [here](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot).
+
+```js
+const htmlPdf = require('html-pdf-chrome');
+
+const html = '<p>Hello, world!</p>';
+const options = {
+  port: 9222, // port Chrome is listening on
+  screenshotOptions: {
+    format: 'png', // png, jpeg, or webp. Optional, defaults to png.
+    // quality: 100, // Optional, quality percent (jpeg only)
+
+    // optional, defaults to entire window
+    clip: {
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 200,
+      scale: 1,
+    },
+  },
+  // Optional. Options here: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
+  deviceMetrics: {
+    width: 1000,
+    height: 1000,
+    deviceScaleFactor: 0,
+    mobile: false,
+  },
+};
+
+htmlPdf.create(html, options).then((pdf) => pdf.toFile('test.png'));
+```
+
 ### Using an External Site
 
 ```js
@@ -106,6 +149,20 @@ const options: htmlPdf.CreateOptions = {
 
 const url = 'https://github.com/westy92/html-pdf-chrome';
 const pdf = await htmlPdf.create(url, options);
+```
+
+### Using Markdown
+
+```js
+import * as htmlPdf from 'html-pdf-chrome';
+import * as marked from 'marked';
+
+const options: htmlPdf.CreateOptions = {
+  port: 9222, // port Chrome is listening on
+};
+
+const html = marked('# Hello [World](https://www.google.com/)!');
+const pdf = await htmlPdf.create(html, options);
 ```
 
 ### Using a Template Engine
@@ -189,6 +246,7 @@ There are a few `CompletionTrigger` types that wait for something to occur befor
 * Element - waits for an element to be injected into the DOM
 * Event - waits for an Event to fire
 * Timer - waits a specified amount of time
+* LifecycleEvent - waits for a Chrome page lifecycle event
 * Variable - waits for a variable to be set to `true`
 * Custom - extend `htmlPdf.CompletionTrigger.CompletionTrigger`
 
@@ -212,6 +270,11 @@ new htmlPdf.CompletionTrigger.Element(
 new htmlPdf.CompletionTrigger.Event(
   'myEvent', // name of the event to listen for
   '#myElement', // optional DOM element CSS selector to listen on, defaults to body
+  5000 // optional timeout (milliseconds)
+),
+
+new htmlPdf.CompletionTrigger.LifecycleEvent(
+  'networkIdle', // name of the Chrome lifecycle event to listen for. Defaults to 'firstMeaningfulPaint'.
   5000 // optional timeout (milliseconds)
 ),
 

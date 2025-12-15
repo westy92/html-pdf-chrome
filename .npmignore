@@ -1,9 +1,10 @@
+.eslintrc.json
+.github/
+.mocharc.json
+.nyc_output/
+.nycrc
+.vscode/
 coverage/
-gulpfile.js
-lib/test/
+dist/test/
 test/
 tsconfig.json
-tslint.json
-.istanbul.yml
-.travis.yml
-.vscode/

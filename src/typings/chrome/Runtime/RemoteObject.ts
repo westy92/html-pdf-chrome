@@ -26,7 +26,7 @@ export default interface RemoteObject {
    * @type {('array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error' | 'proxy' | 'promise' | 'typedarray')}
    * @memberof RemoteObject
    */
-  subtype?: 'array' | 'null' | 'node' | 'regexp' |'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error' | 'proxy' | 'promise' | 'typedarray';
+  subtype?: 'array' | 'null' | 'node' | 'regexp' | 'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error' | 'proxy' | 'promise' | 'typedarray';
 
   /**
    * Object class (constructor) name. Specified for object type values only.
@@ -82,3 +82,4 @@ export default interface RemoteObject {
    */
   customPreview?: CustomPreview;
 }
+
