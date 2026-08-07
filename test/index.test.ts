@@ -10,29 +10,29 @@ import * as Chrome from 'chrome-remote-interface/lib/chrome';
 import { Protocol } from 'devtools-protocol';
 import * as dns from 'dns';
 import * as fs from 'fs';
-import * as getPort from 'get-port';
-import * as mockFs from 'mock-fs';
+import getPort from 'get-port';
+import * as http from 'http';
+import mockFs from 'mock-fs';
+import { AddressInfo } from 'net';
 import * as path from 'path';
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
-import * as pixelmatch from 'pixelmatch';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import { TextItem } from 'pdfjs-dist/types/src/display/api';
-import * as proxyquire from 'proxyquire';
+import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import * as sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import { Readable } from 'stream';
+import { pathToFileURL } from 'url';
 
 import * as HtmlPdf from '../src';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-chai.use(require('chai-string'));
-chai.use(require('sinon-chai'));
+const proxyquire = require('proxyquire');
 /* eslint-enable @typescript-eslint/no-require-imports */
+chai.use(sinonChai);
 const expect = chai.expect;
 
-const NODE_VERSION = parseFloat(process.versions.node);
-if (NODE_VERSION >= 17) {
-  dns.setDefaultResultOrder('ipv4first');
-}
+dns.setDefaultResultOrder('ipv4first');
 
 describe('HtmlPdf', () => {
 
@@ -69,12 +69,50 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
 
+    it('should ignore a Windows temporary profile cleanup failure', async () => {
+      const cleanupError = Object.assign(new Error('temporary profile is locked'), { code: 'EPERM' });
+      const killStub = sinon.stub().throws(cleanupError);
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: sinon.stub().resolves({ port, kill: killStub }),
+        }
+      });
+
+      const result = await mockedHtmlPdf.create('<p>hello!</p>');
+
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(killStub).to.have.been.calledOnce;
+    });
+
+    it('should propagate an unexpected Chrome cleanup failure', async () => {
+      const cleanupError = Object.assign(new Error('unexpected cleanup failure'), { code: 'EIO' });
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: sinon.stub().resolves({
+            port,
+            kill: sinon.stub().throws(cleanupError),
+          }),
+        }
+      });
+
+      try {
+        await mockedHtmlPdf.create('<p>hello!</p>');
+        expect.fail();
+      } catch (error) {
+        expect(error).to.equal(cleanupError);
+      }
+    });
+
     it('should not hang if connection to Chrome is lost', async () => {
       const launchStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method)  {
         // eslint-disable-next-line prefer-rest-params
         const result = Chrome.prototype.send.wrappedMethod.apply(this, arguments);
         if (method === 'Network.clearBrowserCache') {
-          myChrome.kill();
+          try {
+            myChrome.kill();
+          } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+            // Chrome is already stopped; Windows may still lock its temporary profile.
+          }
         }
         return result;
       });
@@ -98,6 +136,26 @@ describe('HtmlPdf', () => {
         expect(err.message).to.equal('HtmlPdf.create() connection lost.');
       } finally {
         launchStub.restore();
+      }
+    });
+
+    it('should normalize a Chrome transport reset as a lost connection', async () => {
+      const connectionReset = Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' });
+      const sendStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method) {
+        if (method === 'Network.clearBrowserCache') {
+          return Promise.reject(connectionReset);
+        }
+        // eslint-disable-next-line prefer-rest-params
+        return Chrome.prototype.send.wrappedMethod.apply(this, arguments);
+      });
+
+      try {
+        await HtmlPdf.create('<p>hello!</p>', { port, clearCache: true });
+        expect.fail();
+      } catch (error) {
+        expect(error.message).to.equal('HtmlPdf.create() connection lost.');
+      } finally {
+        sendStub.restore();
       }
     });
 
@@ -127,7 +185,7 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       expect(launchStub).to.not.have.been.called;
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('hello!');
+      expect(pdf[0].startsWith('hello!')).to.be.true;
     });
 
     it('should use running Chrome to generate a PDF (specify host and port)', async () => {
@@ -141,7 +199,7 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       expect(launchStub).to.not.have.been.called;
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('hello!');
+      expect(pdf[0].startsWith('hello!')).to.be.true;
     });
 
     it('should generate a PDF with Chrome options', async () => {
@@ -183,10 +241,22 @@ describe('HtmlPdf', () => {
       };
       const result = await HtmlPdf.create('https://westy92.github.io/html-pdf-chrome/test/cookie.html', options);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('Cookies:status=Passed!');
+      expect(pdf[0].startsWith('Cookies:status=Passed!')).to.be.true;
     });
 
     it('should generate a PDF and send extra HTTP headers', async () => {
+      let receivedHeaders: http.IncomingHttpHeaders;
+      const server = http.createServer((request, response) => {
+        receivedHeaders = request.headers;
+        response.setHeader('Content-Type', 'text/html');
+        response.setHeader('Connection', 'close');
+        response.end('<p>Passed!</p>');
+      });
+      await new Promise<void>((resolve, reject) => {
+        server.once('error', reject);
+        server.listen(0, '127.0.0.1', resolve);
+      });
+
       const options: HtmlPdf.CreateOptions = {
         port,
         extraHTTPHeaders: {
@@ -195,11 +265,20 @@ describe('HtmlPdf', () => {
         },
       };
 
-      const result = await HtmlPdf.create('https://httpbin.org/headers', options);
-      const pdf = await getParsedPdf(result.toBuffer());
+      try {
+        const address = server.address() as AddressInfo;
+        const result = await HtmlPdf.create(`http://127.0.0.1:${address.port}`, options);
+        const pdf = await getParsedPdf(result.toBuffer());
 
-      expect(pdf[0]).to.contain('"Authorization": "Bearer"');
-      expect(pdf[0]).to.contain('"X-Custom-Test-Header": "Passed1!"');
+        expect(pdf[0].startsWith('Passed!')).to.be.true;
+        expect(receivedHeaders.authorization).to.equal('Bearer');
+        expect(receivedHeaders['x-custom-test-header']).to.equal('Passed1!');
+      } finally {
+        await new Promise<void>((resolve, reject) => {
+          server.close((error) => error ? reject(error) : resolve());
+          server.closeAllConnections();
+        });
+      }
     });
 
     it('should proxy console messages', async () => {
@@ -291,7 +370,7 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('Passed!');
+      expect(pdf[0].startsWith('Passed!')).to.be.true;
     });
 
     it('should generate a PDF with external CSS', async () => {
@@ -309,7 +388,7 @@ describe('HtmlPdf', () => {
       const result = await HtmlPdf.create(html, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('Passed!');
+      expect(pdf[0].startsWith('Passed!')).to.be.true;
     });
 
     it('should generate a PDF with multiple pages', async () => {
@@ -367,11 +446,11 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF from a local file', async () => {
-      const filePath = path.join('file://', __dirname, 'test.html');
+      const filePath = pathToFileURL(path.join(__dirname, 'test.html')).href;
       const result = await HtmlPdf.create(filePath, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());
-      expect(pdf[0]).to.startWith('Passed!');
+      expect(pdf[0].startsWith('Passed!')).to.be.true;
     });
 
     it('should generate a PDF from an external site', async () => {
@@ -382,10 +461,11 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a Screenshot', async () => {
+      const image = fs.readFileSync(path.join(__dirname, '75.png')).toString('base64');
       const html = `
         <html>
-          <body>
-            <img src="https://github.com/westy92/html-pdf-chrome/raw/main/test/75.png"></img>
+          <body style="background-color: white">
+            <img src="data:image/png;base64,${image}"></img>
           </body>
         </html>
       `;
@@ -405,7 +485,7 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const img1 = PNG.sync.read(result.toBuffer());
       const img2 = PNG.sync.read(fs.readFileSync('test/screenshot.png'));
-      const diff = pixelmatch(img1.data, img2.data, null, 100, 100);
+      const diff = pixelmatch(img1.data, img2.data, undefined, 100, 100);
       expect(diff).to.equal(0);
     });
 
@@ -432,7 +512,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, {port});
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Failed!');
+          expect(pdf[0].startsWith('Failed!')).to.be.true;
         });
 
         it('should generate correctly after being triggered', async () => {
@@ -443,7 +523,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Passed!');
+          expect(pdf[0].startsWith('Passed!')).to.be.true;
         });
 
       });
@@ -468,7 +548,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, {port});
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Failed!');
+          expect(pdf[0].startsWith('Failed!')).to.be.true;
         });
 
         it('should time out', async () => {
@@ -505,7 +585,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Passed!');
+          expect(pdf[0].startsWith('Passed!')).to.be.true;
         });
 
       });
@@ -533,7 +613,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, {port});
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Failed!');
+          expect(pdf[0].startsWith('Failed!')).to.be.true;
         });
 
         it('should time out', async () => {
@@ -570,7 +650,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Callback!');
+          expect(pdf[0].startsWith('Callback!')).to.be.true;
         });
 
       });
@@ -597,7 +677,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, {port});
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Failed!');
+          expect(pdf[0].startsWith('Failed!')).to.be.true;
         });
 
         it('should time out', async () => {
@@ -634,7 +714,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Passed!');
+          expect(pdf[0].startsWith('Passed!')).to.be.true;
         });
 
       });
@@ -683,7 +763,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Passed!');
+          expect(pdf[0].startsWith('Passed!')).to.be.true;
         });
 
       });
@@ -708,7 +788,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, {port});
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Failed!');
+          expect(pdf[0].startsWith('Failed!')).to.be.true;
         });
 
         it('should time out', async () => {
@@ -756,7 +836,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(alreadySetHtml, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Variable!');
+          expect(pdf[0].startsWith('Variable!')).to.be.true;
         });
 
         it('should generate correctly after being triggered', async () => {
@@ -767,7 +847,7 @@ describe('HtmlPdf', () => {
           const result = await HtmlPdf.create(html, options);
           expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
           const pdf = await getParsedPdf(result.toBuffer());
-          expect(pdf[0]).startsWith('Variable!');
+          expect(pdf[0].startsWith('Variable!')).to.be.true;
         });
 
       });
@@ -882,7 +962,7 @@ describe('HtmlPdf', () => {
 
 async function getParsedPdf(buffer: Buffer): Promise<Array<string>> {
   const bytes = new Uint8Array(buffer);
-  const pdf = await pdfjs.getDocument(bytes).promise;
+  const pdf = await pdfjs.getDocument({ data: bytes }).promise;
   const pages = await Promise.all(Array.from({ length: pdf.numPages }, (_, i) => pdf.getPage(i + 1)))
   const textPages = await Promise.all(pages.map((page) => page.getTextContent()));
   return textPages.map(({ items }) => (items as Array<TextItem>).map(({ str }) => str).join(''));

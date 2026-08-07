@@ -1,7 +1,7 @@
 'use strict';
 
-import { launch, LaunchedChrome } from 'chrome-launcher';
-import * as CDP from 'chrome-remote-interface';
+import CDP from 'chrome-remote-interface';
+import { launch, type LaunchedChrome } from 'chrome-launcher';
 import Protocol from 'devtools-protocol';
 
 import * as CompletionTrigger from './CompletionTriggers';
@@ -28,7 +28,7 @@ export { CompletionTrigger, CreateOptions, CreateResult };
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = normalizeCreateOptions(options);
 
-  let chrome: LaunchedChrome;
+  let chrome: LaunchedChrome | undefined;
   if (!myOptions.host && !myOptions.port) {
     chrome = await launchChrome(myOptions);
   }
@@ -44,7 +44,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     }
   } finally {
     if (chrome) {
-      chrome.kill();
+      killChrome(chrome);
     }
   }
 }
@@ -95,15 +95,25 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
       let base64Result: string;
       if (options.screenshotOptions) {
         // https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
-        const screenshot = await Page.captureScreenshot(options.screenshotOptions)
-        base64Result = screenshot.data
+        const screenshot = await Page.captureScreenshot(options.screenshotOptions);
+        base64Result = screenshot.data;
       } else {
         // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
         const pdf = await Page.printToPDF(options.printOptions);
-        base64Result = pdf.data
+        base64Result = pdf.data;
       }
       await throwIfExitCondition(options);
       return new CreateResult(base64Result, options._mainRequestResponse);
+    } catch (error) {
+      if (options._exitCondition) {
+        throw options._exitCondition;
+      }
+      if (hasErrorCode(error, ['ECONNABORTED', 'ECONNRESET', 'EPIPE'])) {
+        const connectionLostError = new ConnectionLostError();
+        options._exitCondition = connectionLostError;
+        throw connectionLostError;
+      }
+      throw error;
     } finally {
       client.close();
     }
@@ -201,7 +211,7 @@ async function throwIfExitCondition(options: CreateOptions): Promise<void> {
   }
 }
 
-function normalizeCreateOptions(options: CreateOptions): CreateOptions {
+function normalizeCreateOptions(options?: CreateOptions): CreateOptions {
   const myOptions = Object.assign({}, options); // clone
 
   // make sure these aren't set externally
@@ -226,4 +236,24 @@ async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
   });
   options.port = chrome.port;
   return chrome;
+}
+
+function killChrome(chrome: LaunchedChrome): void {
+  try {
+    chrome.kill();
+  } catch (error) {
+    // On Windows, Chrome can retain a transient lock on its temporary profile
+    // after the process exits. Do not let that cleanup failure replace a
+    // successful PDF result.
+    if (!hasErrorCode(error, ['EPERM'])) {
+      throw error;
+    }
+  }
+}
+
+function hasErrorCode(error: unknown, codes: string[]): error is Error & { code: string } {
+  return error instanceof Error
+    && 'code' in error
+    && typeof error.code === 'string'
+    && codes.includes(error.code);
 }
