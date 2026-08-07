@@ -40,45 +40,42 @@
   "license": "MIT",
   "typings": "dist/index.d.ts",
   "engines": {
-    "node": ">= 18"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
-    "@types/chrome-remote-interface": "^0.31.9",
-    "chrome-launcher": "^0.15.1",
-    "chrome-remote-interface": "^0.33.0"
+    "@types/chrome-remote-interface": "^0.34.0",
+    "chrome-launcher": "^1.2.1",
+    "chrome-remote-interface": "^0.34.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^10.0.0",
-    "@types/chai": "^4.0.1",
-    "@types/chai-string": "^1.1.30",
+    "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.1",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^22.0.2",
-    "@types/pixelmatch": "^5.2.4",
+    "@types/node": "^26.1.2",
     "@types/pngjs": "^6.0.1",
     "@types/proxyquire": "^1.3.28",
-    "@types/sinon": "^17.0.2",
-    "@types/sinon-chai": "^3.2.0",
+    "@types/sinon": "^22.0.0",
+    "@types/sinon-chai": "^4.0.0",
     "@types/source-map-support": "^0.5.3",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
-    "chai": "^4.1.0",
-    "chai-string": "^1.3.0",
-    "eslint": "^9.9.0",
-    "get-port": "^5.0.0",
-    "mocha": "^10.0.0",
+    "chai": "^6.2.2",
+    "eslint": "^10.8.0",
+    "get-port": "^7.2.0",
+    "mocha": "^11.8.0",
     "mock-fs": "^5.0.0",
-    "nyc": "^17.0.0",
-    "pdfjs-dist": "^3.6.172",
-    "pixelmatch": "^5.3.0",
+    "nyc": "^18.0.0",
+    "pdfjs-dist": "^6.2.108",
+    "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0",
     "proxyquire": "^2.1.3",
     "rimraf": "^6.0.1",
-    "sinon": "^19.0.2",
-    "sinon-chai": "^3.0.0",
+    "sinon": "^22.1.0",
+    "sinon-chai": "^4.0.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
-    "typescript": "^5.0.2"
+    "typescript": "^6.0.3"
   }
 }

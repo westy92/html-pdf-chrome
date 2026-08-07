@@ -1,7 +1,7 @@
 'use strict';
 
-import { launch, LaunchedChrome } from 'chrome-launcher';
 import * as CDP from 'chrome-remote-interface';
+import { launch, type LaunchedChrome } from 'chrome-launcher';
 import Protocol from 'devtools-protocol';
 
 import * as CompletionTrigger from './CompletionTriggers';
@@ -95,12 +95,12 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
       let base64Result: string;
       if (options.screenshotOptions) {
         // https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
-        const screenshot = await Page.captureScreenshot(options.screenshotOptions)
-        base64Result = screenshot.data
+        const screenshot = await Page.captureScreenshot(options.screenshotOptions);
+        base64Result = screenshot.data;
       } else {
         // https://chromedevtools.github.io/debugger-protocol-viewer/tot/Page/#method-printToPDF
         const pdf = await Page.printToPDF(options.printOptions);
-        base64Result = pdf.data
+        base64Result = pdf.data;
       }
       await throwIfExitCondition(options);
       return new CreateResult(base64Result, options._mainRequestResponse);
