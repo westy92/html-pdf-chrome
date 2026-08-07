@@ -22,6 +22,7 @@ import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { Readable } from 'stream';
+import { pathToFileURL } from 'url';
 
 import * as HtmlPdf from '../src';
 
@@ -68,12 +69,50 @@ describe('HtmlPdf', () => {
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
     });
 
+    it('should ignore a Windows temporary profile cleanup failure', async () => {
+      const cleanupError = Object.assign(new Error('temporary profile is locked'), { code: 'EPERM' });
+      const killStub = sinon.stub().throws(cleanupError);
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: sinon.stub().resolves({ port, kill: killStub }),
+        }
+      });
+
+      const result = await mockedHtmlPdf.create('<p>hello!</p>');
+
+      expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
+      expect(killStub).to.have.been.calledOnce;
+    });
+
+    it('should propagate an unexpected Chrome cleanup failure', async () => {
+      const cleanupError = Object.assign(new Error('unexpected cleanup failure'), { code: 'EIO' });
+      const mockedHtmlPdf = proxyquire('../src', {
+        'chrome-launcher': {
+          launch: sinon.stub().resolves({
+            port,
+            kill: sinon.stub().throws(cleanupError),
+          }),
+        }
+      });
+
+      try {
+        await mockedHtmlPdf.create('<p>hello!</p>');
+        expect.fail();
+      } catch (error) {
+        expect(error).to.equal(cleanupError);
+      }
+    });
+
     it('should not hang if connection to Chrome is lost', async () => {
       const launchStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method)  {
         // eslint-disable-next-line prefer-rest-params
         const result = Chrome.prototype.send.wrappedMethod.apply(this, arguments);
         if (method === 'Network.clearBrowserCache') {
-          myChrome.kill();
+          try {
+            myChrome.kill();
+          } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+            // Chrome is already stopped; Windows may still lock its temporary profile.
+          }
         }
         return result;
       });
@@ -97,6 +136,26 @@ describe('HtmlPdf', () => {
         expect(err.message).to.equal('HtmlPdf.create() connection lost.');
       } finally {
         launchStub.restore();
+      }
+    });
+
+    it('should normalize a Chrome transport reset as a lost connection', async () => {
+      const connectionReset = Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' });
+      const sendStub = sinon.stub(Chrome.prototype, 'send').callsFake(function (method) {
+        if (method === 'Network.clearBrowserCache') {
+          return Promise.reject(connectionReset);
+        }
+        // eslint-disable-next-line prefer-rest-params
+        return Chrome.prototype.send.wrappedMethod.apply(this, arguments);
+      });
+
+      try {
+        await HtmlPdf.create('<p>hello!</p>', { port, clearCache: true });
+        expect.fail();
+      } catch (error) {
+        expect(error.message).to.equal('HtmlPdf.create() connection lost.');
+      } finally {
+        sendStub.restore();
       }
     });
 
@@ -387,7 +446,7 @@ describe('HtmlPdf', () => {
     });
 
     it('should generate a PDF from a local file', async () => {
-      const filePath = path.join('file://', __dirname, 'test.html');
+      const filePath = pathToFileURL(path.join(__dirname, 'test.html')).href;
       const result = await HtmlPdf.create(filePath, {port});
       expect(result).to.be.an.instanceOf(HtmlPdf.CreateResult);
       const pdf = await getParsedPdf(result.toBuffer());

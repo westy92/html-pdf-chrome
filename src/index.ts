@@ -44,7 +44,7 @@ export async function create(html: string, options?: CreateOptions): Promise<Cre
     }
   } finally {
     if (chrome) {
-      chrome.kill();
+      killChrome(chrome);
     }
   }
 }
@@ -104,6 +104,16 @@ async function generate(html: string, options: CreateOptions, tab: CDP.Target): 
       }
       await throwIfExitCondition(options);
       return new CreateResult(base64Result, options._mainRequestResponse);
+    } catch (error) {
+      if (options._exitCondition) {
+        throw options._exitCondition;
+      }
+      if (hasErrorCode(error, ['ECONNABORTED', 'ECONNRESET', 'EPIPE'])) {
+        const connectionLostError = new ConnectionLostError();
+        options._exitCondition = connectionLostError;
+        throw connectionLostError;
+      }
+      throw error;
     } finally {
       client.close();
     }
@@ -226,4 +236,24 @@ async function launchChrome(options: CreateOptions): Promise<LaunchedChrome> {
   });
   options.port = chrome.port;
   return chrome;
+}
+
+function killChrome(chrome: LaunchedChrome): void {
+  try {
+    chrome.kill();
+  } catch (error) {
+    // On Windows, Chrome can retain a transient lock on its temporary profile
+    // after the process exits. Do not let that cleanup failure replace a
+    // successful PDF result.
+    if (!hasErrorCode(error, ['EPERM'])) {
+      throw error;
+    }
+  }
+}
+
+function hasErrorCode(error: unknown, codes: string[]): error is Error & { code: string } {
+  return error instanceof Error
+    && 'code' in error
+    && typeof error.code === 'string'
+    && codes.includes(error.code);
 }
