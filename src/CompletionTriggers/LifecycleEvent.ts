@@ -35,7 +35,7 @@ export class LifecycleEvent extends CompletionTrigger {
     super(timeout);
   }
 
-  #eventPromise: Promise<void>;
+  #eventPromise!: Promise<void>;
 
   public async init(client: CDP.Client): Promise<void> {
     const eName = this.eventName || 'firstMeaningfulPaint';

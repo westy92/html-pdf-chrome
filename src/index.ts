@@ -1,6 +1,6 @@
 'use strict';
 
-import * as CDP from 'chrome-remote-interface';
+import CDP from 'chrome-remote-interface';
 import { launch, type LaunchedChrome } from 'chrome-launcher';
 import Protocol from 'devtools-protocol';
 
@@ -28,7 +28,7 @@ export { CompletionTrigger, CreateOptions, CreateResult };
 export async function create(html: string, options?: CreateOptions): Promise<CreateResult> {
   const myOptions = normalizeCreateOptions(options);
 
-  let chrome: LaunchedChrome;
+  let chrome: LaunchedChrome | undefined;
   if (!myOptions.host && !myOptions.port) {
     chrome = await launchChrome(myOptions);
   }
@@ -201,7 +201,7 @@ async function throwIfExitCondition(options: CreateOptions): Promise<void> {
   }
 }
 
-function normalizeCreateOptions(options: CreateOptions): CreateOptions {
+function normalizeCreateOptions(options?: CreateOptions): CreateOptions {
   const myOptions = Object.assign({}, options); // clone
 
   // make sure these aren't set externally

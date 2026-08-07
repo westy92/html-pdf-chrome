@@ -12,7 +12,7 @@ import * as dns from 'dns';
 import * as fs from 'fs';
 import getPort from 'get-port';
 import * as http from 'http';
-import * as mockFs from 'mock-fs';
+import mockFs from 'mock-fs';
 import { AddressInfo } from 'net';
 import * as path from 'path';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
