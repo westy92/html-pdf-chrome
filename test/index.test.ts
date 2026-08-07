@@ -40,7 +40,9 @@ describe('HtmlPdf', () => {
     let port: number;
     let chrome: chromeLauncher.LaunchedChrome;
 
-    before(async () => {
+    before(async function () {
+      this.timeout(30000);
+
       // Start Chrome and wait for it to start listening for connections.
       chrome = await chromeLauncher.launch({
         chromeFlags: [
@@ -51,7 +53,7 @@ describe('HtmlPdf', () => {
         // chromePath: '/usr/bin/google-chrome-beta',
         connectionPollInterval: 250,
         logLevel: 'error',
-        maxConnectionRetries: 50,
+        maxConnectionRetries: 100,
       });
       port = chrome.port;
     });
