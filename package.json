@@ -76,6 +76,6 @@
     "sinon-chai": "^4.0.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   }
 }
