@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Runtime/RemoteObjectId.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC","file":"RemoteObjectId.js","sourcesContent":["'use strict';\n\n/**\n * Unique object identifier.\n *\n * @export\n */\nexport type RemoteObjectId = string;\n"],"sourceRoot":"../../../../.."}

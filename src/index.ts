@@ -152,6 +152,10 @@ async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promi
   }
   Network.requestWillBeSent((e: Protocol.Network.RequestWillBeSentEvent) => {
     options._mainRequestId = options._mainRequestId || e.requestId;
+    if (options.requestWillBeSentHandler) {
+      options.requestWillBeSentHandler(e);
+    }
+
   });
   Network.loadingFailed((e: Protocol.Network.LoadingFailedEvent) => {
     if (e.requestId === options._mainRequestId) {
@@ -161,6 +165,20 @@ async function beforeNavigate(options: CreateOptions, client: CDP.Client): Promi
   Network.responseReceived((e: Protocol.Network.ResponseReceivedEvent) => {
     if (e.requestId === options._mainRequestId) {
       options._mainRequestResponse = e.response;
+    }
+  });
+
+  Network.loadingFinished((e) => {
+    if (options.loadingFinishedHandler) {
+      options.loadingFinishedHandler(e);
+    }
+  });
+  Network.responseReceived((e) => {
+    if (e.requestId === options._mainRequestId) {
+      options._responseStatusCode = e.response.status;
+    }
+    if (options.responseReceivedHandler) {
+      options.responseReceivedHandler(e);
     }
   });
   if (options.extraHTTPHeaders) {
@@ -208,6 +226,12 @@ async function afterNavigate(options: CreateOptions, client: CDP.Client): Promis
 async function throwIfExitCondition(options: CreateOptions): Promise<void> {
   if (options._exitCondition) {
     throw options._exitCondition;
+  }
+  if (options._responseStatusCode !== null && false !== options.failOnHTTP4xx && options._responseStatusCode >= 400 && options._responseStatusCode <= 499) {
+    throw new Error('HtmlPdf.create() status code ' + options._responseStatusCode);
+  }
+  if (options._responseStatusCode != null && false !== options.failOnHTTP5xx && options._responseStatusCode >= 500 && options._responseStatusCode <= 599) {
+    throw new Error('HtmlPdf.create() status code ' + options._responseStatusCode);
   }
 }
 

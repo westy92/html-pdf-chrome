@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Runtime/ExecutionContextId.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC","file":"ExecutionContextId.js","sourcesContent":["'use strict';\n\n/**\n * Id of an execution context.\n *\n * @export\n */\nexport type ExecutionContextId = number;\n"],"sourceRoot":"../../../../.."}

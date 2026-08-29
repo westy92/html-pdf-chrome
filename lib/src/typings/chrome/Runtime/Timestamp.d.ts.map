@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/typings/chrome/Runtime/Timestamp.ts"],"names":[],"mappings":"AAEA;;;;GAIG;AACH,oBAAY,SAAS,GAAG,MAAM,CAAC","file":"Timestamp.d.ts","sourcesContent":["'use strict';\n\n/**\n * Number of milliseconds since epoch.\n *\n * @export\n */\nexport type Timestamp = number;\n"],"sourceRoot":"../../../../.."}

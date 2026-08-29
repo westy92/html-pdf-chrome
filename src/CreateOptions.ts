@@ -2,6 +2,11 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CompletionTrigger } from './CompletionTriggers';
+import LoadingFailed from './typings/chrome/Network/LoadingFailed';
+import LoadingFinished from './typings/chrome/Network/LoadingFinished';
+import RequestWillBeSent from './typings/chrome/Network/RequestWillBeSent';
+import ResponseReceived from './typings/chrome/Network/ResponseReceived';
+import ExceptionThrown from './typings/chrome/Runtime/ExceptionThrown';
 
 /**
  * PDF generation options.
@@ -112,6 +117,24 @@ export interface CreateOptions {
   extraHTTPHeaders?: { [key: string]: string; };
 
   /**
+   * Set to true if a 4xx status code on the main request should lead to a failure
+   * Not setting this will assume "true"
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  failOnHTTP4xx?: boolean;
+
+   /**
+    * Set to true if a 5xx status code on the main request should lead to a failure.
+    * Not setting this will assume "true"
+    *
+    * @type {boolean}
+    * @memberof CreateOptions
+    */
+  failOnHTTP5xx?: boolean;
+
+  /**
    * Set a callback to receive console messages.
    *
    * @memberof CreateOptions
@@ -123,7 +146,43 @@ export interface CreateOptions {
    *
    * @memberof CreateOptions
    */
-  runtimeExceptionHandler?: (exception: Protocol.Runtime.ExceptionThrownEvent) => void;
+  runtimeExceptionHandler?: (exception: ExceptionThrown) => void;
+
+  /**
+   * Set a callback to receive information about failed requests
+   *
+   * @memberof CreateOptions
+   */
+  loadingFailedHandler?: (e: LoadingFailed) => void;
+
+  /**
+   * Set a callback to receive information about completed requests
+   *
+   * @memberof CreateOptions
+   */
+  loadingFinishedHandler?: (e: LoadingFinished) => void;
+
+  /**
+   * Set a callback to receive information about received response
+   *
+   * @memberof CreateOptions
+   */
+   responseReceivedHandler?: (e: ResponseReceived) => void;
+
+  /**
+   * Set a callback to receive information about requests which will be sent
+   *
+   * @memberof CreateOptions
+   */
+  requestWillBeSentHandler?: (e: RequestWillBeSent) => void;
+
+  /**
+   * A private flag to signify the operation has been canceled.
+   *
+   * @type {boolean}
+   * @memberof CreateOptions
+   */
+  _canceled?: boolean;
 
   /**
    * A private variable to store the main page navigation requestId.
@@ -139,6 +198,16 @@ export interface CreateOptions {
    * @type {Protocol.Network.Response}
    * @memberof CreateOptions
    */
+  _navigateFailed?: boolean;
+
+  /**
+   * A private flag to hold the status code returned from the main request
+   *
+   * @type {number}
+   * @memberof CreateOptions
+   */
+  _responseStatusCode?: number;
+
   _mainRequestResponse?: Protocol.Network.Response;
 
   /**
@@ -148,4 +217,5 @@ export interface CreateOptions {
    * @memberof CreateOptions
    */
   _exitCondition?: Error;
+
 }
